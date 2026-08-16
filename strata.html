@@ -2,1041 +2,1057 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <meta name="description" content="Strata is a new kind of development environment for macOS. Designed in SwiftUI. Built around the way code actually feels.">
 <meta name="theme-color" content="#070A0D">
+
 <meta property="og:title" content="Strata — A new layer for code.">
 <meta property="og:description" content="A native development environment for macOS, from Dawnstone.">
 <meta property="og:type" content="website">
+
 <title>Strata — A new layer for code.</title>
 
 <style>
 :root{
---bg-top:#070A0D;
---bg-bottom:#0B1015;
---horizon-color:rgba(137,166,194,.045);
---glow-y:44vh;
---glow-opacity:.18;
---glow-scale:.78;
---text:#E8EDF2;
---text-secondary:rgba(232,237,242,.72);
---text-muted:rgba(232,237,242,.46);
---nav-bg:rgba(255,255,255,.045);
---nav-border:rgba(255,255,255,.11);
---nav-shadow:0 8px 40px rgba(0,0,0,.5);
---strata-deep:#394E61;
---strata:#91ABC0;
---strata-light:#C8D8E5;
---mineral:#E0E9EF;
---scroll-progress:0;
+  --bg-top:#070A0D;
+  --bg-bottom:#0B1015;
+  --horizon-color:rgba(137,166,194,0.045);
+
+  --glow-y:44vh;
+  --glow-opacity:.18;
+  --glow-scale:.78;
+
+  --text:#E8EDF2;
+  --text-secondary:rgba(232,237,242,.72);
+  --text-muted:rgba(232,237,242,.46);
+
+  --nav-bg:rgba(255,255,255,.045);
+  --nav-border:rgba(255,255,255,.11);
+  --nav-shadow:0 8px 40px rgba(0,0,0,.5);
+
+  --strata-deep:#394E61;
+  --strata:#91ABC0;
+  --strata-light:#C8D8E5;
+  --mineral:#E0E9EF;
+
+  --scroll-progress:0;
 }
 
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
 html{
-scroll-behavior:smooth;
--webkit-font-smoothing:antialiased;
-text-rendering:optimizeLegibility;
+  scroll-behavior:smooth;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
 }
 
 body{
-font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
-background:linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
-color:var(--text);
-overflow-x:hidden;
-line-height:1.6;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+  color:var(--text);
+  overflow-x:hidden;
+  line-height:1.6;
 }
 
 ::selection{
-background:rgba(200,216,229,.85);
-color:#071017;
+  background:rgba(200,216,229,.85);
+  color:#071017;
 }
 
-a:focus-visible,button:focus-visible{
-outline:2px solid var(--strata-light);
-outline-offset:3px;
-border-radius:4px;
+a:focus-visible,
+button:focus-visible{
+  outline:2px solid var(--strata-light);
+  outline-offset:3px;
+  border-radius:4px;
 }
 
 .serif-italic{
-font-family:"New York","Iowan Old Style","Apple Garamond",Georgia,"Times New Roman",serif;
-font-style:italic;
-font-weight:400;
+  font-family:"New York","Iowan Old Style","Apple Garamond",Georgia,"Times New Roman",serif;
+  font-style:italic;
+  font-weight:400;
 }
 
 .display{
-font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Helvetica,Arial,sans-serif;
-font-weight:600;
-letter-spacing:-.04em;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-weight:600;
+  letter-spacing:-.04em;
 }
 
 .sky{
-position:fixed;
-inset:0;
-z-index:-10;
-overflow:hidden;
-pointer-events:none;
-background:
-radial-gradient(120% 70% at 50% 46%,var(--horizon-color) 0%,transparent 60%),
-linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
-transition:background .1s linear;
+  position:fixed;
+  inset:0;
+  z-index:-10;
+  overflow:hidden;
+  pointer-events:none;
+  background:
+    radial-gradient(120% 70% at 50% 46%,var(--horizon-color) 0%,transparent 60%),
+    linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+  transition:background .1s linear;
 }
 
 .glow{
-position:absolute;
-left:50%;
-top:0;
-width:58vw;
-height:58vw;
-transform:translate(-50%,var(--glow-y)) scale(var(--glow-scale));
-opacity:var(--glow-opacity);
-border-radius:50%;
-background:radial-gradient(circle at 50% 50%,rgba(224,233,239,.95) 0%,rgba(145,171,192,.55) 32%,rgba(145,171,192,0) 68%);
-filter:blur(18px);
+  position:absolute;
+  left:50%;
+  top:0;
+  width:58vw;
+  height:58vw;
+  transform:translate(-50%,var(--glow-y)) scale(var(--glow-scale));
+  opacity:var(--glow-opacity);
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,rgba(224,233,239,.95) 0%,rgba(145,171,192,.55) 32%,rgba(145,171,192,0) 68%);
+  filter:blur(18px);
 }
 
 .minerals{
-position:absolute;
-left:0;
-top:0;
-width:1px;
-height:1px;
-pointer-events:none;
+  position:absolute;
+  left:0;
+  top:0;
+  width:1px;
+  height:1px;
+  pointer-events:none;
 }
 
 .nav-wrap{
-position:fixed;
-top:0;
-left:0;
-right:0;
-z-index:50;
-display:flex;
-justify-content:center;
-padding:1rem;
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:50;
+  display:flex;
+  justify-content:center;
+  padding:1rem;
 }
 
 @media(min-width:640px){
-.nav-wrap{padding-top:1.5rem}
+  .nav-wrap{
+    padding-top:1.5rem;
+  }
 }
 
 .nav{
-width:100%;
-max-width:64rem;
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:1rem;
-padding:.75rem 1.25rem;
-border-radius:9999px;
-background:var(--nav-bg);
-border:.5px solid var(--nav-border);
-box-shadow:var(--nav-shadow);
-backdrop-filter:blur(40px) saturate(150%);
--webkit-backdrop-filter:blur(40px) saturate(150%);
-color:var(--text);
+  width:100%;
+  max-width:64rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  padding:.75rem 1.25rem;
+  border-radius:9999px;
+  background:var(--nav-bg);
+  border:.5px solid var(--nav-border);
+  box-shadow:var(--nav-shadow);
+  backdrop-filter:blur(40px) saturate(150%);
+  -webkit-backdrop-filter:blur(40px) saturate(150%);
+  color:var(--text);
 }
 
 @media(min-width:640px){
-.nav{padding:.875rem 1.75rem}
+  .nav{
+    padding:.875rem 1.75rem;
+  }
 }
 
 .brand{
-font-size:.875rem;
-font-weight:600;
-letter-spacing:.22em;
-text-decoration:none;
-color:inherit;
-display:flex;
-align-items:baseline;
-gap:.5rem;
+  font-size:.875rem;
+  font-weight:600;
+  letter-spacing:.22em;
+  text-decoration:none;
+  color:inherit;
+  display:flex;
+  align-items:baseline;
+  gap:.5rem;
 }
 
 .brand .of{
-font-size:9px;
-letter-spacing:.16em;
-text-transform:uppercase;
-color:currentColor;
-opacity:.4;
-font-weight:400;
+  font-size:9px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:currentColor;
+  opacity:.4;
+  font-weight:400;
 }
 
 @media(min-width:640px){
-.brand{font-size:1rem}
+  .brand{
+    font-size:1rem;
+  }
 }
 
 .nav-links{
-display:none;
-align-items:center;
-gap:2rem;
+  display:none;
+  align-items:center;
+  gap:2rem;
 }
 
 @media(min-width:640px){
-.nav-links{display:flex}
+  .nav-links{
+    display:flex;
+  }
 }
 
 .nav-links a{
-font-size:13px;
-letter-spacing:.04em;
-text-decoration:none;
-color:inherit;
-opacity:.85;
-transition:opacity .3s;
+  font-size:13px;
+  letter-spacing:.04em;
+  text-decoration:none;
+  color:inherit;
+  opacity:.85;
+  transition:opacity .3s;
 }
 
-.nav-links a:hover{opacity:1}
-.nav-links a.back{opacity:.5}
-.nav-links a.back:hover{opacity:.85}
+.nav-links a:hover{
+  opacity:1;
+}
+
+.nav-links a.back{
+  opacity:.5;
+}
+
+.nav-links a.back:hover{
+  opacity:.85;
+}
 
 .burger{
-display:flex;
-flex-direction:column;
-justify-content:center;
-gap:5px;
-width:2rem;
-height:2rem;
-background:none;
-border:none;
-cursor:pointer;
-color:inherit;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:5px;
+  width:2rem;
+  height:2rem;
+  background:none;
+  border:none;
+  cursor:pointer;
+  color:inherit;
 }
 
 @media(min-width:640px){
-.burger{display:none}
+  .burger{
+    display:none;
+  }
 }
 
 .burger span{
-display:block;
-height:1.5px;
-width:1.25rem;
-background:currentColor;
+  display:block;
+  height:1.5px;
+  width:1.25rem;
+  background:currentColor;
 }
 
 .mobile-menu{
-position:fixed;
-inset:0;
-z-index:60;
-display:none;
-flex-direction:column;
+  position:fixed;
+  inset:0;
+  z-index:60;
+  display:none;
+  flex-direction:column;
 }
 
-.mobile-menu.open{display:flex}
+.mobile-menu.open{
+  display:flex;
+}
 
 .mobile-menu .scrim{
-position:absolute;
-inset:0;
-background:rgba(0,0,0,.5);
-backdrop-filter:blur(24px);
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(24px);
 }
 
 .mobile-menu .panel{
-position:relative;
-margin:1rem;
-flex:1;
-display:flex;
-flex-direction:column;
-border-radius:2rem;
-border:1px solid rgba(255,255,255,.13);
-background:rgba(12,18,24,.58);
-padding:2rem;
-backdrop-filter:blur(32px);
+  position:relative;
+  margin:1rem;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  border-radius:2rem;
+  border:1px solid rgba(255,255,255,.13);
+  background:rgba(12,18,24,.58);
+  padding:2rem;
+  backdrop-filter:blur(32px);
 }
 
 .mobile-menu .close-row{
-display:flex;
-justify-content:flex-end;
+  display:flex;
+  justify-content:flex-end;
 }
 
 .mobile-menu .close{
-width:2.25rem;
-height:2.25rem;
-background:none;
-border:none;
-cursor:pointer;
-color:#E8EDF2;
-font-size:1.5rem;
+  width:2.25rem;
+  height:2.25rem;
+  background:none;
+  border:none;
+  cursor:pointer;
+  color:#E8EDF2;
+  font-size:1.5rem;
 }
 
 .mobile-menu nav{
-flex:1;
-display:flex;
-flex-direction:column;
-justify-content:center;
-gap:1.5rem;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:1.5rem;
 }
 
 .mobile-menu nav a{
-font-size:1.875rem;
-letter-spacing:-.02em;
-text-decoration:none;
-color:#E8EDF2;
+  font-size:1.875rem;
+  letter-spacing:-.02em;
+  text-decoration:none;
+  color:#E8EDF2;
 }
 
 .mobile-menu nav a.back{
-font-size:1rem;
-opacity:.55;
+  font-size:1rem;
+  opacity:.55;
 }
 
 main{
-position:relative;
-z-index:10;
+  position:relative;
+  z-index:10;
 }
 
 section{
-position:relative;
-width:100%;
-padding-left:1.5rem;
-padding-right:1.5rem;
+  position:relative;
+  width:100%;
+  padding-left:1.5rem;
+  padding-right:1.5rem;
 }
 
 @media(min-width:640px){
-section{
-padding-left:3rem;
-padding-right:3rem;
-}
+  section{
+    padding-left:3rem;
+    padding-right:3rem;
+  }
 }
 
 @media(min-width:768px){
-section{
-padding-left:5rem;
-padding-right:5rem;
-}
+  section{
+    padding-left:5rem;
+    padding-right:5rem;
+  }
 }
 
 @media(min-width:1024px){
-section{
-padding-left:10rem;
-padding-right:10rem;
-}
+  section{
+    padding-left:10rem;
+    padding-right:10rem;
+  }
 }
 
 .label{
-font-size:11px;
-text-transform:uppercase;
-letter-spacing:.34em;
-color:rgba(232,237,242,.42);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.34em;
+  color:rgba(232,237,242,.42);
 }
 
 .hero{
-min-height:100svh;
-display:flex;
-flex-direction:column;
-justify-content:center;
-padding-top:8rem;
-padding-bottom:6rem;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding-top:8rem;
+  padding-bottom:6rem;
 }
 
 .hero h1{
-font-size:clamp(2.75rem,17vw,10rem);
-line-height:1;
-white-space:nowrap;
-color:var(--text);
+  font-size:clamp(2.75rem,17vw,10rem);
+  line-height:1;
+  white-space:nowrap;
+  color:var(--text);
 }
 
 .hero p{
-margin-top:1.5rem;
-font-size:clamp(1.5rem,4vw,2.25rem);
-line-height:1.2;
-color:rgba(232,237,242,.85);
+  margin-top:1.5rem;
+  font-size:clamp(1.5rem,4vw,2.25rem);
+  line-height:1.2;
+  color:rgba(232,237,242,.85);
 }
 
-.hero p .qc{color:var(--strata-light)}
+.hero p .qc{
+  color:var(--strata-light);
+}
 
 .hero .tag{
-margin-top:1.25rem;
-font-size:1rem;
-letter-spacing:.02em;
-color:rgba(232,237,242,.48);
+  margin-top:1.25rem;
+  font-size:1rem;
+  letter-spacing:.02em;
+  color:rgba(232,237,242,.48);
 }
 
 .scroll-hint{
-position:absolute;
-left:0;
-right:0;
-bottom:2rem;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:.75rem;
-color:rgba(232,237,242,.48);
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:2rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.75rem;
+  color:rgba(232,237,242,.48);
 }
 
 .scroll-hint .txt{
-font-size:10px;
-text-transform:uppercase;
-letter-spacing:.34em;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.34em;
 }
 
 .scroll-hint .arrow{
-font-size:1.125rem;
-color:rgba(232,237,242,.6);
-animation:float 2.6s ease-in-out infinite;
+  font-size:1.125rem;
+  color:rgba(232,237,242,.6);
+  animation:float 2.6s ease-in-out infinite;
 }
 
 @keyframes float{
-0%,100%{transform:translateY(0);opacity:.5}
-50%{transform:translateY(7px);opacity:.9}
+  0%,100%{
+    transform:translateY(0);
+    opacity:.5;
+  }
+  50%{
+    transform:translateY(7px);
+    opacity:.9;
+  }
 }
 
 .prose-section{
-padding-top:8rem;
-padding-bottom:8rem;
+  padding-top:8rem;
+  padding-bottom:8rem;
 }
 
 @media(min-width:768px){
-.prose-section{
-padding-top:11rem;
-padding-bottom:13rem;
-}
-}
-
-.prose-section h2{
-margin-top:2.25rem;
-max-width:52rem;
-font-size:clamp(2rem,6vw,4.25rem);
-line-height:1.14;
-color:var(--text);
+  .prose-section{
+    padding-top:11rem;
+    padding-bottom:13rem;
+  }
 }
 
-.prose-section h2 .accent{color:var(--strata-light)}
+.prose-section h2,
+.editor-section h2{
+  margin-top:2.25rem;
+  max-width:42rem;
+  font-size:clamp(2rem,6vw,4.25rem);
+  line-height:1.14;
+  color:var(--text);
+}
 
-.prose-section .body{
-margin-top:2.25rem;
-max-width:32rem;
-font-size:1.125rem;
-color:var(--text-secondary);
+.prose-section h2 .accent,
+.editor-section h2 .accent{
+  color:var(--strata-light);
+}
+
+.prose-section .body,
+.editor-section .body{
+  margin-top:2.25rem;
+  max-width:32rem;
+  font-size:1.125rem;
+  color:var(--text-secondary);
 }
 
 @media(min-width:640px){
-.prose-section .body{font-size:1.3rem}
+  .prose-section .body,
+  .editor-section .body{
+    font-size:1.3rem;
+  }
 }
 
-.prose-section .body p+p{margin-top:1rem}
+.prose-section .body p+p,
+.editor-section .body p+p{
+  margin-top:1rem;
+}
 
 .spec-line{
-margin-top:2.25rem;
-font-size:.95rem;
-letter-spacing:.02em;
-color:var(--text-muted);
+  margin-top:2.25rem;
+  font-size:.95rem;
+  letter-spacing:.02em;
+  color:var(--text-muted);
 }
 
-.spec-line span{color:rgba(232,237,242,.68)}
-.spec-line .dot{margin:0 .65em;opacity:.4}
+.spec-line span{
+  color:rgba(232,237,242,.68);
+}
 
-/* EDITOR SECTION */
+.spec-line .dot{
+  margin:0 .65em;
+  opacity:.4;
+}
 
 .editor-section{
-min-height:130svh;
-display:flex;
-flex-direction:column;
-justify-content:center;
-padding-top:10rem;
-padding-bottom:10rem;
-}
-
-.editor-section .intro{
-width:100%;
-max-width:70rem;
-}
-
-.editor-section .intro .label{
-display:block;
-}
-
-.editor-section .intro h2{
-display:block;
-width:100%;
-max-width:70rem;
-margin-top:2rem;
-font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Helvetica,Arial,sans-serif;
-font-size:clamp(3.8rem,8vw,7rem);
-font-weight:600;
-line-height:.98;
-letter-spacing:-.065em;
-color:var(--text);
-}
-
-.editor-section .intro h2 .serif-italic{
-display:inline;
-font-family:"New York","Iowan Old Style","Apple Garamond",Georgia,"Times New Roman",serif;
-font-size:1em;
-font-weight:400;
-font-style:italic;
-line-height:.98;
-letter-spacing:-.05em;
-color:var(--strata-light);
-}
-
-.editor-section .intro .body{
-margin-top:2.5rem;
-max-width:38rem;
-font-size:1.25rem;
-line-height:1.55;
-color:var(--text-secondary);
-}
-
-@media(max-width:639px){
-.editor-section{
-min-height:120svh;
-padding-top:8rem;
-padding-bottom:8rem;
-}
-
-.editor-section .intro h2{
-font-size:clamp(3.2rem,14vw,5rem);
-line-height:1;
-letter-spacing:-.065em;
-}
-
-.editor-section .intro .body{
-font-size:1.05rem;
-}
+  min-height:110svh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding-top:8rem;
+  padding-bottom:8rem;
 }
 
 .editor-window{
-margin-top:5rem;
-width:100%;
-max-width:1100px;
-margin-left:auto;
-margin-right:auto;
-border-radius:2rem;
-overflow:hidden;
-background:rgba(18,24,30,.54);
-border:.5px solid rgba(255,255,255,.14);
-box-shadow:0 50px 140px rgba(0,0,0,.6),0 0 0 .5px rgba(200,216,229,.06) inset;
-backdrop-filter:blur(46px) saturate(155%);
--webkit-backdrop-filter:blur(46px) saturate(155%);
-transform:translateY(30px) scale(.98);
-transition:transform 1.2s cubic-bezier(.23,1,.32,1),box-shadow 1.2s ease;
-}
-
-.editor-window.in{
-transform:translateY(0) scale(1);
+  margin-top:4rem;
+  width:100%;
+  max-width:1100px;
+  margin-left:auto;
+  margin-right:auto;
+  border-radius:2rem;
+  overflow:hidden;
+  background:rgba(18,24,30,.54);
+  border:.5px solid rgba(255,255,255,.14);
+  box-shadow:0 50px 140px rgba(0,0,0,.6),0 0 0 .5px rgba(200,216,229,.06) inset;
+  backdrop-filter:blur(46px) saturate(155%);
+  -webkit-backdrop-filter:blur(46px) saturate(155%);
+  transform:translateY(0) scale(.98);
+  transition:transform 1.2s cubic-bezier(.23,1,.32,1),box-shadow 1.2s ease;
 }
 
 .editor-window.in-view{
-transform:translateY(0) scale(1);
-box-shadow:0 50px 140px rgba(0,0,0,.6),0 0 80px rgba(145,171,192,.08);
+  transform:translateY(0) scale(1);
+  box-shadow:0 50px 140px rgba(0,0,0,.6),0 0 80px rgba(145,171,192,.08);
 }
 
 .editor-toolbar{
-height:54px;
-display:flex;
-align-items:center;
-gap:1rem;
-padding:0 1.25rem;
-border-bottom:.5px solid rgba(255,255,255,.09);
-background:rgba(255,255,255,.025);
+  height:54px;
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  padding:0 1.25rem;
+  border-bottom:.5px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.025);
 }
 
 .traffic{
-display:flex;
-gap:7px;
+  display:flex;
+  gap:7px;
 }
 
 .traffic span{
-width:10px;
-height:10px;
-border-radius:50%;
-background:rgba(255,255,255,.16);
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:rgba(255,255,255,.16);
 }
 
 .window-title{
-flex:1;
-text-align:center;
-font-size:12px;
-color:rgba(232,237,242,.55);
-letter-spacing:.02em;
+  flex:1;
+  text-align:center;
+  font-size:12px;
+  color:rgba(232,237,242,.55);
+  letter-spacing:.02em;
 }
 
 .toolbar-icon{
-width:25px;
-height:25px;
-display:flex;
-align-items:center;
-justify-content:center;
-border-radius:7px;
-color:rgba(232,237,242,.55);
-font-size:13px;
+  width:25px;
+  height:25px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:7px;
+  color:rgba(232,237,242,.55);
+  font-size:13px;
 }
 
 .editor-body{
-min-height:570px;
-display:grid;
-grid-template-columns:220px 1fr;
+  min-height:570px;
+  display:grid;
+  grid-template-columns:220px 1fr;
 }
 
 .editor-sidebar{
-border-right:.5px solid rgba(255,255,255,.08);
-padding:1.2rem .85rem;
-background:rgba(0,0,0,.08);
+  border-right:.5px solid rgba(255,255,255,.08);
+  padding:1.2rem .85rem;
+  background:rgba(0,0,0,.08);
 }
 
 .sidebar-title{
-padding:.4rem .65rem .75rem;
-font-size:10px;
-text-transform:uppercase;
-letter-spacing:.24em;
-color:rgba(232,237,242,.35);
+  padding:.4rem .65rem .75rem;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.24em;
+  color:rgba(232,237,242,.35);
 }
 
 .file{
-display:flex;
-align-items:center;
-gap:.65rem;
-padding:.5rem .65rem;
-border-radius:8px;
-font-size:12px;
-color:rgba(232,237,242,.58);
-transition:background .2s,color .2s;
+  display:flex;
+  align-items:center;
+  gap:.65rem;
+  padding:.5rem .65rem;
+  border-radius:8px;
+  font-size:12px;
+  color:rgba(232,237,242,.58);
+  transition:background .2s,color .2s;
 }
 
 .file:hover{
-background:rgba(255,255,255,.055);
-color:rgba(232,237,242,.9);
+  background:rgba(255,255,255,.055);
+  color:rgba(232,237,242,.9);
 }
 
 .file.active{
-background:rgba(145,171,192,.12);
-color:var(--strata-light);
+  background:rgba(145,171,192,.12);
+  color:var(--strata-light);
 }
 
 .file-icon{
-width:13px;
-color:rgba(232,237,242,.4);
+  width:13px;
+  color:rgba(232,237,242,.4);
 }
 
 .code-area{
-position:relative;
-overflow:hidden;
-background:rgba(5,9,12,.20);
+  position:relative;
+  overflow:hidden;
+  background:rgba(5,9,12,.20);
 }
 
 .editor-tabs{
-height:42px;
-display:flex;
-align-items:stretch;
-border-bottom:.5px solid rgba(255,255,255,.07);
+  height:42px;
+  display:flex;
+  align-items:stretch;
+  border-bottom:.5px solid rgba(255,255,255,.07);
 }
 
 .editor-tab{
-display:flex;
-align-items:center;
-padding:0 1.15rem;
-font-size:11px;
-color:rgba(232,237,242,.48);
-border-right:.5px solid rgba(255,255,255,.06);
+  display:flex;
+  align-items:center;
+  padding:0 1.15rem;
+  font-size:11px;
+  color:rgba(232,237,242,.48);
+  border-right:.5px solid rgba(255,255,255,.06);
 }
 
 .editor-tab.active{
-color:rgba(232,237,242,.85);
-background:rgba(255,255,255,.025);
+  color:rgba(232,237,242,.85);
+  background:rgba(255,255,255,.025);
 }
 
 .code{
-padding:1.4rem 1.5rem;
-font-family:"SFMono-Regular",Menlo,Monaco,Consolas,monospace;
-font-size:clamp(10px,1.1vw,13px);
-line-height:1.8;
-color:rgba(225,233,239,.68);
+  padding:1.4rem 1.5rem;
+  font-family:"SFMono-Regular",Menlo,Monaco,Consolas,monospace;
+  font-size:clamp(10px,1.1vw,13px);
+  line-height:1.8;
+  color:rgba(225,233,239,.68);
 }
 
 .line{
-display:flex;
-min-height:1.8em;
+  display:flex;
+  min-height:1.8em;
 }
 
 .line-number{
-width:42px;
-flex-shrink:0;
-text-align:right;
-padding-right:1.3rem;
-color:rgba(232,237,242,.20);
-user-select:none;
+  width:42px;
+  flex-shrink:0;
+  text-align:right;
+  padding-right:1.3rem;
+  color:rgba(232,237,242,.20);
+  user-select:none;
 }
 
-.token-keyword{color:#B7CBE0}
-.token-type{color:#C9D6E0}
-.token-string{color:#B8C9B5}
-.token-comment{color:rgba(232,237,242,.28)}
-.token-function{color:#D2DCE5}
-.token-property{color:#AFC0CF}
+.token-keyword{color:#B7CBE0;}
+.token-type{color:#C9D6E0;}
+.token-string{color:#B8C9B5;}
+.token-comment{color:rgba(232,237,242,.28);}
+.token-function{color:#D2DCE5;}
+.token-property{color:#AFC0CF;}
 
 .editor-status{
-height:30px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 .9rem;
-border-top:.5px solid rgba(255,255,255,.07);
-font-size:10px;
-color:rgba(232,237,242,.36);
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 .9rem;
+  border-top:.5px solid rgba(255,255,255,.07);
+  font-size:10px;
+  color:rgba(232,237,242,.36);
 }
 
-.status-left,.status-right{
-display:flex;
-gap:1rem;
+.status-left,
+.status-right{
+  display:flex;
+  gap:1rem;
 }
 
 .glass-list{
-margin-top:2.75rem;
-max-width:36rem;
-border-radius:1.5rem;
-background:rgba(255,255,255,.03);
-border:.5px solid rgba(255,255,255,.09);
-box-shadow:0 20px 70px rgba(0,0,0,.45);
-backdrop-filter:blur(36px) saturate(150%);
--webkit-backdrop-filter:blur(36px) saturate(150%);
-overflow:hidden;
+  margin-top:2.75rem;
+  max-width:36rem;
+  border-radius:1.5rem;
+  background:rgba(255,255,255,.03);
+  border:.5px solid rgba(255,255,255,.09);
+  box-shadow:0 20px 70px rgba(0,0,0,.45);
+  backdrop-filter:blur(36px) saturate(150%);
+  -webkit-backdrop-filter:blur(36px) saturate(150%);
+  overflow:hidden;
 }
 
 .glass-row{
-display:flex;
-align-items:center;
-gap:1rem;
-padding:.95rem 1.25rem;
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  padding:.95rem 1.25rem;
 }
 
 .glass-row+.glass-row{
-border-top:.5px solid rgba(255,255,255,.07);
+  border-top:.5px solid rgba(255,255,255,.07);
 }
 
 .glass-symbol{
-width:2.5rem;
-height:2.5rem;
-flex-shrink:0;
-border-radius:.7rem;
-display:flex;
-align-items:center;
-justify-content:center;
-background:linear-gradient(135deg,var(--strata-light),var(--strata-deep));
-color:#0B1218;
-font-size:.85rem;
+  width:2.5rem;
+  height:2.5rem;
+  flex-shrink:0;
+  border-radius:.7rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,var(--strata-light),var(--strata-deep));
+  color:#0B1218;
+  font-size:.85rem;
 }
 
-.glass-meta{min-width:0}
-.glass-title{font-size:.92rem;color:var(--text)}
-.glass-sub{font-size:.78rem;color:var(--text-muted);margin-top:.15rem}
+.glass-meta{
+  min-width:0;
+}
+
+.glass-title{
+  font-size:.92rem;
+  color:var(--text);
+}
+
+.glass-sub{
+  font-size:.78rem;
+  color:var(--text-muted);
+  margin-top:.15rem;
+}
 
 .quote{
-max-width:48rem;
-margin-top:3rem;
-font-size:clamp(1.6rem,4vw,3rem);
-line-height:1.2;
-color:rgba(232,237,242,.8);
+  max-width:48rem;
+  margin-top:3rem;
+  font-size:clamp(1.6rem,4vw,3rem);
+  line-height:1.2;
+  color:rgba(232,237,242,.8);
 }
 
 .status-row{
-margin-top:2.5rem;
-display:flex;
-align-items:center;
-gap:.7rem;
+  margin-top:2.5rem;
+  display:flex;
+  align-items:center;
+  gap:.7rem;
 }
 
 .status-dot{
-width:7px;
-height:7px;
-border-radius:50%;
-background:var(--strata-light);
-box-shadow:0 0 12px rgba(200,216,229,.7);
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--strata-light);
+  box-shadow:0 0 12px rgba(200,216,229,.7);
 }
 
 .status-row span:last-child{
-font-size:.72rem;
-text-transform:uppercase;
-letter-spacing:.26em;
-color:var(--strata-light);
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.26em;
+  color:var(--strata-light);
 }
 
 .status-facts{
-margin-top:1.75rem;
-display:flex;
-flex-direction:column;
-gap:.55rem;
-max-width:26rem;
-font-size:1rem;
-color:var(--text-secondary);
+  margin-top:1.75rem;
+  display:flex;
+  flex-direction:column;
+  gap:.55rem;
+  max-width:26rem;
+  font-size:1rem;
+  color:var(--text-secondary);
 }
 
 .contact .lead{
-margin-top:2.25rem;
-font-size:1.05rem;
-color:var(--text-muted);
+  margin-top:2.25rem;
+  font-size:1.05rem;
+  color:var(--text-muted);
 }
 
 .contact h2{
-margin-top:1rem;
-font-size:clamp(2.5rem,7vw,5.5rem);
-line-height:1.05;
-color:var(--text);
+  margin-top:1rem;
+  font-size:clamp(2.5rem,7vw,5.5rem);
+  line-height:1.05;
+  color:var(--text);
 }
 
-.contact h2 .accent{color:var(--strata-light)}
+.contact h2 .accent{
+  color:var(--strata-light);
+}
 
 .contact .links{
-margin-top:2.5rem;
-display:flex;
-flex-direction:column;
-gap:.9rem;
+  margin-top:2.5rem;
+  display:flex;
+  flex-direction:column;
+  gap:.9rem;
 }
 
-.contact .mail,.contact .home{
-display:inline-flex;
-align-items:center;
-gap:.75rem;
-text-decoration:none;
-color:var(--text);
-font-size:1.15rem;
-width:fit-content;
-transition:color .3s;
+.contact .mail,
+.contact .home{
+  display:inline-flex;
+  align-items:center;
+  gap:.75rem;
+  text-decoration:none;
+  color:var(--text);
+  font-size:1.15rem;
+  width:fit-content;
+  transition:color .3s;
 }
 
 @media(min-width:640px){
-.contact .mail,.contact .home{font-size:1.35rem}
+  .contact .mail,
+  .contact .home{
+    font-size:1.35rem;
+  }
 }
 
-.contact .mail span:first-child,.contact .home span:first-child{
-border-bottom:1px solid transparent;
-transition:border-color .3s,color .3s;
+.contact .mail span:first-child,
+.contact .home span:first-child{
+  border-bottom:1px solid transparent;
+  transition:border-color .3s,color .3s;
 }
 
-.contact .mail:hover span:first-child,.contact .home:hover span:first-child{
-border-color:var(--strata-light);
-color:var(--strata-light);
+.contact .mail:hover span:first-child,
+.contact .home:hover span:first-child{
+  border-color:var(--strata-light);
+  color:var(--strata-light);
 }
 
 .contact .arrow{
-font-size:1rem;
-transition:transform .3s;
+  font-size:1rem;
+  transition:transform .3s;
 }
 
-.contact .mail:hover .arrow,.contact .home:hover .arrow{
-transform:translate(4px,-4px);
+.contact .mail:hover .arrow,
+.contact .home:hover .arrow{
+  transform:translate(4px,-4px);
 }
 
 .footer{
-position:relative;
-padding-top:3rem;
-padding-bottom:2rem;
-color:rgba(232,237,242,.9);
+  position:relative;
+  padding-top:3rem;
+  padding-bottom:2rem;
+  color:rgba(232,237,242,.9);
 }
 
 .footer-inner{
-width:100%;
-max-width:90rem;
-margin:0 auto;
-padding:0 1.5rem;
+  width:100%;
+  max-width:90rem;
+  margin:0 auto;
+  padding:0 1.5rem;
 }
 
 @media(min-width:640px){
-.footer-inner{padding:0 3rem}
+  .footer-inner{
+    padding:0 3rem;
+  }
 }
 
 @media(min-width:768px){
-.footer-inner{padding:0 5rem}
+  .footer-inner{
+    padding:0 5rem;
+  }
 }
 
 @media(min-width:1024px){
-.footer-inner{padding:0 7rem}
+  .footer-inner{
+    padding:0 7rem;
+  }
 }
 
 .footer-top{
-display:grid;
-grid-template-columns:1fr;
-gap:2rem;
-padding:2rem 0 3rem;
-border-top:1px solid rgba(255,255,255,.10);
-align-items:center;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:2rem;
+  padding:2rem 0 3rem;
+  border-top:1px solid rgba(255,255,255,.10);
+  align-items:center;
 }
 
 @media(min-width:768px){
-.footer-top{
-grid-template-columns:1fr auto 1fr;
-padding:2.5rem 0 3.5rem;
-}
+  .footer-top{
+    grid-template-columns:1fr auto 1fr;
+    padding:2.5rem 0 3.5rem;
+  }
 }
 
 .footer-brand{
-display:inline-block;
-width:fit-content;
-font-size:.875rem;
-font-weight:600;
-letter-spacing:.24em;
-text-decoration:none;
-color:rgba(232,237,242,.92);
+  display:inline-block;
+  width:fit-content;
+  font-size:.875rem;
+  font-weight:600;
+  letter-spacing:.24em;
+  text-decoration:none;
+  color:rgba(232,237,242,.92);
 }
 
-.footer-brand:hover{color:#C8D8E5}
+.footer-brand:hover{
+  color:#C8D8E5;
+}
 
 .footer-statement{
-font-size:1.25rem;
-line-height:1.2;
-color:rgba(232,237,242,.48);
-text-align:left;
+  font-size:1.25rem;
+  line-height:1.2;
+  color:rgba(232,237,242,.48);
+  text-align:left;
 }
 
 @media(min-width:768px){
-.footer-statement{
-text-align:center;
-font-size:1.375rem;
-}
+  .footer-statement{
+    text-align:center;
+    font-size:1.375rem;
+  }
 }
 
 .footer-back{
-display:inline-flex;
-align-items:center;
-justify-content:flex-start;
-gap:.65rem;
-width:fit-content;
-text-decoration:none;
-font-size:.6875rem;
-text-transform:uppercase;
-letter-spacing:.22em;
-color:rgba(232,237,242,.48);
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:.65rem;
+  width:fit-content;
+  text-decoration:none;
+  font-size:.6875rem;
+  text-transform:uppercase;
+  letter-spacing:.22em;
+  color:rgba(232,237,242,.48);
 }
 
 @media(min-width:768px){
-.footer-back{justify-self:end}
+  .footer-back{
+    justify-self:end;
+  }
 }
 
 .footer-back-arrow{
-display:inline-flex;
-align-items:center;
-justify-content:center;
-width:1.75rem;
-height:1.75rem;
-border:1px solid rgba(255,255,255,.14);
-border-radius:50%;
-transition:transform .35s cubic-bezier(.23,1,.32,1),background .3s,border-color .3s;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:1.75rem;
+  height:1.75rem;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:50%;
+  transition:transform .35s cubic-bezier(.23,1,.32,1),background .3s,border-color .3s;
 }
 
-.footer-back:hover{color:#C8D8E5}
+.footer-back:hover{
+  color:#C8D8E5;
+}
 
 .footer-back:hover .footer-back-arrow{
-transform:translateY(-3px);
-background:rgba(145,171,192,.10);
-border-color:rgba(145,171,192,.35);
+  transform:translateY(-3px);
+  background:rgba(145,171,192,.10);
+  border-color:rgba(145,171,192,.35);
 }
 
 .footer-main{
-display:flex;
-flex-direction:column;
-gap:3rem;
-padding:3rem 0 3.5rem;
+  display:flex;
+  flex-direction:column;
+  gap:3rem;
+  padding:3rem 0 3.5rem;
 }
 
 @media(min-width:768px){
-.footer-main{
-flex-direction:row;
-align-items:flex-start;
-justify-content:space-between;
-padding:3.5rem 0 4rem;
-}
+  .footer-main{
+    flex-direction:row;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:3.5rem 0 4rem;
+  }
 }
 
 .footer-note{
-display:flex;
-flex-direction:column;
-gap:.4rem;
+  display:flex;
+  flex-direction:column;
+  gap:.4rem;
 }
 
 .footer-note p{
-margin:0;
-font-size:.8125rem;
-line-height:1.5;
-color:rgba(232,237,242,.40);
+  margin:0;
+  font-size:.8125rem;
+  line-height:1.5;
+  color:rgba(232,237,242,.40);
 }
 
 .footer-note p:first-child{
-color:rgba(232,237,242,.68);
-font-weight:500;
+  color:rgba(232,237,242,.68);
+  font-weight:500;
 }
 
 .footer-links{
-display:grid;
-grid-template-columns:repeat(2,minmax(90px,1fr));
-column-gap:3rem;
-row-gap:1rem;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(90px,1fr));
+  column-gap:3rem;
+  row-gap:1rem;
 }
 
 @media(min-width:640px){
-.footer-links{
-display:flex;
-gap:2rem;
-}
+  .footer-links{
+    display:flex;
+    gap:2rem;
+  }
 }
 
 .footer-links a{
-position:relative;
-width:fit-content;
-font-size:.75rem;
-text-decoration:none;
-color:rgba(232,237,242,.58);
-transition:color .3s;
+  position:relative;
+  width:fit-content;
+  font-size:.75rem;
+  text-decoration:none;
+  color:rgba(232,237,242,.58);
+  transition:color .3s;
 }
 
-.footer-links a:hover{color:#C8D8E5}
+.footer-links a:hover{
+  color:#C8D8E5;
+}
 
 .footer-bottom{
-display:flex;
-flex-direction:column;
-gap:.5rem;
-padding-top:1.5rem;
-border-top:1px solid rgba(255,255,255,.08);
-font-size:.6875rem;
-color:rgba(232,237,242,.32);
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+  padding-top:1.5rem;
+  border-top:1px solid rgba(255,255,255,.08);
+  font-size:.6875rem;
+  color:rgba(232,237,242,.32);
 }
 
 @media(min-width:640px){
-.footer-bottom{
-flex-direction:row;
-align-items:center;
-justify-content:space-between;
-}
+  .footer-bottom{
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+  }
 }
 
 .reveal{
-opacity:0;
-transform:translateY(26px);
-filter:blur(12px);
-transition:opacity 1.1s cubic-bezier(.23,1,.32,1),transform 1.1s cubic-bezier(.23,1,.32,1),filter 1.1s cubic-bezier(.23,1,.32,1);
+  opacity:0;
+  transform:translateY(26px);
+  filter:blur(12px);
+  transition:
+    opacity 1.1s cubic-bezier(.23,1,.32,1),
+    transform 1.1s cubic-bezier(.23,1,.32,1),
+    filter 1.1s cubic-bezier(.23,1,.32,1);
 }
 
 .reveal.in{
-opacity:1;
-transform:none;
-filter:blur(0);
+  opacity:1;
+  transform:none;
+  filter:blur(0);
 }
 
 @media(prefers-reduced-motion:reduce){
-html{scroll-behavior:auto}
-.reveal{
-opacity:1;
-transform:none;
-filter:none;
-transition:none;
-}
-.scroll-hint .arrow{animation:none}
-}
+  html{
+    scroll-behavior:auto;
+  }
 
-@media(max-width:639px){
-.editor-body{
-grid-template-columns:1fr;
-}
-.editor-sidebar{
-display:none;
-}
-.editor-window{
-border-radius:1.5rem;
-}
-}
+  .reveal{
+    opacity:1;
+    transform:none;
+    filter:none;
+    transition:none;
+  }
 
-@media(max-width:600px){
-.editor-window{
-overflow-x:auto;
-}
-.code-area{
-min-width:600px;
-}
+  .scroll-hint .arrow{
+    animation:none;
+  }
 }
 </style>
 </head>
@@ -1044,383 +1060,860 @@ min-width:600px;
 <body>
 
 <div class="sky" aria-hidden="true">
-<div class="glow"></div>
-<div class="minerals" id="minerals"></div>
+  <div class="glow"></div>
+  <div class="minerals" id="minerals"></div>
 </div>
 
 <div class="nav-wrap">
-<nav class="nav" aria-label="Primary">
-<a class="brand display" href="#top">STRATA<span class="of">by Dawnstone</span></a>
-<div class="nav-links">
-<a href="index.html" class="back">Dawnstone</a>
-<a href="#idea">About</a>
-<a href="#editor">Editor</a>
-<a href="#native">Native</a>
-<a href="#philosophy">Philosophy</a>
-<a href="#status">Status</a>
-</div>
-<button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
-</nav>
+  <nav class="nav" aria-label="Primary">
+    <a class="brand display" href="#top">
+      STRATA
+      <span class="of">by Dawnstone</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="back">Dawnstone</a>
+      <a href="#idea">About</a>
+      <a href="#editor">Editor</a>
+      <a href="#native">Native</a>
+      <a href="#philosophy">Philosophy</a>
+      <a href="#status">Status</a>
+    </div>
+
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
 </div>
 
 <div class="mobile-menu" id="mobileMenu">
-<div class="scrim" id="scrim"></div>
-<div class="panel">
-<div class="close-row"><button class="close" id="closeMenu" aria-label="Close menu">×</button></div>
-<nav>
-<a href="#idea" class="m-link">About</a>
-<a href="#editor" class="m-link">Editor</a>
-<a href="#native" class="m-link">Native</a>
-<a href="#philosophy" class="m-link">Philosophy</a>
-<a href="#status" class="m-link">Status</a>
-<a href="index.html" class="m-link back">← Dawnstone</a>
-</nav>
-</div>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="panel">
+    <div class="close-row">
+      <button class="close" id="closeMenu" aria-label="Close menu">×</button>
+    </div>
+
+    <nav>
+      <a href="#idea" class="m-link">About</a>
+      <a href="#editor" class="m-link">Editor</a>
+      <a href="#native" class="m-link">Native</a>
+      <a href="#philosophy" class="m-link">Philosophy</a>
+      <a href="#status" class="m-link">Status</a>
+      <a href="index.html" class="m-link back">← Dawnstone</a>
+    </nav>
+  </div>
 </div>
 
 <main>
 
 <section id="top" class="hero">
-<h1 class="display reveal">STRATA</h1>
-<p class="reveal">A new layer for<br><span class="serif-italic qc">code.</span></p>
-<p class="tag reveal">Native development environment for macOS.</p>
-<div class="scroll-hint">
-<span class="txt">Scroll to explore</span>
-<span class="arrow">↓</span>
-</div>
+  <h1 class="display reveal">STRATA</h1>
+
+  <p class="reveal">
+    A new layer for
+    <br>
+    <span class="serif-italic qc">code.</span>
+  </p>
+
+  <p class="tag reveal">
+    Native development environment for macOS.
+  </p>
+
+  <div class="scroll-hint">
+    <span class="txt">Scroll to explore</span>
+    <span class="arrow">↓</span>
+  </div>
 </section>
 
 <section id="idea" class="prose-section">
-<p class="label reveal">01 / The Idea</p>
-<h2 class="display reveal">Code,<br><span class="serif-italic accent">without the layers.</span></h2>
-<div class="body reveal">
-<p>Development environments have accumulated layers for years — panels, plugins, menus, terminals and configuration.</p>
-<p>Strata asks a simpler question: what would an editor designed from the ground up for Mac feel like?</p>
-</div>
+  <p class="label reveal">01 / The Idea</p>
+
+  <h2 class="display reveal">
+    Code,
+    <br>
+    <span class="serif-italic accent">without the layers.</span>
+  </h2>
+
+  <div class="body reveal">
+    <p>
+      Development environments have accumulated layers for years —
+      panels, plugins, menus, terminals and configuration.
+    </p>
+
+    <p>
+      Strata asks a simpler question:
+      what would an editor designed from the ground up for Mac feel like?
+    </p>
+  </div>
 </section>
 
 <section id="editor" class="editor-section">
 
-<div class="intro">
-<p class="label reveal">02 / The Editor</p>
-<h2 class="display reveal">Everything<br><span class="serif-italic accent">in its place.</span></h2>
-<div class="body reveal">
-<p>Strata brings the familiar power of a modern code editor into an interface designed around macOS itself.</p>
-</div>
-</div>
+  <p class="label reveal">02 / The Editor</p>
 
-<div class="editor-window reveal" id="editorWindow">
+  <h2 class="display reveal">
+    Everything
+    <br>
+    <span class="serif-italic accent">in its place.</span>
+  </h2>
 
-<div class="editor-toolbar">
-<div class="traffic"><span></span><span></span><span></span></div>
-<div class="window-title">Strata — Dawnstone</div>
-<div class="toolbar-icon">◇</div>
-<div class="toolbar-icon">⌘</div>
-</div>
+  <div class="body reveal">
+    <p>
+      Strata brings the familiar power of a modern code editor
+      into an interface designed around macOS itself.
+    </p>
+  </div>
 
-<div class="editor-body">
+  <div class="editor-window reveal" id="editorWindow">
 
-<aside class="editor-sidebar">
-<div class="sidebar-title">Explorer</div>
-<div class="file active" data-file="ContentView.swift"><span class="file-icon">◇</span>ContentView.swift</div>
-<div class="file" data-file="StrataApp.swift"><span class="file-icon">◇</span>StrataApp.swift</div>
-<div class="file" data-file="EditorView.swift"><span class="file-icon">◇</span>EditorView.swift</div>
-<div class="file" data-file="Theme.swift"><span class="file-icon">◇</span>Theme.swift</div>
-<div class="file" data-file="Package.swift"><span class="file-icon">◇</span>Package.swift</div>
-</aside>
+    <div class="editor-toolbar">
+      <div class="traffic">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
 
-<div class="code-area">
-<div class="editor-tabs">
-<div class="editor-tab active" id="currentTab">ContentView.swift</div>
-</div>
+      <div class="window-title">Strata — Dawnstone</div>
 
-<div class="code" id="code">
-<div class="line"><span class="line-number">1</span><span><span class="token-keyword">import</span> SwiftUI</span></div>
-<div class="line"><span class="line-number">2</span><span></span></div>
-<div class="line"><span class="line-number">3</span><span><span class="token-keyword">struct</span> <span class="token-type">ContentView</span> : <span class="token-type">View</span> {</span></div>
-<div class="line"><span class="line-number">4</span><span>&nbsp;&nbsp;<span class="token-keyword">var</span> body: <span class="token-keyword">some</span> <span class="token-type">View</span> {</span></div>
-<div class="line"><span class="line-number">5</span><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="token-function">VStack</span> {</span></div>
-<div class="line"><span class="line-number">6</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="token-function">Text</span>(<span class="token-string">"Hello, Strata."</span>)</span></div>
-<div class="line"><span class="line-number">7</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<span class="token-property">font</span>(.<span class="token-property">title</span>)</span></div>
-<div class="line"><span class="line-number">8</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<span class="token-property">foregroundStyle</span>(.<span class="token-property">primary</span>)</span></div>
-<div class="line"><span class="line-number">9</span><span>&nbsp;&nbsp;&nbsp;&nbsp;}</span></div>
-<div class="line"><span class="line-number">10</span><span>&nbsp;&nbsp;}</span></div>
-<div class="line"><span class="line-number">11</span><span>}</span></div>
-<div class="line"><span class="line-number">12</span><span><span class="token-comment">// Designed for macOS.</span></span></div>
-<div class="line"><span class="line-number">13</span><span><span class="token-comment">// Built around SwiftUI.</span></span></div>
-</div>
-</div>
+      <div class="toolbar-icon">◇</div>
+      <div class="toolbar-icon">⌘</div>
+    </div>
 
-</div>
+    <div class="editor-body">
 
-<div class="editor-status">
-<div class="status-left"><span>main</span><span>Swift</span></div>
-<div class="status-right"><span>UTF-8</span><span>Spaces: 4</span></div>
-</div>
+      <aside class="editor-sidebar">
+        <div class="sidebar-title">Explorer</div>
 
-</div>
+        <div class="file active" data-file="ContentView.swift">
+          <span class="file-icon">◇</span>
+          ContentView.swift
+        </div>
+
+        <div class="file" data-file="StrataApp.swift">
+          <span class="file-icon">◇</span>
+          StrataApp.swift
+        </div>
+
+        <div class="file" data-file="EditorView.swift">
+          <span class="file-icon">◇</span>
+          EditorView.swift
+        </div>
+
+        <div class="file" data-file="Theme.swift">
+          <span class="file-icon">◇</span>
+          Theme.swift
+        </div>
+
+        <div class="file" data-file="Package.swift">
+          <span class="file-icon">◇</span>
+          Package.swift
+        </div>
+      </aside>
+
+      <div class="code-area">
+
+        <div class="editor-tabs">
+          <div class="editor-tab active" id="currentTab">
+            ContentView.swift
+          </div>
+        </div>
+
+        <div class="code" id="code">
+
+          <div class="line">
+            <span class="line-number">1</span>
+            <span><span class="token-keyword">import</span> SwiftUI</span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">2</span>
+            <span></span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">3</span>
+            <span>
+              <span class="token-keyword">struct</span>
+              <span class="token-type">ContentView</span> :
+              <span class="token-type">View</span> {
+            </span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">4</span>
+            <span>
+              &nbsp;&nbsp;
+              <span class="token-keyword">var</span> body:
+              <span class="token-keyword">some</span>
+              <span class="token-type">View</span> {
+            </span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">5</span>
+            <span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="token-function">VStack</span> {
+            </span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">6</span>
+            <span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="token-function">Text</span>(
+              <span class="token-string">"Hello, Strata."</span>)
+            </span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">7</span>
+            <span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+              <span class="token-property">font</span>(
+              <span class="token-property">.title</span>)
+            </span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">8</span>
+            <span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.
+              <span class="token-property">foregroundStyle</span>(
+              <span class="token-property">.primary</span>)
+            </span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">9</span>
+            <span>
+              &nbsp;&nbsp;&nbsp;&nbsp;}
+            </span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">10</span>
+            <span>
+              &nbsp;&nbsp;}
+            </span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">11</span>
+            <span>}</span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">12</span>
+            <span>
+              <span class="token-comment">// Designed for macOS.</span>
+            </span>
+          </div>
+
+          <div class="line">
+            <span class="line-number">13</span>
+            <span>
+              <span class="token-comment">// Built around SwiftUI.</span>
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="editor-status">
+      <div class="status-left">
+        <span>main</span>
+        <span>Swift</span>
+      </div>
+
+      <div class="status-right">
+        <span>UTF-8</span>
+        <span>Spaces: 4</span>
+      </div>
+    </div>
+
+  </div>
 </section>
 
 <section id="native" class="prose-section">
-<p class="label reveal">03 / Native</p>
-<h2 class="display reveal">Made for<br><span class="serif-italic accent">Mac.</span></h2>
-<div class="body reveal">
-<p>Strata is being designed entirely around SwiftUI and the native technologies of macOS. Windows, panels, shortcuts and interaction should feel like they belong to the operating system.</p>
-</div>
-<p class="spec-line reveal"><span>Swift</span><span class="dot">·</span><span>SwiftUI</span><span class="dot">·</span><span>macOS Tahoe</span><span class="dot">·</span><span>Liquid Glass</span></p>
+  <p class="label reveal">03 / Native</p>
+
+  <h2 class="display reveal">
+    Made for
+    <br>
+    <span class="serif-italic accent">Mac.</span>
+  </h2>
+
+  <div class="body reveal">
+    <p>
+      Strata is being designed entirely around SwiftUI and
+      the native technologies of macOS.
+      Windows, panels, shortcuts and interaction should feel
+      like they belong to the operating system.
+    </p>
+  </div>
+
+  <p class="spec-line reveal">
+    <span>Swift</span>
+    <span class="dot">·</span>
+    <span>SwiftUI</span>
+    <span class="dot">·</span>
+    <span>macOS Tahoe</span>
+    <span class="dot">·</span>
+    <span>Liquid Glass</span>
+  </p>
 </section>
 
 <section id="workspace" class="prose-section">
-<p class="label reveal">04 / Workspace</p>
-<h2 class="display reveal">Your project.<br><span class="serif-italic accent">One quiet surface.</span></h2>
-<div class="body reveal">
-<p>The workspace stays focused on what you are building. Files, search, source control and tools are there when you need them — without turning the entire window into a dashboard.</p>
-</div>
-<div class="glass-list reveal">
-<div class="glass-row"><div class="glass-symbol">S</div><div class="glass-meta"><div class="glass-title">Source</div><div class="glass-sub">Swift source files</div></div></div>
-<div class="glass-row"><div class="glass-symbol">◇</div><div class="glass-meta"><div class="glass-title">Assets</div><div class="glass-sub">Images, icons and resources</div></div></div>
-<div class="glass-row"><div class="glass-symbol">⌘</div><div class="glass-meta"><div class="glass-title">Commands</div><div class="glass-sub">Search everything instantly</div></div></div>
-</div>
+  <p class="label reveal">04 / Workspace</p>
+
+  <h2 class="display reveal">
+    Your project.
+    <br>
+    <span class="serif-italic accent">One quiet surface.</span>
+  </h2>
+
+  <div class="body reveal">
+    <p>
+      The workspace stays focused on what you are building.
+      Files, search, source control and tools are there when
+      you need them — without turning the entire window into a dashboard.
+    </p>
+  </div>
+
+  <div class="glass-list reveal">
+
+    <div class="glass-row">
+      <div class="glass-symbol">S</div>
+      <div class="glass-meta">
+        <div class="glass-title">Source</div>
+        <div class="glass-sub">Swift source files</div>
+      </div>
+    </div>
+
+    <div class="glass-row">
+      <div class="glass-symbol">◇</div>
+      <div class="glass-meta">
+        <div class="glass-title">Assets</div>
+        <div class="glass-sub">Images, icons and resources</div>
+      </div>
+    </div>
+
+    <div class="glass-row">
+      <div class="glass-symbol">⌘</div>
+      <div class="glass-meta">
+        <div class="glass-title">Commands</div>
+        <div class="glass-sub">Search everything instantly</div>
+      </div>
+    </div>
+
+  </div>
 </section>
 
 <section id="glass" class="prose-section">
-<p class="label reveal">05 / Liquid Glass</p>
-<h2 class="display reveal">Interface that<br><span class="serif-italic accent">recedes.</span></h2>
-<div class="body reveal">
-<p>Strata uses translucency carefully. Glass is not decoration — it creates hierarchy, separates layers and lets the project remain the visual focus.</p>
-</div>
-<p class="spec-line reveal"><span>Material</span><span class="dot">·</span><span>Depth</span><span class="dot">·</span><span>Blur</span><span class="dot">·</span><span>Hierarchy</span></p>
+  <p class="label reveal">05 / Liquid Glass</p>
+
+  <h2 class="display reveal">
+    Interface that
+    <br>
+    <span class="serif-italic accent">recedes.</span>
+  </h2>
+
+  <div class="body reveal">
+    <p>
+      Strata uses translucency carefully.
+      Glass is not decoration — it creates hierarchy,
+      separates layers and lets the project remain the visual focus.
+    </p>
+  </div>
+
+  <p class="spec-line reveal">
+    <span>Material</span>
+    <span class="dot">·</span>
+    <span>Depth</span>
+    <span class="dot">·</span>
+    <span>Blur</span>
+    <span class="dot">·</span>
+    <span>Hierarchy</span>
+  </p>
 </section>
 
 <section id="philosophy" class="prose-section">
-<p class="label reveal">06 / Philosophy</p>
-<h2 class="display reveal">A development<br>environment that<br><span class="serif-italic accent">stays out of the way.</span></h2>
-<div class="body reveal">
-<p>Strata isn't trying to make programming feel louder. It is trying to make the environment disappear.</p>
-<p>The code remains the most important thing on screen.</p>
-</div>
-<div class="quote reveal">The best editor is the one you stop noticing.</div>
+  <p class="label reveal">06 / Philosophy</p>
+
+  <h2 class="display reveal">
+    A development
+    <br>
+    environment that
+    <br>
+    <span class="serif-italic accent">stays out of the way.</span>
+  </h2>
+
+  <div class="body reveal">
+    <p>
+      Strata isn't trying to make programming feel louder.
+      It is trying to make the environment disappear.
+    </p>
+
+    <p>
+      The code remains the most important thing on screen.
+    </p>
+  </div>
+
+  <div class="quote reveal">
+    The best editor is the one you stop noticing.
+  </div>
 </section>
 
 <section id="experience" class="prose-section">
-<p class="label reveal">07 / Experience</p>
-<h2 class="display reveal">Fast when you need it.<br><span class="serif-italic accent">Quiet when you don't.</span></h2>
-<div class="body reveal">
-<p>Keyboard-first workflows, instant navigation and a workspace that keeps its visual weight low.</p>
-</div>
-<div class="glass-list reveal">
-<div class="glass-row"><div class="glass-symbol">⌘K</div><div class="glass-meta"><div class="glass-title">Command palette</div><div class="glass-sub">Find actions without leaving the editor</div></div></div>
-<div class="glass-row"><div class="glass-symbol">/</div><div class="glass-meta"><div class="glass-title">Global search</div><div class="glass-sub">Search the project instantly</div></div></div>
-<div class="glass-row"><div class="glass-symbol">→</div><div class="glass-meta"><div class="glass-title">Quick navigation</div><div class="glass-sub">Move through code without losing context</div></div></div>
-</div>
+  <p class="label reveal">07 / Experience</p>
+
+  <h2 class="display reveal">
+    Fast when you need it.
+    <br>
+    <span class="serif-italic accent">Quiet when you don't.</span>
+  </h2>
+
+  <div class="body reveal">
+    <p>
+      Keyboard-first workflows, instant navigation and a workspace
+      that keeps its visual weight low.
+    </p>
+  </div>
+
+  <div class="glass-list reveal">
+
+    <div class="glass-row">
+      <div class="glass-symbol">⌘K</div>
+      <div class="glass-meta">
+        <div class="glass-title">Command palette</div>
+        <div class="glass-sub">Find actions without leaving the editor</div>
+      </div>
+    </div>
+
+    <div class="glass-row">
+      <div class="glass-symbol">/</div>
+      <div class="glass-meta">
+        <div class="glass-title">Global search</div>
+        <div class="glass-sub">Search the project instantly</div>
+      </div>
+    </div>
+
+    <div class="glass-row">
+      <div class="glass-symbol">→</div>
+      <div class="glass-meta">
+        <div class="glass-title">Quick navigation</div>
+        <div class="glass-sub">Move through code without losing context</div>
+      </div>
+    </div>
+
+  </div>
 </section>
 
 <section id="status" class="prose-section">
-<p class="label reveal">08 / Status</p>
-<h2 class="display reveal">Currently in<br><span class="serif-italic accent">development.</span></h2>
-<div class="status-row reveal"><span class="status-dot"></span><span>In Development</span></div>
-<div class="status-facts reveal">
-<div>Built by Dawnstone</div>
-<div>Designed for macOS</div>
-<div>SwiftUI native</div>
-</div>
+  <p class="label reveal">08 / Status</p>
+
+  <h2 class="display reveal">
+    Currently in
+    <br>
+    <span class="serif-italic accent">development.</span>
+  </h2>
+
+  <div class="status-row reveal">
+    <span class="status-dot"></span>
+    <span>In Development</span>
+  </div>
+
+  <div class="status-facts reveal">
+    <div>Built by Dawnstone</div>
+    <div>Designed for macOS</div>
+    <div>SwiftUI native</div>
+  </div>
 </section>
 
 <section id="contact" class="prose-section contact">
-<p class="label reveal">09 / Contact</p>
-<p class="lead reveal">Curious about Strata?</p>
-<h2 class="display reveal">Let's stay<br><span class="serif-italic accent">in touch.</span></h2>
-<div class="links">
-<a class="mail reveal" href="mailto:dawnstone@outlook.jp"><span>dawnstone@outlook.jp</span><span class="arrow">↗</span></a>
-<a class="home reveal" href="index.html"><span>Back to Dawnstone</span><span class="arrow">↗</span></a>
-</div>
+  <p class="label reveal">09 / Contact</p>
+
+  <p class="lead reveal">Curious about Strata?</p>
+
+  <h2 class="display reveal">
+    Let's stay
+    <br>
+    <span class="serif-italic accent">in touch.</span>
+  </h2>
+
+  <div class="links">
+    <a class="mail reveal" href="mailto:dawnstone@outlook.jp">
+      <span>dawnstone@outlook.jp</span>
+      <span class="arrow">↗</span>
+    </a>
+
+    <a class="home reveal" href="index.html">
+      <span>Back to Dawnstone</span>
+      <span class="arrow">↗</span>
+    </a>
+  </div>
 </section>
 
 <footer class="footer">
-<div class="footer-inner">
-<div class="footer-top">
-<a href="#top" class="footer-brand display">STRATA</a>
-<p class="footer-statement serif-italic">A new layer for code.</p>
-<a href="#top" class="footer-back"><span>Back to top</span><span class="footer-back-arrow">↑</span></a>
-</div>
-<div class="footer-main">
-<div class="footer-note">
-<p>Strata by Dawnstone</p>
-<p>A native development environment for macOS.</p>
-</div>
-<nav class="footer-links" aria-label="Footer">
-<a href="#idea">About</a>
-<a href="#editor">Editor</a>
-<a href="#native">Native</a>
-<a href="#glass">Liquid Glass</a>
-<a href="#status">Status</a>
-<a href="index.html">Dawnstone</a>
-</nav>
-</div>
-<div class="footer-bottom">
-<p>© 2026 Dawnstone</p>
-<p>Strata is currently in development.</p>
-</div>
-</div>
+  <div class="footer-inner">
+
+    <div class="footer-top">
+
+      <a href="#top" class="footer-brand display">STRATA</a>
+
+      <p class="footer-statement serif-italic">
+        A new layer for code.
+      </p>
+
+      <a href="#top" class="footer-back">
+        <span>Back to top</span>
+        <span class="footer-back-arrow">↑</span>
+      </a>
+
+    </div>
+
+    <div class="footer-main">
+
+      <div class="footer-note">
+        <p>Strata by Dawnstone</p>
+        <p>A native development environment for macOS.</p>
+      </div>
+
+      <nav class="footer-links" aria-label="Footer">
+        <a href="#idea">About</a>
+        <a href="#editor">Editor</a>
+        <a href="#native">Native</a>
+        <a href="#glass">Liquid Glass</a>
+        <a href="#status">Status</a>
+        <a href="index.html">Dawnstone</a>
+      </nav>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 Dawnstone</p>
+      <p>Strata is currently in development.</p>
+    </div>
+
+  </div>
 </footer>
 
 </main>
 
 <script>
 (function(){
-var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-(function(){
-var count=reduce?35:85;
-var shadows=[];
-for(var i=0;i<count;i++){
-var x=(Math.random()*100).toFixed(2);
-var y=(Math.random()*100).toFixed(2);
-var o=(Math.random()*.35+.06).toFixed(2);
-var big=Math.random()>.93;
-var r=big?1.5:.7;
-var color=Math.random()>.5?"200,216,229":"232,237,242";
-shadows.push(x+"vw "+y+"vh 0 "+r+"px rgba("+color+","+o+")");
-}
-document.getElementById("minerals").style.boxShadow=shadows.join(",");
-})();
+  var reduce =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-(function(){
-if(reduce){
-document.querySelectorAll(".reveal").forEach(function(el){el.classList.add("in")});
-return;
-}
-var io=new IntersectionObserver(function(entries){
-entries.forEach(function(entry){
-if(entry.isIntersecting){
-entry.target.classList.add("in");
-io.unobserve(entry.target);
-}
-});
-},{threshold:.08,rootMargin:"0px 0px -8% 0px"});
-document.querySelectorAll(".reveal").forEach(function(el){io.observe(el)});
-})();
+  (function(){
 
-(function(){
-var menu=document.getElementById("mobileMenu");
-var open=document.getElementById("burger");
-var close=document.getElementById("closeMenu");
-var scrim=document.getElementById("scrim");
+    var count = reduce ? 35 : 85;
+    var shadows = [];
 
-function show(v){
-menu.classList.toggle("open",v);
-open.setAttribute("aria-expanded",v?"true":"false");
-document.body.style.overflow=v?"hidden":"";
-}
+    for(var i=0;i<count;i++){
 
-open.addEventListener("click",function(){show(true)});
-close.addEventListener("click",function(){show(false)});
-scrim.addEventListener("click",function(){show(false)});
+      var x=(Math.random()*100).toFixed(2);
+      var y=(Math.random()*100).toFixed(2);
+      var o=(Math.random()*.35+.06).toFixed(2);
+      var big=Math.random()>.93;
+      var r=big ? 1.5 : .7;
 
-menu.querySelectorAll(".m-link").forEach(function(a){
-a.addEventListener("click",function(){show(false)});
-});
-})();
+      var color=Math.random()>.5
+        ? "200,216,229"
+        : "232,237,242";
 
-var root=document.documentElement.style;
+      shadows.push(
+        x+"vw "+y+"vh 0 "+r+"px rgba("+color+","+o+")"
+      );
+    }
 
-var backgroundStops=[
-{p:0,top:[7,10,13],bottom:[11,16,21],horizon:[137,166,194,.035],text:[232,237,242]},
-{p:.16,top:[11,17,23],bottom:[19,28,37],horizon:[137,166,194,.07],text:[233,239,244]},
-{p:.32,top:[18,28,38],bottom:[31,45,58],horizon:[145,171,192,.14],text:[237,242,246]},
-{p:.46,top:[27,42,55],bottom:[46,64,80],horizon:[176,198,215,.22],text:[241,245,248]},
-{p:.56,top:[36,55,70],bottom:[61,82,99],horizon:[200,216,229,.30],text:[246,248,249]},
-{p:.68,top:[26,41,54],bottom:[45,62,77],horizon:[176,198,215,.19],text:[240,244,247]},
-{p:.84,top:[13,21,28],bottom:[23,32,41],horizon:[137,166,194,.07],text:[235,240,244]},
-{p:1,top:[6,9,12],bottom:[10,14,18],horizon:[137,166,194,.025],text:[231,236,241]}
-];
+    document.getElementById("minerals").style.boxShadow=shadows.join(",");
 
-var glowStops=[
-{p:0,y:44,opacity:.13,scale:.76},
-{p:.22,y:34,opacity:.25,scale:.84},
-{p:.42,y:20,opacity:.42,scale:.96},
-{p:.56,y:8,opacity:.55,scale:1.05},
-{p:.70,y:20,opacity:.37,scale:.98},
-{p:.85,y:34,opacity:.19,scale:.88},
-{p:1,y:44,opacity:.11,scale:.78}
-];
+  })();
 
-function lerp(a,b,t){return a+(b-a)*t}
+  (function(){
 
-function interpColor(a,b,t){
-return[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];
-}
+    if(reduce){
 
-function interpRGBA(a,b,t){
-return[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t),lerp(a[3],b[3],t)];
-}
+      document.querySelectorAll(".reveal").forEach(function(el){
+        el.classList.add("in");
+      });
 
-function rgb(c){
-return"rgb("+Math.round(c[0])+","+Math.round(c[1])+","+Math.round(c[2])+")";
-}
+      return;
+    }
 
-function rgba(c){
-return"rgba("+Math.round(c[0])+","+Math.round(c[1])+","+Math.round(c[2])+","+c[3].toFixed(3)+")";
-}
+    var io=new IntersectionObserver(
+      function(entries){
 
-function sample(stops,p,key,isRGBA){
-if(p<=stops[0].p)return stops[0][key];
-if(p>=stops[stops.length-1].p)return stops[stops.length-1][key];
+        entries.forEach(function(entry){
 
-for(var i=0;i<stops.length-1;i++){
-var a=stops[i],b=stops[i+1];
-if(p>=a.p&&p<=b.p){
-var t=(p-a.p)/(b.p-a.p);
-return isRGBA?interpRGBA(a[key],b[key],t):Array.isArray(a[key])?interpColor(a[key],b[key],t):lerp(a[key],b[key],t);
-}
-}
-}
+          if(entry.isIntersecting){
 
-var ticking=false;
+            entry.target.classList.add("in");
+            io.unobserve(entry.target);
 
-function update(){
-var max=document.documentElement.scrollHeight-window.innerHeight;
-var p=max>0?Math.min(1,Math.max(0,window.scrollY/max)):0;
+          }
 
-root.setProperty("--scroll-progress",p);
-root.setProperty("--bg-top",rgb(sample(backgroundStops,p,"top")));
-root.setProperty("--bg-bottom",rgb(sample(backgroundStops,p,"bottom")));
-root.setProperty("--horizon-color",rgba(sample(backgroundStops,p,"horizon",true)));
-root.setProperty("--text",rgb(sample(backgroundStops,p,"text")));
+        });
 
-var gy=sample(glowStops,p,"y");
-var go=sample(glowStops,p,"opacity");
-var gs=sample(glowStops,p,"scale");
+      },
+      {
+        threshold:.12,
+        rootMargin:"0px 0px -10% 0px"
+      }
+    );
 
-root.setProperty("--glow-y",gy+"vh");
-root.setProperty("--glow-opacity",go);
-root.setProperty("--glow-scale",gs);
+    document.querySelectorAll(".reveal").forEach(function(el){
+      io.observe(el);
+    });
 
-var minerals=document.getElementById("minerals");
-if(minerals)minerals.style.opacity=Math.max(.25,.9-go*.7);
+  })();
 
-root.setProperty("--nav-shadow","0 8px 40px rgba(0,0,0,"+lerp(.5,.35,go).toFixed(3)+")");
-ticking=false;
-}
+  (function(){
 
-function onScroll(){
-if(!ticking){
-ticking=true;
-requestAnimationFrame(update);
-}
-}
+    var menu=document.getElementById("mobileMenu");
+    var open=document.getElementById("burger");
+    var close=document.getElementById("closeMenu");
+    var scrim=document.getElementById("scrim");
 
-window.addEventListener("scroll",onScroll,{passive:true});
-window.addEventListener("resize",onScroll);
-update();
+    function show(v){
 
-(function(){
-var files=document.querySelectorAll(".file");
-var tab=document.getElementById("currentTab");
-var code=document.getElementById("code");
+      menu.classList.toggle("open",v);
 
-var snippets={
-"ContentView.swift":`
+      open.setAttribute(
+        "aria-expanded",
+        v ? "true" : "false"
+      );
+
+      document.body.style.overflow=v ? "hidden" : "";
+
+    }
+
+    open.addEventListener("click",function(){
+      show(true);
+    });
+
+    close.addEventListener("click",function(){
+      show(false);
+    });
+
+    scrim.addEventListener("click",function(){
+      show(false);
+    });
+
+    menu.querySelectorAll(".m-link").forEach(function(a){
+      a.addEventListener("click",function(){
+        show(false);
+      });
+    });
+
+  })();
+
+  var root=document.documentElement.style;
+
+  var backgroundStops=[
+    {
+      p:0,
+      top:[7,10,13],
+      bottom:[11,16,21],
+      horizon:[137,166,194,.035],
+      text:[232,237,242]
+    },
+    {
+      p:.16,
+      top:[11,17,23],
+      bottom:[19,28,37],
+      horizon:[137,166,194,.07],
+      text:[233,239,244]
+    },
+    {
+      p:.32,
+      top:[18,28,38],
+      bottom:[31,45,58],
+      horizon:[145,171,192,.14],
+      text:[237,242,246]
+    },
+    {
+      p:.46,
+      top:[27,42,55],
+      bottom:[46,64,80],
+      horizon:[176,198,215,.22],
+      text:[241,245,248]
+    },
+    {
+      p:.56,
+      top:[36,55,70],
+      bottom:[61,82,99],
+      horizon:[200,216,229,.30],
+      text:[246,248,249]
+    },
+    {
+      p:.68,
+      top:[26,41,54],
+      bottom:[45,62,77],
+      horizon:[176,198,215,.19],
+      text:[240,244,247]
+    },
+    {
+      p:.84,
+      top:[13,21,28],
+      bottom:[23,32,41],
+      horizon:[137,166,194,.07],
+      text:[235,240,244]
+    },
+    {
+      p:1,
+      top:[6,9,12],
+      bottom:[10,14,18],
+      horizon:[137,166,194,.025],
+      text:[231,236,241]
+    }
+  ];
+
+  var glowStops=[
+    {p:0,y:44,opacity:.13,scale:.76},
+    {p:.22,y:34,opacity:.25,scale:.84},
+    {p:.42,y:20,opacity:.42,scale:.96},
+    {p:.56,y:8,opacity:.55,scale:1.05},
+    {p:.70,y:20,opacity:.37,scale:.98},
+    {p:.85,y:34,opacity:.19,scale:.88},
+    {p:1,y:44,opacity:.11,scale:.78}
+  ];
+
+  function lerp(a,b,t){
+    return a+(b-a)*t;
+  }
+
+  function interpColor(a,b,t){
+    return [
+      lerp(a[0],b[0],t),
+      lerp(a[1],b[1],t),
+      lerp(a[2],b[2],t)
+    ];
+  }
+
+  function interpRGBA(a,b,t){
+    return [
+      lerp(a[0],b[0],t),
+      lerp(a[1],b[1],t),
+      lerp(a[2],b[2],t),
+      lerp(a[3],b[3],t)
+    ];
+  }
+
+  function rgb(c){
+    return "rgb("+Math.round(c[0])+","+Math.round(c[1])+","+Math.round(c[2])+")";
+  }
+
+  function rgba(c){
+    return "rgba("+Math.round(c[0])+","+Math.round(c[1])+","+Math.round(c[2])+","+c[3].toFixed(3)+")";
+  }
+
+  function sample(stops,p,key,isRGBA){
+
+    if(p<=stops[0].p)
+      return stops[0][key];
+
+    if(p>=stops[stops.length-1].p)
+      return stops[stops.length-1][key];
+
+    for(var i=0;i<stops.length-1;i++){
+
+      var a=stops[i];
+      var b=stops[i+1];
+
+      if(p>=a.p && p<=b.p){
+
+        var t=(p-a.p)/(b.p-a.p);
+
+        return isRGBA
+          ? interpRGBA(a[key],b[key],t)
+          : Array.isArray(a[key])
+            ? interpColor(a[key],b[key],t)
+            : lerp(a[key],b[key],t);
+
+      }
+    }
+  }
+
+  var ticking=false;
+
+  function update(){
+
+    var max=document.documentElement.scrollHeight-window.innerHeight;
+
+    var p=max>0
+      ? Math.min(1,Math.max(0,window.scrollY/max))
+      : 0;
+
+    root.setProperty("--scroll-progress",p);
+
+    var top=sample(backgroundStops,p,"top");
+    var bottom=sample(backgroundStops,p,"bottom");
+    var horizon=sample(backgroundStops,p,"horizon",true);
+    var text=sample(backgroundStops,p,"text");
+
+    root.setProperty("--bg-top",rgb(top));
+    root.setProperty("--bg-bottom",rgb(bottom));
+    root.setProperty("--horizon-color",rgba(horizon));
+    root.setProperty("--text",rgb(text));
+
+    var gy=sample(glowStops,p,"y");
+    var go=sample(glowStops,p,"opacity");
+    var gs=sample(glowStops,p,"scale");
+
+    root.setProperty("--glow-y",gy+"vh");
+    root.setProperty("--glow-opacity",go);
+    root.setProperty("--glow-scale",gs);
+
+    var mineralOpacity=.9-go*.7;
+    var minerals=document.getElementById("minerals");
+
+    if(minerals){
+      minerals.style.opacity=Math.max(.25,mineralOpacity);
+    }
+
+    root.setProperty(
+      "--nav-shadow",
+      "0 8px 40px rgba(0,0,0,"+
+      lerp(.5,.35,go).toFixed(3)+")"
+    );
+
+    ticking=false;
+  }
+
+  function onScroll(){
+
+    if(!ticking){
+
+      ticking=true;
+
+      requestAnimationFrame(update);
+
+    }
+
+  }
+
+  window.addEventListener("scroll",onScroll,{passive:true});
+  window.addEventListener("resize",onScroll);
+
+  update();
+
+  (function(){
+
+    var files=document.querySelectorAll(".file");
+    var tab=document.getElementById("currentTab");
+    var code=document.getElementById("code");
+
+    var snippets={
+
+      "ContentView.swift":`
 <div class="line"><span class="line-number">1</span><span><span class="token-keyword">import</span> SwiftUI</span></div>
 <div class="line"><span class="line-number">2</span><span></span></div>
 <div class="line"><span class="line-number">3</span><span><span class="token-keyword">struct</span> <span class="token-type">ContentView</span>: <span class="token-type">View</span> {</span></div>
@@ -1430,7 +1923,7 @@ var snippets={
 <div class="line"><span class="line-number">7</span><span>&nbsp;&nbsp;}</span></div>
 <div class="line"><span class="line-number">8</span><span>}</span></div>`,
 
-"StrataApp.swift":`
+      "StrataApp.swift":`
 <div class="line"><span class="line-number">1</span><span><span class="token-keyword">import</span> SwiftUI</span></div>
 <div class="line"><span class="line-number">2</span><span></span></div>
 <div class="line"><span class="line-number">3</span><span><span class="token-keyword">@main</span></span></div>
@@ -1442,16 +1935,16 @@ var snippets={
 <div class="line"><span class="line-number">9</span><span>&nbsp;&nbsp;}</span></div>
 <div class="line"><span class="line-number">10</span><span>}</span></div>`,
 
-"EditorView.swift":`
+      "EditorView.swift":`
 <div class="line"><span class="line-number">1</span><span><span class="token-keyword">struct</span> <span class="token-type">EditorView</span>: <span class="token-type">View</span> {</span></div>
 <div class="line"><span class="line-number">2</span><span>&nbsp;&nbsp;<span class="token-keyword">let</span> document: <span class="token-type">Document</span></span></div>
 <div class="line"><span class="line-number">3</span><span></span></div>
 <div class="line"><span class="line-number">4</span><span>&nbsp;&nbsp;<span class="token-keyword">var</span> body: <span class="token-keyword">some</span> <span class="token-type">View</span> {</span></div>
-<div class="line"><span class="line-number">5</span><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="token-function">TextEditor</span>(text:.constant(<span class="token-string">""</span>))</span></div>
+<div class="line"><span class="line-number">5</span><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="token-function">TextEditor</span>(text: .constant(<span class="token-string">""</span>))</span></div>
 <div class="line"><span class="line-number">6</span><span>&nbsp;&nbsp;}</span></div>
 <div class="line"><span class="line-number">7</span><span>}</span></div>`,
 
-"Theme.swift":`
+      "Theme.swift":`
 <div class="line"><span class="line-number">1</span><span><span class="token-keyword">import</span> SwiftUI</span></div>
 <div class="line"><span class="line-number">2</span><span></span></div>
 <div class="line"><span class="line-number">3</span><span><span class="token-keyword">struct</span> <span class="token-type">StrataTheme</span> {</span></div>
@@ -1459,40 +1952,66 @@ var snippets={
 <div class="line"><span class="line-number">5</span><span>&nbsp;&nbsp;<span class="token-keyword">static let</span> accent = <span class="token-string">Color.blue</span></span></div>
 <div class="line"><span class="line-number">6</span><span>}</span></div>`,
 
-"Package.swift":`
+      "Package.swift":`
 <div class="line"><span class="line-number">1</span><span><span class="token-comment">// swift-tools-version: 6.0</span></span></div>
 <div class="line"><span class="line-number">2</span><span><span class="token-keyword">import</span> PackageDescription</span></div>
 <div class="line"><span class="line-number">3</span><span></span></div>
 <div class="line"><span class="line-number">4</span><span><span class="token-keyword">let</span> package = <span class="token-type">Package</span>(</span></div>
 <div class="line"><span class="line-number">5</span><span>&nbsp;&nbsp;name: <span class="token-string">"Strata"</span></span></div>
 <div class="line"><span class="line-number">6</span><span>)</span></div>`
-};
+    };
 
-files.forEach(function(file){
-file.addEventListener("click",function(){
-files.forEach(function(other){other.classList.remove("active")});
-file.classList.add("active");
-var name=file.dataset.file;
-tab.textContent=name;
-code.innerHTML=snippets[name]||snippets["ContentView.swift"];
-});
-});
-})();
+    files.forEach(function(file){
 
-(function(){
-var editor=document.getElementById("editorWindow");
-if(!editor||reduce)return;
+      file.addEventListener("click",function(){
 
-var observer=new IntersectionObserver(function(entries){
-entries.forEach(function(entry){
-if(entry.isIntersecting){
-editor.classList.add("in-view");
-}
-});
-},{threshold:.2});
+        files.forEach(function(other){
+          other.classList.remove("active");
+        });
 
-observer.observe(editor);
-})();
+        file.classList.add("active");
+
+        var name=file.dataset.file;
+
+        tab.textContent=name;
+
+        code.innerHTML=
+          snippets[name] ||
+          snippets["ContentView.swift"];
+
+      });
+
+    });
+
+  })();
+
+  (function(){
+
+    var editor=document.getElementById("editorWindow");
+
+    if(!editor || reduce)
+      return;
+
+    var observer=new IntersectionObserver(
+      function(entries){
+
+        entries.forEach(function(entry){
+
+          if(entry.isIntersecting){
+            editor.classList.add("in-view");
+          }
+
+        });
+
+      },
+      {
+        threshold:.2
+      }
+    );
+
+    observer.observe(editor);
+
+  })();
 
 })();
 </script>
