@@ -1,0 +1,1287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="description" content="Amber is a quiet, native music player for macOS, made by Dawnstone. Music, quietly played." />
+<meta name="theme-color" content="#0A0706" />
+<meta property="og:title" content="Amber — Music, quietly played." />
+<meta property="og:description" content="A native music player for macOS, from Dawnstone. Currently in development." />
+<meta property="og:type" content="website" />
+<title>Amber — Music, quietly played.</title>
+
+<style>
+  /* =========================================================
+     Amber — Design Tokens
+     A single warm arc: quiet dark   glow   quiet dark again.
+     No day, no beige — this stays in Amber's own register.
+     ========================================================= */
+  :root{
+    --bg-top:#0A0706;
+    --bg-bottom:#100B08;
+    --horizon-color: rgba(245,164,91,0.05);
+
+    --glow-y: 44vh;
+    --glow-opacity: 0.22;
+    --glow-scale: 0.78;
+
+    --text-tint:#EFE7DC;
+    --text:#EFE7DC;
+    --text-secondary: rgba(239,231,220,0.72);
+    --text-muted: rgba(239,231,220,0.48);
+
+    --nav-bg: rgba(255,255,255,0.05);
+    --nav-border: rgba(255,255,255,0.11);
+    --nav-shadow: 0 8px 40px rgba(0,0,0,0.5);
+
+    --amber-deep:#B5672D;
+    --amber:#F5A45B;
+    --amber-light:#FFCB7A;
+    --gold-pale:#FFE3B0;
+
+    --scroll-progress:0;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+    color:var(--text);
+    overflow-x:hidden;
+    line-height:1.6;
+    transition:color .2s linear;
+  }
+
+  ::selection{ background:rgba(255,203,122,0.85); color:#180d05; }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--amber-light); outline-offset:3px; border-radius:4px; }
+
+  .serif-italic{
+    font-family:"New York","Iowan Old Style","Apple Garamond",Georgia,"Times New Roman",serif;
+    font-style:italic; font-weight:400;
+  }
+  .display{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:600; letter-spacing:-0.04em;
+  }
+
+  /* =========================================================
+     Sky
+     ========================================================= */
+  .sky{
+    position:fixed; inset:0; z-index:-10; overflow:hidden; pointer-events:none;
+    background:
+      radial-gradient(120% 70% at 50% 46%, var(--horizon-color) 0%, transparent 60%),
+      linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+    transition:background .1s linear;
+  }
+  .glow{
+    position:absolute; left:50%; top:0; width:58vw; height:58vw;
+    transform:translate(-50%,var(--glow-y)) scale(var(--glow-scale));
+    opacity:var(--glow-opacity); border-radius:50%;
+    background:radial-gradient(circle at 50% 50%, rgba(255,227,176,0.95) 0%, rgba(245,164,91,0.55) 32%, rgba(245,164,91,0) 68%);
+    filter:blur(14px); pointer-events:none;
+  }
+  .embers{ position:absolute; left:0; top:0; width:1px; height:1px; pointer-events:none; }
+
+  /* =========================================================
+     Navigation
+     ========================================================= */
+  .nav-wrap{ position:fixed; top:0; left:0; right:0; z-index:50; display:flex; justify-content:center; padding:1rem; }
+  @media (min-width:640px){ .nav-wrap{ padding-top:1.5rem; } }
+
+  .nav{
+    width:100%; max-width:64rem;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:0.75rem 1.25rem; border-radius:9999px;
+    background:var(--nav-bg); border:0.5px solid var(--nav-border); box-shadow:var(--nav-shadow);
+    backdrop-filter:blur(40px) saturate(150%); -webkit-backdrop-filter:blur(40px) saturate(150%);
+    color:var(--text);
+    transition:background .2s linear, border-color .2s linear, box-shadow .2s linear;
+  }
+  @media (min-width:640px){ .nav{ padding:0.875rem 1.75rem; } }
+
+  .brand{ font-size:.875rem; font-weight:600; letter-spacing:0.22em; text-decoration:none; color:inherit; display:flex; align-items:baseline; gap:.5rem; }
+  .brand .of{ font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:currentColor; opacity:.4; font-weight:400; }
+  @media (min-width:640px){ .brand{ font-size:1rem; } }
+
+  .nav-links{ display:none; align-items:center; gap:2rem; }
+  @media (min-width:640px){ .nav-links{ display:flex; } }
+  .nav-links a{ font-size:13px; letter-spacing:.04em; text-decoration:none; color:inherit; opacity:.85; transition:opacity .3s; }
+  .nav-links a:hover{ opacity:1; }
+  .nav-links a.back{ opacity:.5; }
+  .nav-links a.back:hover{ opacity:.85; }
+
+  .burger{ display:flex; flex-direction:column; justify-content:center; gap:5px; width:2rem; height:2rem; background:none; border:none; cursor:pointer; color:inherit; }
+  @media (min-width:640px){ .burger{ display:none; } }
+  .burger span{ display:block; height:1.5px; width:1.25rem; background:currentColor; }
+
+  .mobile-menu{ position:fixed; inset:0; z-index:60; display:none; flex-direction:column; }
+  .mobile-menu.open{ display:flex; }
+  .mobile-menu .scrim{ position:absolute; inset:0; background:rgba(0,0,0,.5); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); }
+  .mobile-menu .panel{
+    position:relative; margin:1rem; flex:1; display:flex; flex-direction:column;
+    border-radius:2rem; border:1px solid rgba(255,255,255,.13); background:rgba(20,14,10,.55);
+    padding:2rem; backdrop-filter:blur(32px); -webkit-backdrop-filter:blur(32px);
+  }
+  .mobile-menu .close-row{ display:flex; justify-content:flex-end; }
+  .mobile-menu .close{ width:2.25rem; height:2.25rem; background:none; border:none; cursor:pointer; color:#EFE7DC; font-size:1.5rem; line-height:1; }
+  .mobile-menu nav{ flex:1; display:flex; flex-direction:column; justify-content:center; gap:1.5rem; }
+  .mobile-menu nav a{ font-size:1.875rem; letter-spacing:-0.02em; text-decoration:none; color:#EFE7DC; }
+  .mobile-menu nav a.back{ font-size:1rem; opacity:.55; }
+
+  /* =========================================================
+     Layout
+     ========================================================= */
+  main{ position:relative; z-index:10; }
+  section{ position:relative; width:100%; padding-left:1.5rem; padding-right:1.5rem; }
+  @media (min-width:640px){ section{ padding-left:3rem; padding-right:3rem; } }
+  @media (min-width:768px){ section{ padding-left:5rem; padding-right:5rem; } }
+  @media (min-width:1024px){ section{ padding-left:10rem; padding-right:10rem; } }
+
+  .label{ font-size:11px; text-transform:uppercase; letter-spacing:.34em; color:rgba(239,231,220,0.42); }
+
+  /* Hero */
+  .hero{ min-height:100svh; display:flex; flex-direction:column; justify-content:center; padding-top:8rem; padding-bottom:6rem; }
+  .hero h1{ font-size:clamp(2.75rem,17vw,10rem); line-height:1; white-space:nowrap; color:var(--text); }
+  .hero p{ margin-top:1.5rem; font-size:clamp(1.5rem,4vw,2.25rem); line-height:1.2; color:rgba(239,231,220,.85); }
+  .hero p .qc{ color:var(--amber-light); }
+  .hero .tag{ margin-top:1.25rem; font-size:1rem; letter-spacing:.02em; color:rgba(239,231,220,.48); }
+
+  .scroll-hint{ position:absolute; left:0; right:0; bottom:2rem; display:flex; flex-direction:column; align-items:center; gap:.75rem; color:rgba(239,231,220,.48); }
+  .scroll-hint .txt{ font-size:10px; text-transform:uppercase; letter-spacing:.34em; }
+  .scroll-hint .arrow{ font-size:1.125rem; color:rgba(239,231,220,.6); animation:float 2.6s ease-in-out infinite; }
+  @keyframes float{ 0%,100%{ transform:translateY(0); opacity:.5; } 50%{ transform:translateY(7px); opacity:.9; } }
+
+  /* Generic prose sections */
+  .prose-section{ padding-top:8rem; padding-bottom:8rem; }
+  @media (min-width:768px){ .prose-section{ padding-top:11rem; padding-bottom:13rem; } }
+  .prose-section h2{ margin-top:2.25rem; max-width:42rem; font-size:clamp(2rem,6vw,4.25rem); line-height:1.14; color:var(--text); }
+  .prose-section h2 .accent{ color:var(--amber-light); }
+  .prose-section .body{ margin-top:2.25rem; max-width:32rem; font-size:1.125rem; color:var(--text-secondary); }
+  @media (min-width:640px){ .prose-section .body{ font-size:1.3rem; } }
+  .prose-section .body p + p{ margin-top:1rem; }
+
+  /* Spec line (Native section) — restrained, no pill clutter */
+  .spec-line{ margin-top:2.25rem; font-size:.95rem; letter-spacing:.02em; color:var(--text-muted); }
+  .spec-line span{ color:rgba(239,231,220,.68); }
+  .spec-line .dot{ margin:0 .65em; opacity:.4; }
+
+  /* Library track rows */
+  .track-card{
+    margin-top:2.75rem; max-width:32rem; border-radius:1.5rem;
+    background:rgba(255,255,255,.03); border:0.5px solid rgba(255,255,255,.09);
+    box-shadow:0 20px 70px rgba(0,0,0,.45);
+    backdrop-filter:blur(36px) saturate(150%); -webkit-backdrop-filter:blur(36px) saturate(150%);
+    overflow:hidden;
+  }
+  .track-row{ display:flex; align-items:center; gap:1rem; padding:.9rem 1.25rem; }
+  .track-row + .track-row{ border-top:0.5px solid rgba(255,255,255,.07); }
+  .track-art{ width:2.5rem; height:2.5rem; flex-shrink:0; border-radius:.6rem; background:linear-gradient(135deg,var(--amber-light),var(--amber-deep)); }
+  .track-meta{ min-width:0; }
+  .track-title{ font-size:.92rem; color:var(--text); }
+  .track-artist{ font-size:.78rem; color:var(--text-muted); margin-top:.15rem; }
+
+  /* ---------------------------------------------------------
+     Now Playing — the centered, functional signature widget
+     --------------------------------------------------------- */
+  .nowplaying-section{
+    min-height:92svh; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center;
+    padding-top:7rem; padding-bottom:7rem;
+  }
+  .nowplaying-section .label{ text-align:center; }
+  .nowplaying-section h2{ margin-top:1.25rem; max-width:34rem; font-size:clamp(1.75rem,5vw,3rem); line-height:1.2; color:var(--text); }
+  .nowplaying-section h2 .accent{ color:var(--amber-light); }
+
+  .player-card{
+    margin-top:3rem; width:100%; max-width:23rem; border-radius:2rem;
+    background:rgba(255,255,255,.045); border:0.5px solid rgba(255,255,255,.13);
+    box-shadow:0 30px 100px rgba(0,0,0,.55), 0 0 0 0.5px rgba(255,203,122,.06) inset;
+    backdrop-filter:blur(46px) saturate(160%); -webkit-backdrop-filter:blur(46px) saturate(160%);
+    padding:1.85rem; text-align:left;
+  }
+  .player-art{
+    width:100%; aspect-ratio:1/1; border-radius:1.3rem;
+    box-shadow:0 18px 40px rgba(180,90,30,.3), inset 0 0 0 0.5px rgba(255,255,255,.14);
+    transition:background 0.6s ease;
+  }
+  .player-info{ margin-top:1.4rem; display:flex; align-items:baseline; justify-content:space-between; gap:1rem; }
+  .player-title{ font-size:1.15rem; color:var(--text); }
+  .player-artist{ margin-top:.2rem; font-size:.9rem; color:var(--text-muted); }
+  .player-eq{ display:flex; align-items:flex-end; gap:2px; height:12px; flex-shrink:0; opacity:0; transition:opacity .3s; }
+  .player-eq.playing{ opacity:1; }
+  .player-eq span{ display:block; width:2.5px; background:var(--amber-light); border-radius:2px; animation:eq 900ms ease-in-out infinite; }
+  .player-eq span:nth-child(1){ animation-delay:-600ms; }
+  .player-eq span:nth-child(2){ animation-delay:-300ms; }
+  .player-eq span:nth-child(3){ animation-delay:0ms; }
+  @keyframes eq{ 0%,100%{ height:3px; } 50%{ height:12px; } }
+
+  .player-progress{ margin-top:1.4rem; height:4px; border-radius:9999px; background:rgba(255,255,255,.12); cursor:pointer; position:relative; }
+  .player-progress .fill{ width:0%; height:100%; background:linear-gradient(90deg,var(--amber-light),var(--amber)); border-radius:9999px; }
+  .player-time{ margin-top:.5rem; display:flex; justify-content:space-between; font-size:.7rem; letter-spacing:.05em; color:var(--text-muted); font-variant-numeric:tabular-nums; }
+
+  .player-controls{ margin-top:1.6rem; display:flex; align-items:center; justify-content:center; gap:1.75rem; }
+  .player-controls button{ background:none; border:none; cursor:pointer; color:var(--text); padding:.35rem; transition:opacity .2s; }
+  .player-controls button:hover{ opacity:.7; }
+  .player-controls button svg{ display:block; width:1.05rem; height:1.05rem; }
+  .player-controls .play{
+    width:3.1rem; height:3.1rem; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,var(--amber-light),var(--amber-deep));
+    box-shadow:0 10px 30px rgba(200,110,40,.4);
+  }
+  .player-controls .play:hover{ opacity:1; transform:scale(1.04); }
+  .player-controls .play svg{ width:.95rem; height:.95rem; color:#20110a; }
+
+  .player-volume{ margin-top:1.6rem; display:flex; align-items:center; gap:.75rem; }
+  .player-volume svg{ width:1rem; height:1rem; color:var(--text-muted); flex-shrink:0; }
+  .player-volume .track{ flex:1; height:4px; border-radius:9999px; background:rgba(255,255,255,.12); position:relative; cursor:pointer; }
+  .player-volume .track .fill{ width:70%; height:100%; border-radius:9999px; background:rgba(239,231,220,.55); }
+
+  /* Control list */
+  .ctrl-list{ margin-top:2.5rem; display:flex; flex-direction:column; gap:.9rem; max-width:26rem; }
+  .ctrl-item{ display:flex; align-items:center; gap:1rem; font-size:1.02rem; color:var(--text-secondary); }
+  .ctrl-dot{ width:5px; height:5px; border-radius:50%; background:var(--amber-light); flex-shrink:0; }
+
+  /* Status */
+  .status-row{ margin-top:2.5rem; display:flex; align-items:center; gap:.7rem; }
+  .status-dot{ width:7px; height:7px; border-radius:50%; background:var(--amber-light); box-shadow:0 0 12px rgba(255,203,122,.7); }
+  .status-row span:last-child{ font-size:.72rem; text-transform:uppercase; letter-spacing:.26em; color:var(--amber-light); }
+  .status-facts{ margin-top:1.75rem; display:flex; flex-direction:column; gap:.55rem; max-width:26rem; font-size:1rem; color:var(--text-secondary); }
+
+  /* Contact */
+  .contact .lead{ margin-top:2.25rem; font-size:1.05rem; color:var(--text-muted); }
+  .contact h2{ margin-top:1rem; font-size:clamp(2.5rem,7vw,5.5rem); line-height:1.05; color:var(--text); }
+  .contact h2 .accent{ color:var(--amber-light); }
+  .contact .links{ margin-top:2.5rem; display:flex; flex-direction:column; gap:.9rem; }
+  .contact .mail, .contact .home{
+    display:inline-flex; align-items:center; gap:.75rem; text-decoration:none; color:var(--text); font-size:1.15rem; width:fit-content;
+    transition:color .3s;
+  }
+  @media (min-width:640px){ .contact .mail, .contact .home{ font-size:1.35rem; } }
+  .contact .mail span:first-child, .contact .home span:first-child{ border-bottom:1px solid transparent; transition:border-color .3s, color .3s; }
+  .contact .mail:hover span:first-child, .contact .home:hover span:first-child{ border-color:var(--amber-light); color:var(--amber-light); }
+  .contact .arrow{ font-size:1rem; transition:transform .3s; }
+  .contact .mail:hover .arrow, .contact .home:hover .arrow{ transform:translate(4px,-4px); }
+
+  /* Footer */
+
+.footer {
+  position: relative;
+
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+
+  color: rgba(245,247,251,0.9);
+
+  /*
+   * Footer stays transparent.
+   * The dark background comes from the page itself.
+   */
+}
+
+.footer-inner {
+  width: 100%;
+  max-width: 90rem;
+
+  margin: 0 auto;
+
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .footer-inner {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .footer-inner {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer-inner {
+    padding-left: 7rem;
+    padding-right: 7rem;
+  }
+}
+
+
+/* =========================================================
+   Footer top
+   ========================================================= */
+
+.footer-top {
+  display: grid;
+
+  grid-template-columns:
+    1fr;
+
+  gap: 2rem;
+
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,0.10);
+
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .footer-top {
+    grid-template-columns:
+      1fr
+      auto
+      1fr;
+
+    padding-top: 2.5rem;
+    padding-bottom: 3.5rem;
+  }
+}
+
+
+/* =========================================================
+   Brand
+   ========================================================= */
+
+.footer-brand {
+  display: inline-block;
+
+  width: fit-content;
+
+  font-size: 0.875rem;
+
+  font-weight: 600;
+
+  letter-spacing: 0.24em;
+
+  text-decoration: none;
+
+  color: rgba(245,247,251,0.92);
+
+  transition:
+    color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.footer-brand:hover {
+  color: #FFDEA3;
+
+  opacity: 0.9;
+}
+
+
+/* =========================================================
+   Statement
+   ========================================================= */
+
+.footer-statement {
+  font-size: 1.25rem;
+
+  line-height: 1.2;
+
+  color:
+    rgba(245,247,251,0.48);
+
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .footer-statement {
+    text-align: center;
+
+    font-size: 1.375rem;
+  }
+}
+
+
+/* =========================================================
+   Back to top
+   ========================================================= */
+
+.footer-back {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: flex-start;
+
+  gap: 0.65rem;
+
+  width: fit-content;
+
+  text-decoration: none;
+
+  font-size: 0.6875rem;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.22em;
+
+  color:
+    rgba(245,247,251,0.48);
+
+  transition:
+    color 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .footer-back {
+    justify-self: end;
+  }
+}
+
+.footer-back-arrow {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 1.75rem;
+  height: 1.75rem;
+
+  border:
+    1px solid
+    rgba(255,255,255,0.14);
+
+  border-radius: 50%;
+
+  font-size: 0.8rem;
+
+  color:
+    rgba(245,247,251,0.7);
+
+  transition:
+    transform 0.35s
+      cubic-bezier(.23,1,.32,1),
+    background 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.footer-back:hover {
+  color: #F58F4B;
+}
+
+.footer-back:hover
+.footer-back-arrow {
+  transform:
+    translateY(-3px);
+
+  background:
+    rgba(245,143,75,0.10);
+
+  border-color:
+    rgba(245,143,75,0.35);
+
+  color:
+    #F58F4B;
+}
+
+
+/* =========================================================
+   Footer main
+   ========================================================= */
+
+.footer-main {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3rem;
+
+  padding-top: 3rem;
+  padding-bottom: 3.5rem;
+}
+
+@media (min-width: 768px) {
+  .footer-main {
+    flex-direction: row;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    padding-top: 3.5rem;
+    padding-bottom: 4rem;
+  }
+}
+
+
+/* =========================================================
+   Footer note
+   ========================================================= */
+
+.footer-note {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.4rem;
+}
+
+.footer-note p {
+  margin: 0;
+
+  font-size: 0.8125rem;
+
+  line-height: 1.5;
+
+  color:
+    rgba(245,247,251,0.40);
+}
+
+.footer-note p:first-child {
+  color:
+    rgba(245,247,251,0.68);
+
+  font-weight: 500;
+
+  letter-spacing: 0.01em;
+}
+
+
+/* =========================================================
+   Footer links
+   ========================================================= */
+
+.footer-links {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(90px, 1fr));
+
+  column-gap: 3rem;
+  row-gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .footer-links {
+    display: flex;
+
+    gap: 2rem;
+  }
+}
+
+.footer-links a {
+  position: relative;
+
+  width: fit-content;
+
+  font-size: 0.75rem;
+
+  text-decoration: none;
+
+  color:
+    rgba(245,247,251,0.58);
+
+  transition:
+    color 0.3s ease;
+}
+
+.footer-links a::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: -0.3rem;
+
+  width: 100%;
+  height: 1px;
+
+  background:
+    #F58F4B;
+
+  transform:
+    scaleX(0);
+
+  transform-origin:
+    right center;
+
+  transition:
+    transform 0.35s
+    cubic-bezier(.23,1,.32,1);
+}
+
+.footer-links a:hover {
+  color:
+    #F58F4B;
+}
+
+.footer-links a:hover::after {
+  transform:
+    scaleX(1);
+
+  transform-origin:
+    left center;
+}
+
+
+/* =========================================================
+   Footer bottom
+   ========================================================= */
+
+.footer-bottom {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.5rem;
+
+  padding-top: 1.5rem;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,0.08);
+
+  font-size: 0.6875rem;
+
+  letter-spacing: 0.02em;
+
+  color:
+    rgba(245,247,251,0.32);
+}
+
+@media (min-width: 640px) {
+  .footer-bottom {
+    flex-direction: row;
+
+    align-items: center;
+
+    justify-content: space-between;
+  }
+}
+
+  /* Reveal */
+  .reveal{ opacity:0; transform:translateY(26px); filter:blur(12px); transition:opacity 1.1s cubic-bezier(.23,1,.32,1), transform 1.1s cubic-bezier(.23,1,.32,1), filter 1.1s cubic-bezier(.23,1,.32,1); }
+  .reveal.in{ opacity:1; transform:none; filter:blur(0); }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .reveal{ opacity:1; transform:none; filter:none; transition:none; }
+    .scroll-hint .arrow{ animation:none; }
+    .player-eq span{ animation:none; height:6px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="sky" aria-hidden="true">
+    <div class="glow"></div>
+    <div class="embers" id="embers"></div>
+  </div>
+
+<!-- Navigation -->
+<div class="nav-wrap">
+  <nav class="nav" aria-label="Primary">
+
+    <a class="brand display" href="#top">
+      AMBER <span class="of">by Dawnstone</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="back">Dawnstone</a>
+      <a href="#idea">About</a>
+      <a href="#library">Library</a>
+      <a href="#nowplaying">Player</a>
+      <a href="#status">Status</a>
+      <a href="#contact">Contact</a>
+    </div>
+
+    <button
+      class="burger"
+      id="burger"
+      aria-label="Open menu"
+      aria-expanded="false"
+    >
+      <span></span>
+      <span></span>
+    </button>
+
+  </nav>
+</div>
+
+  <!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+
+  <div class="scrim" id="scrim"></div>
+
+  <div class="panel">
+
+    <div class="close-row">
+      <button
+        class="close"
+        id="closeMenu"
+        aria-label="Close menu"
+      >
+        ✕
+      </button>
+    </div>
+
+    <nav>
+      <a href="#idea" class="m-link">About</a>
+      <a href="#library" class="m-link">Library</a>
+      <a href="#nowplaying" class="m-link">Player</a>
+      <a href="#status" class="m-link">Status</a>
+      <a href="#contact" class="m-link">Contact</a>
+      <a href="index.html" class="m-link back">← Dawnstone</a>
+    </nav>
+
+  </div>
+</div>
+
+  <main>
+
+    <!-- HERO -->
+    <section id="top" class="hero">
+      <h1 class="display reveal">AMBER</h1>
+      <p class="reveal">Music,<br><span class="serif-italic qc">quietly played.</span></p>
+      <p class="tag reveal">Native music player for macOS.</p>
+      <div class="scroll-hint">
+        <span class="txt">Scroll to explore</span>
+        <span class="arrow">↓</span>
+      </div>
+    </section>
+
+    <!-- 01 / THE IDEA -->
+    <section id="idea" class="prose-section">
+      <p class="label reveal">01 / The Idea</p>
+      <h2 class="display reveal">Music,<br><span class="serif-italic accent">without the noise.</span></h2>
+      <div class="body reveal">
+        <p>Most players want your attention — feeds, suggestions, badges. Amber wants none of that.</p>
+        <p>It plays your music, and gets out of the way.</p>
+      </div>
+    </section>
+
+    <!-- 02 / NATIVE -->
+    <section id="native" class="prose-section">
+      <p class="label reveal">02 / Native</p>
+      <h2 class="display reveal">Made for<br><span class="serif-italic accent">Mac.</span></h2>
+      <div class="body reveal">
+        <p>Amber is built entirely in Swift and SwiftUI, designed for macOS Tahoe, with an interface that draws on Liquid Glass to feel like it belongs on your Mac — not on top of it.</p>
+      </div>
+      <p class="spec-line reveal"><span>Swift</span><span class="dot"> </span><span>SwiftUI</span><span class="dot"> </span><span>macOS Tahoe</span><span class="dot"> </span><span>Liquid Glass</span></p>
+    </section>
+
+    <!-- 03 / LIBRARY -->
+    <section id="library" class="prose-section">
+      <p class="label reveal">03 / Library</p>
+      <h2 class="display reveal">Your music.<br><span class="serif-italic accent">One quiet place.</span></h2>
+      <div class="body reveal">
+        <p>Drag your music in, and Amber takes care of the rest — organizing titles, artists, albums and artwork into a library that stays out of your way until you need it.</p>
+      </div>
+      <div class="track-card reveal" aria-hidden="true">
+        <div class="track-row">
+          <div class="track-art" style="background:linear-gradient(135deg,#FFE3B0,#B5672D)"></div>
+          <div class="track-meta">
+            <div class="track-title">Amber Room</div>
+            <div class="track-artist">Low Season</div>
+          </div>
+        </div>
+        <div class="track-row">
+          <div class="track-art" style="background:linear-gradient(135deg,#F5A45B,#5C2E10)"></div>
+          <div class="track-meta">
+            <div class="track-title">Late Hours</div>
+            <div class="track-artist">Field Study</div>
+          </div>
+        </div>
+        <div class="track-row">
+          <div class="track-art" style="background:linear-gradient(135deg,#FFCB7A,#2E1A0C)"></div>
+          <div class="track-meta">
+            <div class="track-title">Quiet Hour</div>
+            <div class="track-artist">North Window</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 / NOW PLAYING — centered, functional -->
+    <section id="nowplaying" class="nowplaying-section">
+      <p class="label reveal">04 / Now Playing</p>
+      <h2 class="display reveal">The song you're<br><span class="serif-italic accent">listening to.</span></h2>
+
+      <div class="player-card reveal" id="playerCard" aria-label="Now Playing preview with working playback controls">
+        <div class="player-art" id="playerArt"></div>
+        <div class="player-info">
+          <div>
+            <div class="player-title" id="playerTitle">Amber Room</div>
+            <div class="player-artist" id="playerArtist">Low Season</div>
+          </div>
+          <div class="player-eq" id="playerEq"><span></span><span></span><span></span></div>
+        </div>
+        <div class="player-progress" id="playerProgress" role="slider" aria-label="Seek" tabindex="0">
+          <div class="fill" id="playerFill"></div>
+        </div>
+        <div class="player-time"><span id="timeNow">0:00</span><span id="timeTotal">3:41</span></div>
+        <div class="player-controls">
+          <button id="btnPrev" aria-label="Previous track">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM20 6L9 12l11 6z"/></svg>
+          </button>
+          <button class="play" id="btnPlay" aria-label="Play">
+            <svg id="iconPlay" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>
+          </button>
+          <button id="btnNext" aria-label="Next track">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM4 6l11 6-11 6z"/></svg>
+          </button>
+        </div>
+        <div class="player-volume">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 5V4L8 9H4z"/></svg>
+          <div class="track" id="volumeTrack"><div class="fill" id="volumeFill"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 / CONTROL -->
+    <section id="control" class="prose-section">
+      <p class="label reveal">05 / Control</p>
+      <h2 class="display reveal">Nothing more.<br><span class="serif-italic accent">Nothing less.</span></h2>
+      <div class="body reveal">
+        <p>The controls you'd expect from a native player, made carefully — and nothing you don't need cluttering the way.</p>
+      </div>
+      <div class="ctrl-list reveal">
+        <div class="ctrl-item"><span class="ctrl-dot"></span>Play &amp; pause</div>
+        <div class="ctrl-item"><span class="ctrl-dot"></span>Skip forward &amp; back</div>
+        <div class="ctrl-item"><span class="ctrl-dot"></span>Seek within a track</div>
+        <div class="ctrl-item"><span class="ctrl-dot"></span>Volume control</div>
+      </div>
+    </section>
+
+    <!-- 06 / AUDIO -->
+    <section id="audio" class="prose-section">
+      <p class="label reveal">06 / Audio</p>
+      <h2 class="display reveal">Listen<br><span class="serif-italic accent">your way.</span></h2>
+      <div class="body reveal">
+        <p>Amber is being built with real attention to how it sounds, not just how it looks — with room to shape playback in detail as the app matures, for the people who care about the difference.</p>
+      </div>
+    </section>
+
+    <!-- 07 / PHILOSOPHY -->
+    <section id="philosophy" class="prose-section">
+      <p class="label reveal">07 / Philosophy</p>
+      <h2 class="display reveal">A player that<br><span class="serif-italic accent">stays out of the way.</span></h2>
+      <div class="body reveal">
+        <p>Amber isn't trying to be the star. The music is.</p>
+        <p>Every part of it — the interface, the animation, the sound — is built to disappear behind whatever you're listening to.</p>
+      </div>
+    </section>
+
+    <!-- 08 / STATUS -->
+    <section id="status" class="prose-section">
+      <p class="label reveal">08 / Status</p>
+      <h2 class="display reveal">Currently in<br><span class="serif-italic accent">development.</span></h2>
+      <div class="status-row reveal">
+        <span class="status-dot"></span>
+        <span>In Development</span>
+      </div>
+      <div class="status-facts reveal">
+        <div>Built by Dawnstone</div>
+        <div>For macOS</div>
+        <div>Planned to be free</div>
+      </div>
+    </section>
+
+    <!-- 09 / CONTACT -->
+    <section id="contact" class="prose-section contact">
+      <p class="label reveal">09 / Contact</p>
+      <p class="lead reveal">Curious about Amber?</p>
+      <h2 class="display reveal">Let&rsquo;s stay<br><span class="serif-italic accent">in touch.</span></h2>
+      <div class="links">
+        <a class="mail reveal" href="mailto:dawnstone@outlook.jp">
+          <span>dawnstone@outlook.jp</span>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="home reveal" href="index.html">
+          <span>Back to Dawnstone</span>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <footer class="footer">
+
+  <div class="footer-inner">
+
+    <!-- Top -->
+    <div class="footer-top">
+
+      <a
+        href="#top"
+        class="footer-brand display"
+      >
+        AMBER
+      </a>
+
+      <p class="footer-statement serif-italic">
+        Music, quietly played.
+      </p>
+
+      <a
+        href="#top"
+        class="footer-back"
+        aria-label="Back to top"
+      >
+        <span>Back to top</span>
+        <span class="footer-back-arrow">↑</span>
+      </a>
+
+    </div>
+
+
+    <!-- Main -->
+    <div class="footer-main">
+
+      <div class="footer-note">
+
+        <p>
+          Amber by Dawnstone
+        </p>
+
+        <p>
+          A native music player for macOS.
+        </p>
+
+      </div>
+
+
+      <nav
+        class="footer-links"
+        aria-label="Footer"
+      >
+
+        <a href="#idea">
+          About
+        </a>
+
+        <a href="#library">
+          Library
+        </a>
+
+        <a href="#nowplaying">
+          Player
+        </a>
+
+        <a href="#status">
+          Status
+        </a>
+
+        <a href="#contact">
+          Contact
+        </a>
+
+        <a href="index.html">
+          Dawnstone
+        </a>
+
+      </nav>
+
+    </div>
+
+
+    <!-- Bottom -->
+    <div class="footer-bottom">
+
+      <p>
+        © 2026 Dawnstone
+      </p>
+
+      <p>
+        Amber is currently in development.
+      </p>
+
+    </div>
+
+  </div>
+
+</footer>
+  </main>
+
+  <script>
+  (function(){
+
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ---------------------------------------------------------
+       Embers — warm floating particles, replacing a literal
+       starfield since Amber's own arc doesn't have to be a sky.
+       --------------------------------------------------------- */
+    (function(){
+      var count = reduce ? 40 : 90;
+      var shadows = [];
+      for (var i=0;i<count;i++){
+        var x = (Math.random()*100).toFixed(2);
+        var y = (Math.random()*100).toFixed(2);
+        var o = (Math.random()*0.45+0.08).toFixed(2);
+        var big = Math.random() > 0.92;
+        var r = big ? 1.6 : 0.8;
+        var warm = Math.random() > 0.5;
+        var color = warm ? "255,203,122" : "239,231,220";
+        shadows.push(x+"vw "+y+"vh 0 "+r+"px rgba("+color+","+o+")");
+      }
+      document.getElementById("embers").style.boxShadow = shadows.join(", ");
+    })();
+
+    /* Reveal animations */
+    (function(){
+      if (reduce){
+        document.querySelectorAll(".reveal").forEach(function(el){ el.classList.add("in"); });
+        return;
+      }
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if (entry.isIntersecting){
+            entry.target.classList.add("in");
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold:0.12, rootMargin:"0px 0px -10% 0px" });
+      document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+    })();
+
+    /* Mobile menu */
+    (function(){
+      var menu = document.getElementById("mobileMenu");
+      var open = document.getElementById("burger");
+      var close = document.getElementById("closeMenu");
+      var scrim = document.getElementById("scrim");
+      function show(v){
+        menu.classList.toggle("open", v);
+        open.setAttribute("aria-expanded", v ? "true":"false");
+        document.body.style.overflow = v ? "hidden" : "";
+      }
+      open.addEventListener("click", function(){ show(true); });
+      close.addEventListener("click", function(){ show(false); });
+      scrim.addEventListener("click", function(){ show(false); });
+      menu.querySelectorAll(".m-link").forEach(function(a){
+        a.addEventListener("click", function(){ show(false); });
+      });
+    })();
+
+    /* =========================================================
+       Scroll-driven color interpolation.
+       One warm arc: quiet dark   glow   quiet dark.
+       Text tint shifts gently toward gold at the peak, and
+       back to a cooler cream at the edges — always legible
+       against a background that never leaves the amber family.
+       ========================================================= */
+    var root = document.documentElement.style;
+
+    var backgroundStops = [
+      { p:0.00, top:[10,7,6],    bottom:[16,11,8],   horizon:[245,164,91,0.04], text:[239,231,220] },
+      { p:0.16, top:[18,11,7],   bottom:[30,18,10],  horizon:[245,164,91,0.10], text:[240,230,215] },
+      { p:0.32, top:[34,19,10],  bottom:[56,29,13],  horizon:[245,164,91,0.20], text:[245,229,205] },
+      { p:0.46, top:[58,30,13],  bottom:[92,46,17],  horizon:[250,180,100,0.32],text:[250,229,195] },
+      { p:0.56, top:[74,38,15],  bottom:[118,62,22], horizon:[255,203,122,0.40],text:[255,230,190] },
+      { p:0.68, top:[52,28,13],  bottom:[86,44,17],  horizon:[250,180,100,0.26],text:[248,228,202] },
+      { p:0.84, top:[24,15,9],   bottom:[38,22,12],  horizon:[245,164,91,0.10], text:[242,232,220] },
+      { p:1.00, top:[9,7,6],     bottom:[14,10,8],   horizon:[245,164,91,0.03], text:[238,230,220] }
+    ];
+
+    var glowStops = [
+      { p:0,    y:44, opacity:0.16, scale:0.76 },
+      { p:0.22, y:34, opacity:0.30, scale:0.84 },
+      { p:0.42, y:20, opacity:0.50, scale:0.96 },
+      { p:0.56, y:8,  opacity:0.62, scale:1.05 },
+      { p:0.70, y:20, opacity:0.42, scale:0.98 },
+      { p:0.85, y:34, opacity:0.22, scale:0.88 },
+      { p:1,    y:44, opacity:0.14, scale:0.78 }
+    ];
+
+    function lerp(a,b,t){ return a+(b-a)*t; }
+    function interpColor(a,b,t){ return [lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)]; }
+    function interpRGBA(a,b,t){ return [lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t),lerp(a[3],b[3],t)]; }
+    function rgb(c){ return "rgb("+Math.round(c[0])+","+Math.round(c[1])+","+Math.round(c[2])+")"; }
+    function rgba(c){ return "rgba("+Math.round(c[0])+","+Math.round(c[1])+","+Math.round(c[2])+","+c[3].toFixed(3)+")"; }
+
+    function sampleNumeric(stops,p,key){
+      if (p<=stops[0].p) return stops[0][key];
+      if (p>=stops[stops.length-1].p) return stops[stops.length-1][key];
+      for (var i=0;i<stops.length-1;i++){
+        var a=stops[i], b=stops[i+1];
+        if (p>=a.p && p<=b.p){ var t=(p-a.p)/(b.p-a.p); return lerp(a[key],b[key],t); }
+      }
+    }
+    function sampleColor(stops,p,key){
+      if (p<=stops[0].p) return stops[0][key];
+      if (p>=stops[stops.length-1].p) return stops[stops.length-1][key];
+      for (var i=0;i<stops.length-1;i++){
+        var a=stops[i], b=stops[i+1];
+        if (p>=a.p && p<=b.p){ var t=(p-a.p)/(b.p-a.p); return interpColor(a[key],b[key],t); }
+      }
+    }
+    function sampleRGBA(stops,p,key){
+      if (p<=stops[0].p) return stops[0][key];
+      if (p>=stops[stops.length-1].p) return stops[stops.length-1][key];
+      for (var i=0;i<stops.length-1;i++){
+        var a=stops[i], b=stops[i+1];
+        if (p>=a.p && p<=b.p){ var t=(p-a.p)/(b.p-a.p); return interpRGBA(a[key],b[key],t); }
+      }
+    }
+
+    var ticking = false;
+
+    function update(){
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      root.setProperty("--scroll-progress", p);
+
+      var top = sampleColor(backgroundStops, p, "top");
+      var bottom = sampleColor(backgroundStops, p, "bottom");
+      var horizon = sampleRGBA(backgroundStops, p, "horizon");
+      var text = sampleColor(backgroundStops, p, "text");
+      root.setProperty("--bg-top", rgb(top));
+      root.setProperty("--bg-bottom", rgb(bottom));
+      root.setProperty("--horizon-color", rgba(horizon));
+      root.setProperty("--text-tint", rgb(text));
+      root.setProperty("--text", rgb(text));
+
+      var gy = sampleNumeric(glowStops, p, "y");
+      var go = sampleNumeric(glowStops, p, "opacity");
+      var gs = sampleNumeric(glowStops, p, "scale");
+      root.setProperty("--glow-y", gy + "vh");
+      root.setProperty("--glow-opacity", go);
+      root.setProperty("--glow-scale", gs);
+
+      var emberOpacity = 0.9 - go * 0.7;
+      var embersEl = document.getElementById("embers");
+      if (embersEl) embersEl.style.opacity = Math.max(0.25, emberOpacity);
+
+      var shadow = "0 8px 40px rgba(0,0,0," + lerp(0.5,0.35,go).toFixed(3) + ")";
+      root.setProperty("--nav-shadow", shadow);
+
+      ticking = false;
+    }
+
+    function onScroll(){
+      if (!ticking){ ticking = true; requestAnimationFrame(update); }
+    }
+
+    window.addEventListener("scroll", onScroll, { passive:true });
+    window.addEventListener("resize", onScroll);
+    update();
+
+    /* =========================================================
+       Now Playing — a player that actually responds.
+       Simulated playback (no audio files ship on a marketing
+       page), but every control here is fully interactive.
+       ========================================================= */
+    (function(){
+      var tracks = [
+        { title:"Amber Room",  artist:"Low Season",  duration:221, art:"radial-gradient(circle at 32% 28%, #FFE3B0 0%, #F5A45B 42%, #B5672D 78%, #2E1A0C 100%)" },
+        { title:"Late Hours",  artist:"Field Study",  duration:198, art:"radial-gradient(circle at 32% 28%, #FFCB7A 0%, #E08A3E 42%, #7A3D14 78%, #20110a 100%)" },
+        { title:"Quiet Hour",  artist:"North Window", duration:245, art:"radial-gradient(circle at 32% 28%, #FFD9A0 0%, #F0954C 42%, #8C4A1A 78%, #24140a 100%)" }
+      ];
+
+      var i = 0;
+      var playing = false;
+      var t = 46; /* start partway in, feels alive on load */
+      var timer = null;
+
+      var els = {
+        art: document.getElementById("playerArt"),
+        title: document.getElementById("playerTitle"),
+        artist: document.getElementById("playerArtist"),
+        fill: document.getElementById("playerFill"),
+        now: document.getElementById("timeNow"),
+        total: document.getElementById("timeTotal"),
+        progress: document.getElementById("playerProgress"),
+        play: document.getElementById("btnPlay"),
+        iconPlay: document.getElementById("iconPlay"),
+        prev: document.getElementById("btnPrev"),
+        next: document.getElementById("btnNext"),
+        eq: document.getElementById("playerEq"),
+        volTrack: document.getElementById("volumeTrack"),
+        volFill: document.getElementById("volumeFill")
+      };
+
+      function fmt(sec){
+        sec = Math.max(0, Math.floor(sec));
+        var m = Math.floor(sec/60);
+        var s = sec % 60;
+        return m + ":" + (s < 10 ? "0" : "") + s;
+      }
+
+      function render(){
+        var tr = tracks[i];
+        els.art.style.background = tr.art;
+        els.title.textContent = tr.title;
+        els.artist.textContent = tr.artist;
+        els.total.textContent = fmt(tr.duration);
+        els.now.textContent = fmt(t);
+        els.fill.style.width = Math.min(100, (t / tr.duration) * 100) + "%";
+      }
+
+      function setPlaying(v){
+        playing = v;
+        els.play.setAttribute("aria-label", playing ? "Pause" : "Play");
+        els.iconPlay.innerHTML = playing
+          ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'
+          : '<path d="M7 5v14l12-7z"/>';
+        els.eq.classList.toggle("playing", playing);
+
+        if (timer) clearInterval(timer);
+        if (playing){
+          timer = setInterval(function(){
+            t += 1;
+            if (t >= tracks[i].duration){
+              i = (i + 1) % tracks.length;
+              t = 0;
+            }
+            render();
+          }, 1000);
+        }
+      }
+
+      function goTo(index){
+        i = ((index % tracks.length) + tracks.length) % tracks.length;
+        t = 0;
+        render();
+      }
+
+      els.play.addEventListener("click", function(){ setPlaying(!playing); });
+      els.next.addEventListener("click", function(){ goTo(i + 1); });
+      els.prev.addEventListener("click", function(){
+        if (t > 4){ t = 0; render(); } else { goTo(i - 1); }
+      });
+
+      function seekFromEvent(e){
+        var rect = els.progress.getBoundingClientRect();
+        var x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+        var ratio = Math.min(1, Math.max(0, x / rect.width));
+        t = ratio * tracks[i].duration;
+        render();
+      }
+      els.progress.addEventListener("click", seekFromEvent);
+
+      var volDragging = false;
+      function setVolumeFromEvent(e){
+        var rect = els.volTrack.getBoundingClientRect();
+        var x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+        var ratio = Math.min(1, Math.max(0, x / rect.width));
+        els.volFill.style.width = (ratio * 100) + "%";
+      }
+      els.volTrack.addEventListener("mousedown", function(e){ volDragging = true; setVolumeFromEvent(e); });
+      window.addEventListener("mousemove", function(e){ if (volDragging) setVolumeFromEvent(e); });
+      window.addEventListener("mouseup", function(){ volDragging = false; });
+      els.volTrack.addEventListener("touchstart", function(e){ setVolumeFromEvent(e); }, { passive:true });
+      els.volTrack.addEventListener("touchmove", function(e){ setVolumeFromEvent(e); }, { passive:true });
+
+      render();
+      setPlaying(true);
+    })();
+
+  })();
+  </script>
+
+</body>
+</html>
