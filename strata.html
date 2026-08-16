@@ -2162,6 +2162,94 @@ section{
 
 }
 
+/* =========================================================
+   Editor Intro Heading
+   ========================================================= */
+
+.editor-section .intro{
+  width:100%;
+  max-width:52rem;
+}
+
+.editor-section .intro h2{
+  display:block;
+
+  margin-top:2.25rem;
+
+  width:100%;
+  max-width:52rem;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size:
+    clamp(
+      3rem,
+      7vw,
+      5rem
+    );
+
+  font-weight:600;
+
+  line-height:1.04;
+
+  letter-spacing:-.055em;
+
+  color:var(--text);
+
+  text-wrap:balance;
+}
+
+.editor-section .intro h2 .serif-italic{
+  display:inline-block;
+
+  font-family:
+    "New York",
+    "Iowan Old Style",
+    "Apple Garamond",
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:1em;
+
+  font-weight:400;
+
+  font-style:italic;
+
+  line-height:1;
+
+  letter-spacing:-.045em;
+
+  color:var(--strata-light);
+}
+
+
+/* Mobile */
+
+@media(max-width:639px){
+
+  .editor-section .intro h2{
+    font-size:
+      clamp(
+        2.5rem,
+        12vw,
+        3.5rem
+      );
+
+    line-height:1.05;
+
+    letter-spacing:-.06em;
+  }
+
+}
+
 </style>
 </head>
 
