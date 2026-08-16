@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<meta name="description" content="The page you're looking for could not be found. Dawnstone.">
+<meta name="theme-color" content="#070A0D">
+
+<title>404 — Lost Layer. | Dawnstone</title>
+
+<style>
+:root{
+  --bg-top:#070A0D;
+  --bg-bottom:#0B1015;
+
+  --text:#E8EDF2;
+  --text-secondary:rgba(232,237,242,.72);
+  --text-muted:rgba(232,237,242,.42);
+
+  --glass:rgba(255,255,255,.045);
+  --glass-border:rgba(255,255,255,.11);
+
+  --strata:#91ABC0;
+  --strata-light:#C8D8E5;
+  --mineral:#E0E9EF;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+body{
+  min-height:100svh;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Text",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+  color:var(--text);
+  background:
+    linear-gradient(
+      180deg,
+      var(--bg-top) 0%,
+      var(--bg-bottom) 100%
+    );
+  overflow-x:hidden;
+}
+
+a{
+  color:inherit;
+}
+
+::selection{
+  background:rgba(200,216,229,.85);
+  color:#071017;
+}
+
+.serif{
+  font-family:
+    "New York",
+    "Iowan Old Style",
+    "Apple Garamond",
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-style:italic;
+  font-weight:400;
+}
+
+.display{
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+  font-weight:600;
+  letter-spacing:-.05em;
+}
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+.sky{
+  position:fixed;
+  inset:0;
+  z-index:-10;
+  overflow:hidden;
+  pointer-events:none;
+  background:
+    radial-gradient(
+      90% 70% at 50% 48%,
+      rgba(145,171,192,.075) 0%,
+      transparent 65%
+    ),
+    linear-gradient(
+      180deg,
+      #070A0D 0%,
+      #0B1015 100%
+    );
+}
+
+.glow{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:62vw;
+  height:62vw;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:
+    radial-gradient(
+      circle,
+      rgba(224,233,239,.22) 0%,
+      rgba(145,171,192,.10) 32%,
+      rgba(145,171,192,0) 68%
+    );
+  filter:blur(28px);
+  opacity:.8;
+}
+
+.horizon{
+  position:absolute;
+  left:0;
+  right:0;
+  top:50%;
+  height:1px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(200,216,229,.08),
+      transparent
+    );
+  opacity:.7;
+}
+
+/* =========================================================
+   MINERALS
+   ========================================================= */
+
+.minerals{
+  position:absolute;
+  inset:0;
+  opacity:.65;
+}
+
+.minerals::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:
+    radial-gradient(circle,rgba(224,233,239,.32) 0 1px,transparent 1.5px),
+    radial-gradient(circle,rgba(145,171,192,.24) 0 1px,transparent 1.5px),
+    radial-gradient(circle,rgba(232,237,242,.18) 0 1px,transparent 1.5px);
+  background-size:
+    97px 121px,
+    151px 173px,
+    211px 193px;
+  background-position:
+    12px 20px,
+    73px 41px,
+    31px 92px;
+  mask-image:
+    linear-gradient(
+      180deg,
+      transparent,
+      #000 18%,
+      #000 82%,
+      transparent
+    );
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.nav-wrap{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:50;
+  display:flex;
+  justify-content:center;
+  padding:1rem;
+}
+
+.nav{
+  width:100%;
+  max-width:64rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:.75rem 1.25rem;
+  border-radius:999px;
+  background:rgba(255,255,255,.045);
+  border:.5px solid rgba(255,255,255,.11);
+  box-shadow:0 8px 40px rgba(0,0,0,.5);
+  backdrop-filter:blur(40px) saturate(150%);
+  -webkit-backdrop-filter:blur(40px) saturate(150%);
+}
+
+@media(min-width:640px){
+  .nav-wrap{
+    padding-top:1.5rem;
+  }
+
+  .nav{
+    padding:.875rem 1.75rem;
+  }
+}
+
+.brand{
+  display:flex;
+  align-items:baseline;
+  gap:.5rem;
+  text-decoration:none;
+  font-size:.875rem;
+  font-weight:600;
+  letter-spacing:.22em;
+}
+
+.brand .of{
+  font-size:9px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  opacity:.4;
+  font-weight:400;
+}
+
+@media(min-width:640px){
+  .brand{
+    font-size:1rem;
+  }
+}
+
+.nav-links{
+  display:flex;
+  align-items:center;
+  gap:2rem;
+}
+
+.nav-links a{
+  text-decoration:none;
+  font-size:13px;
+  letter-spacing:.04em;
+  opacity:.78;
+  transition:opacity .3s,color .3s;
+}
+
+.nav-links a:hover{
+  opacity:1;
+  color:var(--strata-light);
+}
+
+@media(max-width:639px){
+  .nav-links{
+    display:none;
+  }
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+main{
+  min-height:100svh;
+  position:relative;
+  z-index:10;
+}
+
+.error{
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:
+    8rem 1.5rem
+    7rem;
+}
+
+.error-label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.34em;
+  color:rgba(232,237,242,.42);
+}
+
+.error-code{
+  margin-top:1.5rem;
+  font-size:clamp(7rem,24vw,17rem);
+  line-height:.82;
+  letter-spacing:-.09em;
+  font-weight:600;
+  color:rgba(232,237,242,.94);
+  text-shadow:
+    0 20px 80px rgba(0,0,0,.35);
+}
+
+.error-title{
+  margin-top:2rem;
+  font-size:clamp(2rem,5vw,3.75rem);
+  line-height:1.05;
+  color:var(--text);
+}
+
+.error-title .accent{
+  color:var(--strata-light);
+}
+
+.error-body{
+  max-width:32rem;
+  margin-top:1.5rem;
+  font-size:1.05rem;
+  line-height:1.7;
+  color:var(--text-secondary);
+}
+
+.error-body strong{
+  color:rgba(232,237,242,.88);
+  font-weight:500;
+}
+
+.actions{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:.75rem;
+  margin-top:2.5rem;
+}
+
+.button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:2.9rem;
+  padding:0 1.25rem;
+  border-radius:999px;
+  text-decoration:none;
+  font-size:.85rem;
+  letter-spacing:.01em;
+  transition:
+    transform .35s cubic-bezier(.23,1,.32,1),
+    background .3s,
+    border-color .3s,
+    color .3s;
+}
+
+.button.primary{
+  color:#081017;
+  background:var(--strata-light);
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:
+    0 10px 35px rgba(0,0,0,.25),
+    0 0 30px rgba(200,216,229,.08);
+}
+
+.button.secondary{
+  color:rgba(232,237,242,.82);
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.11);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+
+.button:hover{
+  transform:translateY(-2px);
+}
+
+.button.primary:hover{
+  background:#E0E9EF;
+}
+
+.button.secondary:hover{
+  background:rgba(255,255,255,.075);
+  border-color:rgba(255,255,255,.18);
+  color:var(--text);
+}
+
+.path{
+  margin-top:2.25rem;
+  font-family:
+    "SFMono-Regular",
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+  font-size:.72rem;
+  color:rgba(232,237,242,.25);
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer{
+  position:relative;
+  padding:
+    0 1.5rem
+    2rem;
+  color:rgba(232,237,242,.9);
+}
+
+.footer-inner{
+  width:100%;
+  max-width:90rem;
+  margin:0 auto;
+}
+
+.footer-top{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:2rem;
+  padding:
+    2rem 0
+    3rem;
+  border-top:1px solid rgba(255,255,255,.10);
+  align-items:center;
+}
+
+@media(min-width:768px){
+  .footer{
+    padding-left:3rem;
+    padding-right:3rem;
+  }
+
+  .footer-top{
+    grid-template-columns:1fr auto 1fr;
+    padding:
+      2.5rem 0
+      3.5rem;
+  }
+}
+
+@media(min-width:1024px){
+  .footer{
+    padding-left:7rem;
+    padding-right:7rem;
+  }
+}
+
+.footer-brand{
+  display:inline-block;
+  width:fit-content;
+  text-decoration:none;
+  font-size:.875rem;
+  font-weight:600;
+  letter-spacing:.24em;
+  color:rgba(232,237,242,.92);
+  transition:color .3s;
+}
+
+.footer-brand:hover{
+  color:var(--strata-light);
+}
+
+.footer-statement{
+  font-size:1.25rem;
+  line-height:1.2;
+  color:rgba(232,237,242,.46);
+  text-align:left;
+}
+
+@media(min-width:768px){
+  .footer-statement{
+    text-align:center;
+    font-size:1.375rem;
+  }
+}
+
+.footer-back{
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:.65rem;
+  width:fit-content;
+  text-decoration:none;
+  font-size:.6875rem;
+  text-transform:uppercase;
+  letter-spacing:.22em;
+  color:rgba(232,237,242,.48);
+  transition:color .3s;
+}
+
+@media(min-width:768px){
+  .footer-back{
+    justify-self:end;
+  }
+}
+
+.footer-back:hover{
+  color:var(--strata-light);
+}
+
+.footer-back-arrow{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:1.75rem;
+  height:1.75rem;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:50%;
+  transition:
+    transform .35s cubic-bezier(.23,1,.32,1),
+    background .3s,
+    border-color .3s;
+}
+
+.footer-back:hover .footer-back-arrow{
+  transform:translateY(-3px);
+  background:rgba(145,171,192,.10);
+  border-color:rgba(145,171,192,.35);
+}
+
+.footer-main{
+  display:flex;
+  flex-direction:column;
+  gap:3rem;
+  padding:
+    3rem 0
+    3.5rem;
+}
+
+@media(min-width:768px){
+  .footer-main{
+    flex-direction:row;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:
+      3.5rem 0
+      4rem;
+  }
+}
+
+.footer-note{
+  display:flex;
+  flex-direction:column;
+  gap:.4rem;
+}
+
+.footer-note p{
+  margin:0;
+  font-size:.8125rem;
+  line-height:1.5;
+  color:rgba(232,237,242,.40);
+}
+
+.footer-note p:first-child{
+  color:rgba(232,237,242,.68);
+  font-weight:500;
+}
+
+.footer-links{
+  display:grid;
+  grid-template-columns:
+    repeat(2,minmax(90px,1fr));
+  column-gap:3rem;
+  row-gap:1rem;
+}
+
+@media(min-width:640px){
+  .footer-links{
+    display:flex;
+    gap:2rem;
+  }
+}
+
+.footer-links a{
+  width:fit-content;
+  font-size:.75rem;
+  text-decoration:none;
+  color:rgba(232,237,242,.58);
+  transition:color .3s;
+}
+
+.footer-links a:hover{
+  color:var(--strata-light);
+}
+
+.footer-bottom{
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+  padding-top:1.5rem;
+  border-top:1px solid rgba(255,255,255,.08);
+  font-size:.6875rem;
+  color:rgba(232,237,242,.32);
+}
+
+@media(min-width:640px){
+  .footer-bottom{
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+  }
+}
+
+/* =========================================================
+   REVEAL
+   ========================================================= */
+
+.reveal{
+  opacity:0;
+  transform:translateY(20px);
+  filter:blur(10px);
+  transition:
+    opacity 1s cubic-bezier(.23,1,.32,1),
+    transform 1s cubic-bezier(.23,1,.32,1),
+    filter 1s cubic-bezier(.23,1,.32,1);
+}
+
+.reveal.in{
+  opacity:1;
+  transform:none;
+  filter:blur(0);
+}
+
+.delay-1{
+  transition-delay:.08s;
+}
+
+.delay-2{
+  transition-delay:.16s;
+}
+
+.delay-3{
+  transition-delay:.24s;
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{
+    scroll-behavior:auto;
+  }
+
+  .reveal{
+    opacity:1;
+    transform:none;
+    filter:none;
+    transition:none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="sky" aria-hidden="true">
+  <div class="glow"></div>
+  <div class="horizon"></div>
+  <div class="minerals"></div>
+</div>
+
+<header class="nav-wrap">
+  <nav class="nav" aria-label="Primary navigation">
+
+    <a href="index.html" class="brand display">
+      DAWNSTONE
+      <span class="of">Development</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#projects">Projects</a>
+      <a href="mailto:dawnstone@outlook.jp">Contact</a>
+    </div>
+
+  </nav>
+</header>
+
+<main>
+
+  <section class="error">
+
+    <p class="error-label reveal">
+      404 / Lost Layer
+    </p>
+
+    <div class="error-code display reveal delay-1">
+      404
+    </div>
+
+    <h1 class="error-title display reveal delay-2">
+      This layer seems to be
+      <br>
+      <span class="serif accent">missing.</span>
+    </h1>
+
+    <div class="error-body reveal delay-3">
+      <p>
+        We looked everywhere.
+        Under the rocks, between the layers,
+        even behind the unusually suspicious button.
+      </p>
+
+      <p style="margin-top:.8rem;">
+        Unfortunately, this page has apparently
+        <strong>gone somewhere else.</strong>
+      </p>
+    </div>
+
+    <div class="actions reveal delay-3">
+
+      <a
+        href="index.html"
+        class="button primary"
+      >
+        Return to Dawnstone
+      </a>
+
+      <a
+        href="javascript:history.back()"
+        class="button secondary"
+      >
+        Go back
+      </a>
+
+    </div>
+
+    <div class="path reveal delay-3">
+      /somewhere/between/the/layers
+    </div>
+
+  </section>
+
+</main>
+
+<footer class="footer">
+
+  <div class="footer-inner">
+
+    <div class="footer-top">
+
+      <a
+        href="index.html"
+        class="footer-brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <p class="footer-statement serif">
+        Building things worth opening.
+      </p>
+
+      <a
+        href="#"
+        class="footer-back"
+        onclick="window.scrollTo({top:0,behavior:'smooth'});return false;"
+      >
+        <span>Back to top</span>
+
+        <span class="footer-back-arrow">
+          ↑
+        </span>
+      </a>
+
+    </div>
+
+    <div class="footer-main">
+
+      <div class="footer-note">
+
+        <p>
+          Dawnstone
+        </p>
+
+        <p>
+          Independent software for Mac.
+        </p>
+
+      </div>
+
+      <nav
+        class="footer-links"
+        aria-label="Footer"
+      >
+
+        <a href="index.html">
+          Home
+        </a>
+
+        <a href="index.html#projects">
+          Projects
+        </a>
+
+        <a href="index.html#about">
+          About
+        </a>
+
+        <a href="index.html#contact">
+          Contact
+        </a>
+
+      </nav>
+
+    </div>
+
+    <div class="footer-bottom">
+
+      <p>
+        © 2026 Dawnstone
+      </p>
+
+      <p>
+        Even the best maps have blank spaces.
+      </p>
+
+    </div>
+
+  </div>
+
+</footer>
+
+<script>
+(function(){
+
+  const reduce =
+    window.matchMedia &&
+    window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+  const elements =
+    document.querySelectorAll(".reveal");
+
+  if(reduce){
+    elements.forEach(function(el){
+      el.classList.add("in");
+    });
+    return;
+  }
+
+  const observer =
+    new IntersectionObserver(
+      function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            entry.target.classList.add("in");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold:.08
+      }
+    );
+
+  elements.forEach(function(el){
+    observer.observe(el);
+  });
+
+})();
+</script>
+
+</body>
+</html>
