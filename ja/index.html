@@ -1,0 +1,2921 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta
+    name="description"
+    content="Dawnstoneは、macOSのための小さく、思慮深く、ネイティブなソフトウェアをつくる独立系ソフトウェアスタジオです。ソフトウェアを、静かに、丁寧に。"
+  />
+
+  <meta name="theme-color" content="#030811" />
+
+  <meta property="og:title" content="Dawnstone — Software, quietly crafted." />
+  <meta
+    property="og:description"
+    content="大切な瞬間のための、小さく思慮深いソフトウェア。Dawnstoneがつくる独立系macOSソフトウェア。"
+  />
+  <meta property="og:type" content="website" />
+
+  <title>Dawnstone — Software, quietly crafted.</title>
+
+  <style>
+    :root {
+      --bg-top: #030811;
+      --bg-bottom: #071526;
+
+      --horizon-color: rgba(245, 143, 75, 0.10);
+
+      --sun-y: 46vh;
+      --sun-opacity: 0.25;
+      --sun-scale: 0.7;
+
+      --nav-color: #F5F7FB;
+      --nav-bg: rgba(255,255,255,0.05);
+      --nav-border: rgba(255,255,255,0.12);
+      --nav-shadow: 0 8px 40px rgba(0,0,0,0.45);
+
+      --main-text: #F5F7FB;
+      --secondary-text: rgba(245,247,251,0.82);
+      --muted-text: rgba(245,247,251,0.55);
+
+      --gold: #FFDEA3;
+      --orange: #F58F4B;
+
+      --ink: #18304A;
+      --warm-ink: #C26A2E;
+
+      --scroll-progress: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Text",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      background:
+        linear-gradient(
+          180deg,
+          var(--bg-top) 0%,
+          var(--bg-bottom) 100%
+        );
+
+      color: var(--main-text);
+
+      overflow-x: hidden;
+      line-height: 1.6;
+
+      transition:
+        color 0.15s linear;
+    }
+
+    ::selection {
+      background: rgba(255,222,163,0.85);
+      color: #030811;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    .serif-italic {
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        "Apple Garamond",
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .display {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+
+    .sky {
+      position: fixed;
+      inset: 0;
+      z-index: -10;
+
+      overflow: hidden;
+      pointer-events: none;
+
+      background:
+        radial-gradient(
+          125% 75% at 50% 88%,
+          var(--horizon-color) 0%,
+          transparent 58%
+        ),
+        linear-gradient(
+          180deg,
+          var(--bg-top) 0%,
+          var(--bg-bottom) 100%
+        );
+
+      transition:
+        background 0.1s linear;
+    }
+
+    .sun {
+      position: absolute;
+
+      left: 50%;
+      top: 0;
+
+      width: 55vw;
+      height: 55vw;
+
+      transform:
+        translate(-50%, var(--sun-y))
+        scale(var(--sun-scale));
+
+      opacity: var(--sun-opacity);
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle at 50% 50%,
+          rgba(255,222,163,0.95) 0%,
+          rgba(245,143,75,0.55) 30%,
+          rgba(245,143,75,0) 68%
+        );
+
+      filter: blur(10px);
+
+      pointer-events: none;
+    }
+
+    .stars {
+      position: absolute;
+      left: 0;
+      top: 0;
+
+      width: 1px;
+      height: 1px;
+
+      opacity: 0.95;
+
+      pointer-events: none;
+    }
+
+    .nav-wrap {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      right: 0;
+
+      z-index: 50;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .nav-wrap {
+        padding-top: 1.5rem;
+      }
+    }
+
+    .nav {
+      width: 100%;
+      max-width: 64rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 1rem;
+
+      padding:
+        0.75rem
+        1.25rem;
+
+      border-radius: 9999px;
+
+      background: var(--nav-bg);
+
+      border:
+        0.5px solid
+        var(--nav-border);
+
+      box-shadow:
+        var(--nav-shadow);
+
+      backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      -webkit-backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      color: var(--nav-color);
+
+      transition:
+        background 0.15s linear,
+        border-color 0.15s linear,
+        box-shadow 0.15s linear,
+        color 0.15s linear;
+    }
+
+    @media (min-width: 640px) {
+      .nav {
+        padding:
+          0.875rem
+          1.75rem;
+      }
+    }
+
+    .brand {
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+
+      color: inherit;
+    }
+
+    @media (min-width: 640px) {
+      .brand {
+        font-size: 1rem;
+      }
+    }
+
+    .nav-links {
+      display: none;
+
+      align-items: center;
+      gap: 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .nav-links {
+        display: flex;
+      }
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      letter-spacing: 0.04em;
+
+      text-decoration: none;
+
+      color: inherit;
+
+      transition: opacity 0.3s;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.6;
+    }
+
+    .language-switch {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-left: 0.25rem;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .language-switch a {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-decoration: none;
+      color: rgba(245,247,251,0.42);
+      transition:
+        color 0.3s ease,
+        opacity 0.3s ease;
+    }
+
+    .language-switch a:hover {
+      color: rgba(245,247,251,0.9);
+    }
+
+    .language-switch a.active {
+      color: rgba(245,247,251,0.9);
+    }
+
+    .language-switch span {
+      font-size: 10px;
+      color: rgba(245,247,251,0.2);
+    }
+
+    @media (max-width: 639px) {
+      .language-switch {
+        display: none;
+      }
+    }
+
+    .burger {
+      display: flex;
+
+      flex-direction: column;
+      justify-content: center;
+
+      gap: 5px;
+
+      width: 2rem;
+      height: 2rem;
+
+      background: none;
+      border: none;
+
+      cursor: pointer;
+
+      color: inherit;
+    }
+
+    @media (min-width: 640px) {
+      .burger {
+        display: none;
+      }
+    }
+
+    .burger span {
+      display: block;
+
+      height: 1.5px;
+      width: 1.25rem;
+
+      background: currentColor;
+    }
+
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+
+      z-index: 60;
+
+      display: none;
+
+      flex-direction: column;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu .scrim {
+      position: absolute;
+      inset: 0;
+
+      background:
+        rgba(0,0,0,0.4);
+
+      backdrop-filter:
+        blur(24px);
+
+      -webkit-backdrop-filter:
+        blur(24px);
+    }
+
+    .mobile-menu .panel {
+      position: relative;
+
+      margin: 1rem;
+
+      flex: 1;
+
+      display: flex;
+      flex-direction: column;
+
+      border-radius: 2rem;
+
+      border:
+        1px solid
+        rgba(255,255,255,0.15);
+
+      background:
+        rgba(255,255,255,0.08);
+
+      padding: 2rem;
+
+      backdrop-filter:
+        blur(32px);
+
+      -webkit-backdrop-filter:
+        blur(32px);
+    }
+
+    .mobile-menu .close-row {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .mobile-menu .close {
+      width: 2.25rem;
+      height: 2.25rem;
+
+      background: none;
+      border: none;
+
+      cursor: pointer;
+
+      color: #F5F7FB;
+
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .mobile-menu nav {
+      flex: 1;
+
+      display: flex;
+      flex-direction: column;
+
+      justify-content: center;
+
+      gap: 1.5rem;
+    }
+
+    .mobile-menu nav a {
+      font-size: 1.875rem;
+
+      letter-spacing: -0.02em;
+
+      text-decoration: none;
+
+      color: #F5F7FB;
+    }
+
+    .mobile-language-switch {
+      display: flex;
+      margin-top: auto;
+      margin-left: 0;
+      padding-left: 0;
+      border-left: 0;
+      padding-top: 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .mobile-language-switch {
+        display: none;
+      }
+    }
+
+    main {
+      position: relative;
+      z-index: 10;
+    }
+
+    section {
+      position: relative;
+
+      width: 100%;
+
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      section {
+        padding-left: 3rem;
+        padding-right: 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      section {
+        padding-left: 5rem;
+        padding-right: 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      section {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .label {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.34em;
+
+      color:
+        rgba(245,247,251,0.45);
+
+      transition:
+        color 0.15s linear;
+    }
+
+    .hero {
+      min-height: 100svh;
+
+      display: flex;
+      flex-direction: column;
+
+      justify-content: center;
+
+      padding-top: 8rem;
+      padding-bottom: 6rem;
+    }
+
+    .hero h1 {
+      font-size:
+        clamp(
+          2.5rem,
+          15.5vw,
+          9.5rem
+        );
+
+      line-height: 1;
+
+      white-space: nowrap;
+
+      color: #F5F7FB;
+    }
+
+    .hero p {
+      margin-top: 1.5rem;
+
+      font-size:
+        clamp(
+          1.5rem,
+          4vw,
+          2.25rem
+        );
+
+      line-height: 1.2;
+
+      color:
+        rgba(245,247,251,0.82);
+    }
+
+    .hero p .qc {
+      color: var(--gold);
+    }
+
+    .scroll-hint {
+      position: absolute;
+
+      left: 0;
+      right: 0;
+
+      bottom: 2rem;
+
+      display: flex;
+      flex-direction: column;
+
+      align-items: center;
+
+      gap: 0.75rem;
+
+      color:
+        rgba(245,247,251,0.5);
+    }
+
+    .scroll-hint .txt {
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.34em;
+    }
+
+    .scroll-hint .arrow {
+      font-size: 1.125rem;
+
+      color:
+        rgba(245,247,251,0.6);
+
+      animation:
+        float 2.6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%,
+      100% {
+        transform: translateY(0);
+        opacity: 0.5;
+      }
+
+      50% {
+        transform: translateY(7px);
+        opacity: 0.9;
+      }
+    }
+
+    .intro {
+      padding-top: 10rem;
+      padding-bottom: 14rem;
+    }
+
+    @media (min-width: 768px) {
+      .intro {
+        padding-top: 14rem;
+        padding-bottom: 22rem;
+      }
+    }
+
+    .intro h2 {
+      margin-top: 2.5rem;
+
+      max-width: 48rem;
+
+      font-size:
+        clamp(
+          1.875rem,
+          5.5vw,
+          4.5rem
+        );
+
+      line-height: 1.18;
+
+      color: #F5F7FB;
+    }
+
+    .intro h2 .accent {
+      color: var(--gold);
+    }
+
+    .projects {
+      padding-top: 6rem;
+      padding-bottom: 8rem;
+    }
+
+    @media (min-width: 768px) {
+      .projects {
+        padding-top: 8rem;
+        padding-bottom: 12rem;
+      }
+    }
+
+    .projects h2 {
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          2.25rem,
+          7vw,
+          6rem
+        );
+
+      line-height: 1.05;
+
+      color: #F5F7FB;
+    }
+
+    .projects h2 .accent {
+      color: var(--gold);
+    }
+
+    .projects .sub {
+      margin-top: 1.5rem;
+
+      font-size: 1.25rem;
+
+      color:
+        rgba(245,247,251,0.6);
+    }
+
+    @media (min-width: 640px) {
+      .projects .sub {
+        font-size: 1.5rem;
+      }
+    }
+
+    .cards {
+      margin-top: 4rem;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 2.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .cards {
+        margin-top: 6rem;
+        gap: 4rem;
+      }
+    }
+
+    .card {
+      position: relative;
+
+      overflow: hidden;
+
+      border-radius: 2rem;
+
+      background:
+        rgba(255,255,255,0.04);
+
+      backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      -webkit-backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      border:
+        0.5px solid
+        rgba(255,255,255,0.12);
+
+      box-shadow:
+        0 20px 80px
+        rgba(0,0,0,0.45);
+
+      transition:
+        transform 0.5s cubic-bezier(.23,1,.32,1),
+        background 0.5s,
+        border-color 0.5s,
+        box-shadow 0.5s;
+    }
+
+    @media (min-width: 640px) {
+      .card {
+        border-radius: 2.5rem;
+      }
+    }
+
+    .card .glow {
+      position: absolute;
+
+      width: 55%;
+      height: 70%;
+
+      border-radius: 50%;
+
+      filter: blur(24px);
+
+      opacity: 0.7;
+
+      pointer-events: none;
+
+      transition:
+        opacity 0.7s;
+    }
+
+    .card:hover .glow {
+      opacity: 1;
+    }
+
+    .card.reverse .glow {
+      left: -8%;
+      bottom: -12%;
+    }
+
+    .card:not(.reverse) .glow {
+      right: -8%;
+      top: -14%;
+    }
+
+    .card .letter {
+      position: absolute;
+
+      font-size:
+        clamp(
+          14rem,
+          32vw,
+          26rem
+        );
+
+      line-height: 1;
+
+      color:
+        rgba(255,255,255,0.06);
+
+      user-select: none;
+
+      pointer-events: none;
+    }
+
+    .card.reverse .letter {
+      right: -2%;
+      bottom: -18%;
+    }
+
+    .card:not(.reverse) .letter {
+      left: -3%;
+      top: -16%;
+    }
+
+    .card .inner {
+      position: relative;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 2rem;
+
+      padding: 2rem;
+
+      align-items: flex-start;
+
+      text-align: left;
+    }
+
+    @media (min-width: 640px) {
+      .card .inner {
+        padding: 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .card .inner {
+        padding: 4rem;
+      }
+    }
+
+    .card.reverse .inner {
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    .card .meta {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.34em;
+
+      color:
+        rgba(245,247,251,0.5);
+    }
+
+    .card h3 {
+      font-size:
+        clamp(
+          3.75rem,
+          9vw,
+          8rem
+        );
+
+      line-height: 1;
+
+      letter-spacing: -0.04em;
+
+      color: #F5F7FB;
+    }
+
+    .card .desc {
+      margin-top: 1.5rem;
+
+      max-width: 28rem;
+
+      font-size: 1.25rem;
+
+      line-height: 1.3;
+
+      color:
+        rgba(245,247,251,0.8);
+    }
+
+    @media (min-width: 640px) {
+      .card .desc {
+        font-size: 1.5rem;
+      }
+    }
+
+    .card.reverse .desc {
+      margin-left: auto;
+    }
+
+    .card .status {
+      display: flex;
+
+      align-items: center;
+
+      gap: 0.75rem;
+    }
+
+    .card .dot {
+      width: 6px;
+      height: 6px;
+
+      border-radius: 50%;
+    }
+
+    .card .status span:last-child {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.28em;
+    }
+
+    .project-card-link {
+      display: block;
+
+      color: inherit;
+      text-decoration: none;
+
+      border-radius: 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .project-card-link {
+        border-radius: 2.5rem;
+      }
+    }
+
+    .project-card-link .card {
+      cursor: pointer;
+    }
+
+    .project-card-link:hover .card {
+      background: rgba(255,255,255,0.07);
+
+      border-color:
+        rgba(255,255,255,0.18);
+
+      box-shadow:
+        0 28px 100px
+        rgba(0,0,0,0.5);
+    }
+
+    .project-card-link:hover .card {
+      transform: translateY(-4px);
+    }
+
+    .project-card-link:hover .glow {
+      opacity: 1;
+    }
+
+    .project-card-link:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 5px;
+      border-radius: 2rem;
+    }
+
+    .project-card-link:focus-visible .card {
+      border-color: var(--gold);
+    }
+
+    .philosophy {
+      padding-top: 8rem;
+      padding-bottom: 11rem;
+    }
+
+    @media (min-width: 768px) {
+      .philosophy {
+        padding-top: 11rem;
+        padding-bottom: 17rem;
+      }
+    }
+
+    .philosophy h2 {
+      margin-top: 2.5rem;
+
+      max-width: 48rem;
+
+      font-size:
+        clamp(
+          2.25rem,
+          6vw,
+          5rem
+        );
+
+      line-height: 1.08;
+
+      color: #F5F7FB;
+    }
+
+    .philosophy h2 .accent {
+      color: var(--gold);
+    }
+
+    .philosophy .body {
+      margin-top: 3rem;
+
+      max-width: 36rem;
+
+      font-size: 1.25rem;
+
+      color:
+        rgba(245,247,251,0.72);
+    }
+
+    @media (min-width: 640px) {
+      .philosophy .body {
+        font-size: 1.5rem;
+      }
+    }
+
+    .philosophy .body p + p {
+      margin-top: 1rem;
+    }
+
+    .about {
+      padding-top: 8rem;
+      padding-bottom: 11rem;
+    }
+
+    @media (min-width: 768px) {
+      .about {
+        padding-top: 11rem;
+        padding-bottom: 17rem;
+      }
+    }
+
+    .about .label {
+      color:
+        rgba(24,48,74,0.5);
+    }
+
+    .about h2 {
+      margin-top: 2.5rem;
+
+      font-size:
+        clamp(
+          2.25rem,
+          7vw,
+          6rem
+        );
+
+      line-height: 1.05;
+
+      color: var(--ink);
+    }
+
+    .about h2 .accent {
+      color: var(--warm-ink);
+    }
+
+    .about .body {
+      margin-top: 3rem;
+
+      max-width: 36rem;
+
+      font-size: 1.25rem;
+
+      color:
+        rgba(24,48,74,0.78);
+    }
+
+    @media (min-width: 640px) {
+      .about .body {
+        font-size: 1.5rem;
+      }
+    }
+
+    .about .body p + p {
+      margin-top: 1.25rem;
+    }
+
+    .about .punch {
+      padding-top: 0.5rem;
+
+      font-size: 1.5rem;
+
+      color: var(--ink);
+    }
+
+    @media (min-width: 640px) {
+      .about .punch {
+        font-size: 1.875rem;
+      }
+    }
+
+    .about .punch .accent {
+      color: var(--warm-ink);
+    }
+
+    .contact {
+      padding-top: 8rem;
+      padding-bottom: 12rem;
+    }
+
+    @media (min-width: 768px) {
+      .contact {
+        padding-top: 12rem;
+        padding-bottom: 18rem;
+      }
+    }
+
+    .contact .label {
+      color:
+        rgba(24,48,74,0.5);
+    }
+
+    .contact .lead {
+      margin-top: 2.5rem;
+
+      font-size: 1.125rem;
+
+      color:
+        rgba(24,48,74,0.6);
+    }
+
+    @media (min-width: 640px) {
+      .contact .lead {
+        font-size: 1.25rem;
+      }
+    }
+
+    .contact h2 {
+      margin-top: 1.25rem;
+
+      font-size:
+        clamp(
+          3rem,
+          8vw,
+          7rem
+        );
+
+      line-height: 1.02;
+
+      color: var(--ink);
+    }
+
+    .contact h2 .accent {
+      color: var(--warm-ink);
+    }
+
+    .contact .mail {
+      margin-top: 3rem;
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.75rem;
+
+      text-decoration: none;
+
+      color: var(--ink);
+
+      font-size: 1.25rem;
+
+      transition:
+        color 0.3s;
+    }
+
+    @media (min-width: 640px) {
+      .contact .mail {
+        font-size: 1.875rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .contact .mail {
+        font-size: 2.25rem;
+      }
+    }
+
+    .contact .mail span:first-child {
+      border-bottom:
+        1px solid transparent;
+
+      transition:
+        border-color 0.3s,
+        color 0.3s;
+    }
+
+    .contact .mail:hover span:first-child {
+      border-color:
+        var(--warm-ink);
+
+      color:
+        var(--warm-ink);
+    }
+
+    .contact .mail .arrow {
+      font-size: 1rem;
+
+      transition:
+        transform 0.3s;
+    }
+
+    .contact .mail:hover .arrow {
+      transform:
+        translate(4px,-4px);
+    }
+
+    .footer {
+      position: relative;
+
+      padding-top: 3rem;
+      padding-bottom: 2rem;
+
+      color: var(--ink);
+    }
+
+    .footer-inner {
+      width: 100%;
+      max-width: 90rem;
+
+      margin: 0 auto;
+
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer-inner {
+        padding-left: 3rem;
+        padding-right: 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .footer-inner {
+        padding-left: 5rem;
+        padding-right: 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .footer-inner {
+        padding-left: 7rem;
+        padding-right: 7rem;
+      }
+    }
+
+    .footer-top {
+      display: grid;
+
+      grid-template-columns:
+        1fr;
+
+      gap: 2rem;
+
+      padding-top: 2rem;
+      padding-bottom: 3rem;
+
+      border-top:
+        1px solid
+        rgba(24,48,74,0.14);
+
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .footer-top {
+        grid-template-columns:
+          1fr
+          auto
+          1fr;
+
+        padding-top: 2.5rem;
+        padding-bottom: 3.5rem;
+      }
+    }
+
+    .footer-brand {
+      display: inline-block;
+
+      width: fit-content;
+
+      font-size: 0.875rem;
+
+      font-weight: 600;
+
+      letter-spacing: 0.24em;
+
+      text-decoration: none;
+
+      color: var(--ink);
+
+      transition:
+        opacity 0.3s ease;
+    }
+
+    .footer-brand:hover {
+      opacity: 0.55;
+    }
+
+    .footer-statement {
+      font-size: 1.25rem;
+
+      line-height: 1.2;
+
+      color:
+        rgba(24,48,74,0.55);
+
+      text-align: left;
+    }
+
+    @media (min-width: 768px) {
+      .footer-statement {
+        text-align: center;
+
+        font-size: 1.375rem;
+      }
+    }
+
+    .footer-back {
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: flex-start;
+
+      gap: 0.65rem;
+
+      width: fit-content;
+
+      text-decoration: none;
+
+      font-size: 0.6875rem;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.22em;
+
+      color:
+        rgba(24,48,74,0.55);
+
+      transition:
+        color 0.3s ease;
+    }
+
+    @media (min-width: 768px) {
+      .footer-back {
+        justify-self: end;
+      }
+    }
+
+    .footer-back-arrow {
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      width: 1.75rem;
+      height: 1.75rem;
+
+      border:
+        1px solid
+        rgba(24,48,74,0.18);
+
+      border-radius: 50%;
+
+      font-size: 0.8rem;
+
+      transition:
+        transform 0.35s
+          cubic-bezier(.23,1,.32,1),
+        background 0.3s ease,
+        border-color 0.3s ease;
+    }
+
+    .footer-back:hover {
+      color: var(--warm-ink);
+    }
+
+    .footer-back:hover
+    .footer-back-arrow {
+      transform:
+        translateY(-3px);
+
+      background:
+        rgba(194,106,46,0.08);
+
+      border-color:
+        rgba(194,106,46,0.25);
+    }
+
+    .footer-main {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 3rem;
+
+      padding-top: 3rem;
+      padding-bottom: 3.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .footer-main {
+        flex-direction: row;
+
+        align-items: flex-start;
+
+        justify-content: space-between;
+
+        padding-top: 3.5rem;
+        padding-bottom: 4rem;
+      }
+    }
+
+    .footer-note {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0.4rem;
+    }
+
+    .footer-note p {
+      margin: 0;
+
+      font-size: 0.8125rem;
+
+      line-height: 1.5;
+
+      color:
+        rgba(24,48,74,0.48);
+    }
+
+    .footer-note p:first-child {
+      color:
+        rgba(24,48,74,0.72);
+
+      font-weight: 500;
+
+      letter-spacing: 0.01em;
+    }
+
+    .footer-links {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, minmax(90px, 1fr));
+
+      column-gap: 3rem;
+      row-gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer-links {
+        display: flex;
+
+        gap: 2rem;
+      }
+    }
+
+    .footer-links a {
+      position: relative;
+
+      width: fit-content;
+
+      font-size: 0.75rem;
+
+      text-decoration: none;
+
+      color:
+        rgba(24,48,74,0.62);
+
+      transition:
+        color 0.3s ease;
+    }
+
+    .footer-links a::after {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+      bottom: -0.3rem;
+
+      width: 100%;
+      height: 1px;
+
+      background:
+        var(--warm-ink);
+
+      transform:
+        scaleX(0);
+
+      transform-origin:
+        right center;
+
+      transition:
+        transform 0.35s
+        cubic-bezier(.23,1,.32,1);
+    }
+
+    .footer-links a:hover {
+      color:
+        var(--warm-ink);
+    }
+
+    .footer-links a:hover::after {
+      transform:
+        scaleX(1);
+
+      transform-origin:
+        left center;
+    }
+
+    .footer-bottom {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0.5rem;
+
+      padding-top: 1.5rem;
+
+      border-top:
+        1px solid
+        rgba(24,48,74,0.10);
+
+      font-size: 0.6875rem;
+
+      letter-spacing: 0.02em;
+
+      color:
+        rgba(24,48,74,0.42);
+    }
+
+    @media (min-width: 640px) {
+      .footer-bottom {
+        flex-direction: row;
+
+        align-items: center;
+
+        justify-content: space-between;
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+
+      transform:
+        translateY(28px);
+
+      filter:
+        blur(14px);
+
+      transition:
+        opacity 1.15s cubic-bezier(.23,1,.32,1),
+        transform 1.15s cubic-bezier(.23,1,.32,1),
+        filter 1.15s cubic-bezier(.23,1,.32,1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+
+      transform: none;
+
+      filter: blur(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        filter: none;
+
+        transition: none;
+      }
+
+      .scroll-hint .arrow {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sky" aria-hidden="true">
+    <div class="sun"></div>
+    <div class="stars" id="stars"></div>
+  </div>
+
+  <!-- NAVIGATION -->
+
+  <div class="nav-wrap">
+    <nav class="nav" aria-label="Primary">
+
+      <a
+        class="brand display"
+        href="#top"
+      >
+        DAWNSTONE
+      </a>
+
+      <!-- Keep navigation English -->
+
+      <div class="nav-links">
+        <a href="#projects">Projects</a>
+        <a href="#philosophy">Philosophy</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <!-- JA active -->
+
+      <div class="language-switch" aria-label="Language">
+        <a href="../index.html">EN</a>
+        <span>/</span>
+        <a href="index.html" class="active">JA</a>
+      </div>
+
+      <button
+        class="burger"
+        id="burger"
+        aria-label="Open menu"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+      </button>
+
+    </nav>
+  </div>
+
+  <!-- MOBILE MENU -->
+
+  <div
+    class="mobile-menu"
+    id="mobileMenu"
+  >
+
+    <div
+      class="scrim"
+      id="scrim"
+    ></div>
+
+    <div class="panel">
+
+      <div class="close-row">
+        <button
+          class="close"
+          id="closeMenu"
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
+      </div>
+
+      <nav>
+
+        <a
+          href="#projects"
+          class="m-link"
+        >
+          Projects
+        </a>
+
+        <a
+          href="#philosophy"
+          class="m-link"
+        >
+          Philosophy
+        </a>
+
+        <a
+          href="#about"
+          class="m-link"
+        >
+          About
+        </a>
+
+        <a
+          href="#contact"
+          class="m-link"
+        >
+          Contact
+        </a>
+
+      </nav>
+
+      <div class="language-switch mobile-language-switch" aria-label="Language">
+        <a href="../index.html">EN</a>
+        <span>/</span>
+        <a href="index.html" class="active">JA</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+
+  <main>
+
+    <!-- HERO -->
+
+    <section
+      id="top"
+      class="hero"
+    >
+
+      <h1 class="display reveal">
+        DAWNSTONE
+      </h1>
+
+      <p class="reveal">
+        ソフトウェアを、<br>
+        <span class="serif-italic qc">
+          静かに、丁寧に。
+        </span>
+      </p>
+
+      <div class="scroll-hint">
+        <span class="txt">
+          Scroll to explore
+        </span>
+
+        <span class="arrow">
+          ↓
+        </span>
+      </div>
+
+    </section>
+
+    <!-- INTRO -->
+
+    <section class="intro">
+
+      <p class="label reveal">
+        01 / The Morning
+      </p>
+
+      <h2 class="reveal">
+        ソフトウェアは
+        <span class="serif-italic accent">
+          静かでいい。
+        </span>
+        役に立つ。美しい。
+      </h2>
+
+    </section>
+
+    <!-- PROJECTS -->
+
+    <section
+      id="projects"
+      class="projects"
+    >
+
+      <p class="label reveal">
+        02 / Projects
+      </p>
+
+      <h2 class="display reveal">
+        私たちが<br>
+        <span class="serif-italic accent">
+          つくっているもの。
+        </span>
+      </h2>
+
+      <p class="sub reveal">
+        一つひとつ、丁寧につくる独立系ソフトウェア。
+      </p>
+
+      <div class="cards">
+
+        <!-- AMBER -->
+
+        <a href="../amber.html" class="project-card-link">
+
+          <article class="card reveal">
+
+            <div
+              class="glow"
+              style="
+                background:
+                  radial-gradient(
+                    circle at 50% 50%,
+                    rgba(255,222,163,0.9) 0%,
+                    rgba(245,143,75,0.7) 35%,
+                    rgba(245,143,75,0) 70%
+                  );
+              "
+            ></div>
+
+            <span class="letter display">
+              A
+            </span>
+
+            <div class="inner">
+
+              <p class="meta">
+                Amber &nbsp;&nbsp; macOS
+              </p>
+
+              <div>
+
+                <h3 class="display">
+                  Amber
+                </h3>
+
+                <p class="desc">
+                  macOSのためのネイティブ音楽プレイヤー。
+                </p>
+
+              </div>
+
+              <div class="status">
+
+                <span
+                  class="dot"
+                  style="background:#F58F4B"
+                ></span>
+
+                <span
+                  style="color:#F58F4B"
+                >
+                  In Development
+                </span>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        </a>
+
+        <!-- ATLAS -->
+
+        <a href="../atlas.html" class="project-card-link">
+
+          <article class="card reveal">
+
+            <div
+              class="glow"
+              style="
+                background:
+                  radial-gradient(
+                    circle at 50% 50%,
+                    rgba(255,222,163,0.9) 0%,
+                    rgba(245,143,75,0.7) 35%,
+                    rgba(245,143,75,0) 70%
+                  );
+              "
+            ></div>
+
+            <span class="letter display">
+              A
+            </span>
+
+            <div class="inner">
+
+              <p class="meta">
+                Atlas &nbsp;&nbsp; macOS
+              </p>
+
+              <div>
+
+                <h3 class="display">
+                  Atlas
+                </h3>
+
+                <p class="desc">
+                  macOSのためのネイティブなドキュメント環境。
+                </p>
+
+              </div>
+
+              <div class="status">
+
+                <span
+                  class="dot"
+                  style="background:#F58F4B"
+                ></span>
+
+                <span
+                  style="color:#F58F4B"
+                >
+                  In Development
+                </span>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        </a>
+
+      </div>
+
+    </section>
+
+    <!-- PHILOSOPHY -->
+
+    <section
+      id="philosophy"
+      class="philosophy"
+    >
+
+      <p class="label reveal">
+        03 / Philosophy
+      </p>
+
+      <h2 class="display reveal">
+        優れたソフトウェアは<br>
+        ユーザーの<br>
+        <span class="serif-italic accent">
+          注意を奪わない。
+        </span>
+      </h2>
+
+      <div class="body reveal">
+
+        <p>
+          Dawnstoneは、最初のクリックから自然に使える道具をつくります。
+        </p>
+
+        <p>
+          シンプルにできるところは、シンプルに。
+          必要なところには、確かな力を。
+          プラットフォームのために、丁寧につくる。
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- ABOUT -->
+
+    <section
+      id="about"
+      class="about"
+    >
+
+      <p class="label reveal">
+        04 / About
+      </p>
+
+      <h2 class="display reveal">
+        最初の<br>
+        <span class="serif-italic accent">
+          光から。
+        </span>
+      </h2>
+
+      <div class="body reveal">
+
+        <p>
+          Dawnstoneは、思慮深く、ネイティブなアプリケーションをつくる
+          独立系ソフトウェアスタジオです。
+        </p>
+
+        <p>
+          その名前は、夜と昼のあいだにある「夜明け」に由来しています。
+          世界がまだ静かなまま、
+          それでも新しい何かが、すでにはじまっている瞬間です。
+        </p>
+
+        <p class="punch">
+          小さなチーム。大きな
+          <span class="serif-italic accent">
+            こだわり。
+          </span>
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- CONTACT -->
+
+    <section
+      id="contact"
+      class="contact"
+    >
+
+      <p class="label reveal">
+        05 / Contact
+      </p>
+
+      <p class="lead reveal">
+        アイデアがありますか？
+      </p>
+
+      <h2 class="display reveal">
+        何かを<br>
+        <span class="serif-italic accent">
+          つくろう。
+        </span>
+      </h2>
+
+      <a
+        class="mail reveal"
+        href="mailto:dawnstone@outlook.jp"
+      >
+
+        <span>
+          dawnstone@outlook.jp
+        </span>
+
+        <span
+          class="arrow"
+          aria-hidden="true"
+        >
+          ↗
+        </span>
+
+      </a>
+
+    </section>
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+
+      <div class="footer-inner">
+
+        <!-- Top -->
+
+        <div class="footer-top">
+
+          <a
+            href="#top"
+            class="footer-brand display"
+          >
+            DAWNSTONE
+          </a>
+
+          <p class="footer-statement serif-italic">
+            ソフトウェアを、静かに、丁寧に。
+          </p>
+
+          <a
+            href="#top"
+            class="footer-back"
+            aria-label="Back to top"
+          >
+            <span>Back to top</span>
+            <span class="footer-back-arrow">↑</span>
+          </a>
+
+        </div>
+
+        <!-- Main -->
+
+        <div class="footer-main">
+
+          <div class="footer-note">
+
+            <p>
+              独立系ソフトウェアスタジオ
+            </p>
+
+            <p>
+              macOSのためのネイティブアプリケーション。
+            </p>
+
+          </div>
+
+          <nav
+            class="footer-links"
+            aria-label="Footer"
+          >
+
+            <a href="#projects">
+              Projects
+            </a>
+
+            <a href="#philosophy">
+              Philosophy
+            </a>
+
+            <a href="#about">
+              About
+            </a>
+
+            <a href="#contact">
+              Contact
+            </a>
+
+          </nav>
+
+        </div>
+
+        <!-- Bottom -->
+
+        <div class="footer-bottom">
+
+          <p>
+            © 2026 Dawnstone
+          </p>
+
+          <p>
+            丁寧につくっています。
+          </p>
+
+        </div>
+
+      </div>
+
+    </footer>
+
+  </main>
+
+  <!-- JAVASCRIPT -->
+
+  <script>
+    (function () {
+
+      var reduce =
+        window.matchMedia &&
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+      (function () {
+
+        var count = reduce ? 70 : 150;
+        var shadows = [];
+
+        for (var i = 0; i < count; i++) {
+
+          var x =
+            (Math.random() * 100).toFixed(2);
+
+          var y =
+            (Math.random() * 72).toFixed(2);
+
+          var o =
+            (Math.random() * 0.6 + 0.15).toFixed(2);
+
+          var big =
+            Math.random() > 0.93;
+
+          var r =
+            big ? 1.6 : 0.8;
+
+          shadows.push(
+            x +
+            "vw " +
+            y +
+            "vh 0 " +
+            r +
+            "px rgba(245,247,251," +
+            o +
+            ")"
+          );
+        }
+
+        document
+          .getElementById("stars")
+          .style.boxShadow =
+          shadows.join(", ");
+
+      })();
+
+      (function () {
+
+        if (reduce) {
+
+          document
+            .querySelectorAll(".reveal")
+            .forEach(function (el) {
+              el.classList.add("in");
+            });
+
+          return;
+        }
+
+        var io =
+          new IntersectionObserver(
+            function (entries) {
+
+              entries.forEach(
+                function (entry) {
+
+                  if (entry.isIntersecting) {
+
+                    entry.target.classList.add("in");
+
+                    io.unobserve(entry.target);
+
+                  }
+
+                }
+              );
+
+            },
+            {
+              threshold: 0.12,
+              rootMargin:
+                "0px 0px -10% 0px"
+            }
+          );
+
+        document
+          .querySelectorAll(".reveal")
+          .forEach(function (el) {
+            io.observe(el);
+          });
+
+      })();
+
+      (function () {
+
+        var menu =
+          document.getElementById(
+            "mobileMenu"
+          );
+
+        var open =
+          document.getElementById(
+            "burger"
+          );
+
+        var close =
+          document.getElementById(
+            "closeMenu"
+          );
+
+        var scrim =
+          document.getElementById(
+            "scrim"
+          );
+
+        function show(value) {
+
+          menu.classList.toggle(
+            "open",
+            value
+          );
+
+          open.setAttribute(
+            "aria-expanded",
+            value ? "true" : "false"
+          );
+
+          document.body.style.overflow =
+            value ? "hidden" : "";
+
+        }
+
+        open.addEventListener(
+          "click",
+          function () {
+            show(true);
+          }
+        );
+
+        close.addEventListener(
+          "click",
+          function () {
+            show(false);
+          }
+        );
+
+        scrim.addEventListener(
+          "click",
+          function () {
+            show(false);
+          }
+        );
+
+        menu
+          .querySelectorAll(".m-link")
+          .forEach(function (a) {
+
+            a.addEventListener(
+              "click",
+              function () {
+                show(false);
+              }
+            );
+
+          });
+
+      })();
+
+      var root =
+        document.documentElement.style;
+
+      var starsEl =
+        document.getElementById(
+          "stars"
+        );
+
+      var backgroundStops = [
+
+        {
+          p: 0.00,
+          top: [3, 8, 17],
+          bottom: [7, 21, 38],
+          horizon: [245, 143, 75, 0.08]
+        },
+
+        {
+          p: 0.18,
+          top: [4, 11, 23],
+          bottom: [11, 29, 51],
+          horizon: [245, 143, 75, 0.14]
+        },
+
+        {
+          p: 0.35,
+          top: [7, 18, 34],
+          bottom: [25, 47, 72],
+          horizon: [245, 143, 75, 0.25]
+        },
+
+        {
+          p: 0.50,
+          top: [18, 38, 62],
+          bottom: [72, 92, 116],
+          horizon: [245, 143, 75, 0.42]
+        },
+
+        {
+          p: 0.62,
+          top: [68, 86, 108],
+          bottom: [176, 157, 132],
+          horizon: [245, 143, 75, 0.38]
+        },
+
+        {
+          p: 0.74,
+          top: [155, 145, 128],
+          bottom: [218, 201, 170],
+          horizon: [255, 222, 163, 0.18]
+        },
+
+        {
+          p: 0.88,
+          top: [218, 205, 179],
+          bottom: [239, 227, 202],
+          horizon: [255, 255, 255, 0.05]
+        },
+
+        {
+          p: 1.00,
+          top: [239, 227, 202],
+          bottom: [246, 237, 218],
+          horizon: [255, 255, 255, 0]
+        }
+
+      ];
+
+      var sunStops = [
+
+        {
+          p: 0,
+          y: 46,
+          opacity: 0.20,
+          scale: 0.70
+        },
+
+        {
+          p: 0.25,
+          y: 40,
+          opacity: 0.42,
+          scale: 0.78
+        },
+
+        {
+          p: 0.45,
+          y: 30,
+          opacity: 0.62,
+          scale: 0.90
+        },
+
+        {
+          p: 0.62,
+          y: 15,
+          opacity: 0.48,
+          scale: 1.00
+        },
+
+        {
+          p: 0.75,
+          y: -5,
+          opacity: 0.18,
+          scale: 1.08
+        },
+
+        {
+          p: 1,
+          y: -20,
+          opacity: 0,
+          scale: 1.15
+        }
+
+      ];
+
+      var navStops = [
+
+        {
+          p: 0,
+          color: [245,247,251],
+          bg: [255,255,255,0.05],
+          border: [255,255,255,0.12],
+          shadow:
+            "0 8px 40px rgba(0,0,0,0.45)"
+        },
+
+        {
+          p: 0.55,
+          color: [245,247,251],
+          bg: [255,255,255,0.08],
+          border: [255,255,255,0.12],
+          shadow:
+            "0 8px 40px rgba(0,0,0,0.25)"
+        },
+
+        {
+          p: 0.72,
+          color: [24,48,74],
+          bg: [255,255,255,0.45],
+          border: [24,48,74,0.12],
+          shadow:
+            "0 10px 40px rgba(24,48,74,0.12)"
+        },
+
+        {
+          p: 1,
+          color: [24,48,74],
+          bg: [255,255,255,0.55],
+          border: [24,48,74,0.12],
+          shadow:
+            "0 10px 40px rgba(24,48,74,0.10)"
+        }
+
+      ];
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      function interpolateColor(
+        a,
+        b,
+        t
+      ) {
+
+        return [
+          lerp(a[0], b[0], t),
+          lerp(a[1], b[1], t),
+          lerp(a[2], b[2], t)
+        ];
+
+      }
+
+      function interpolateRGBA(
+        a,
+        b,
+        t
+      ) {
+
+        return [
+          lerp(a[0], b[0], t),
+          lerp(a[1], b[1], t),
+          lerp(a[2], b[2], t),
+          lerp(a[3], b[3], t)
+        ];
+
+      }
+
+      function rgb(c) {
+
+        return (
+          "rgb(" +
+          Math.round(c[0]) +
+          "," +
+          Math.round(c[1]) +
+          "," +
+          Math.round(c[2]) +
+          ")"
+        );
+
+      }
+
+      function rgba(c) {
+
+        return (
+          "rgba(" +
+          Math.round(c[0]) +
+          "," +
+          Math.round(c[1]) +
+          "," +
+          Math.round(c[2]) +
+          "," +
+          c[3].toFixed(3) +
+          ")"
+        );
+
+      }
+
+      function sampleNumeric(
+        stops,
+        p,
+        key
+      ) {
+
+        if (p <= stops[0].p) {
+          return stops[0][key];
+        }
+
+        if (
+          p >=
+          stops[stops.length - 1].p
+        ) {
+          return stops[
+            stops.length - 1
+          ][key];
+        }
+
+        for (
+          var i = 0;
+          i < stops.length - 1;
+          i++
+        ) {
+
+          var a = stops[i];
+          var b = stops[i + 1];
+
+          if (
+            p >= a.p &&
+            p <= b.p
+          ) {
+
+            var t =
+              (p - a.p) /
+              (b.p - a.p);
+
+            return lerp(
+              a[key],
+              b[key],
+              t
+            );
+
+          }
+
+        }
+
+      }
+
+      function sampleColor(
+        stops,
+        p,
+        key
+      ) {
+
+        if (p <= stops[0].p) {
+          return stops[0][key];
+        }
+
+        if (
+          p >=
+          stops[stops.length - 1].p
+        ) {
+          return stops[
+            stops.length - 1
+          ][key];
+        }
+
+        for (
+          var i = 0;
+          i < stops.length - 1;
+          i++
+        ) {
+
+          var a = stops[i];
+          var b = stops[i + 1];
+
+          if (
+            p >= a.p &&
+            p <= b.p
+          ) {
+
+            var t =
+              (p - a.p) /
+              (b.p - a.p);
+
+            return interpolateColor(
+              a[key],
+              b[key],
+              t
+            );
+
+          }
+
+        }
+
+      }
+
+      function sampleRGBA(
+        stops,
+        p,
+        key
+      ) {
+
+        if (p <= stops[0].p) {
+          return stops[0][key];
+        }
+
+        if (
+          p >=
+          stops[stops.length - 1].p
+        ) {
+          return stops[
+            stops.length - 1
+          ][key];
+        }
+
+        for (
+          var i = 0;
+          i < stops.length - 1;
+          i++
+        ) {
+
+          var a = stops[i];
+          var b = stops[i + 1];
+
+          if (
+            p >= a.p &&
+            p <= b.p
+          ) {
+
+            var t =
+              (p - a.p) /
+              (b.p - a.p);
+
+            return interpolateRGBA(
+              a[key],
+              b[key],
+              t
+            );
+
+          }
+
+        }
+
+      }
+
+      var ticking = false;
+
+      function update() {
+
+        var max =
+          document.documentElement
+            .scrollHeight -
+          window.innerHeight;
+
+        var p =
+          max > 0
+            ? Math.min(
+                1,
+                Math.max(
+                  0,
+                  window.scrollY / max
+                )
+              )
+            : 0;
+
+        root.setProperty(
+          "--scroll-progress",
+          p
+        );
+
+        var top =
+          sampleColor(
+            backgroundStops,
+            p,
+            "top"
+          );
+
+        var bottom =
+          sampleColor(
+            backgroundStops,
+            p,
+            "bottom"
+          );
+
+        var horizon =
+          sampleRGBA(
+            backgroundStops,
+            p,
+            "horizon"
+          );
+
+        root.setProperty(
+          "--bg-top",
+          rgb(top)
+        );
+
+        root.setProperty(
+          "--bg-bottom",
+          rgb(bottom)
+        );
+
+        root.setProperty(
+          "--horizon-color",
+          rgba(horizon)
+        );
+
+        var sunY =
+          sampleNumeric(
+            sunStops,
+            p,
+            "y"
+          );
+
+        var sunOpacity =
+          sampleNumeric(
+            sunStops,
+            p,
+            "opacity"
+          );
+
+        var sunScale =
+          sampleNumeric(
+            sunStops,
+            p,
+            "scale"
+          );
+
+        root.setProperty(
+          "--sun-y",
+          sunY + "vh"
+        );
+
+        root.setProperty(
+          "--sun-opacity",
+          sunOpacity
+        );
+
+        root.setProperty(
+          "--sun-scale",
+          sunScale
+        );
+
+        var starOpacity;
+
+        if (p < 0.28) {
+
+          starOpacity =
+            lerp(
+              0.95,
+              0.55,
+              p / 0.28
+            );
+
+        } else if (p < 0.55) {
+
+          starOpacity =
+            lerp(
+              0.55,
+              0,
+              (p - 0.28) / 0.27
+            );
+
+        } else {
+
+          starOpacity = 0;
+
+        }
+
+        starsEl.style.opacity =
+          starOpacity;
+
+        starsEl.style.transform =
+          reduce
+            ? "none"
+            : "translateY(" +
+              lerp(0, 140, p) +
+              "px)";
+
+        var navColor =
+          sampleColor(
+            navStops,
+            p,
+            "color"
+          );
+
+        var navBg =
+          sampleRGBA(
+            navStops,
+            p,
+            "bg"
+          );
+
+        var navBorder =
+          sampleRGBA(
+            navStops,
+            p,
+            "border"
+          );
+
+        root.setProperty(
+          "--nav-color",
+          rgb(navColor)
+        );
+
+        root.setProperty(
+          "--nav-bg",
+          rgba(navBg)
+        );
+
+        root.setProperty(
+          "--nav-border",
+          rgba(navBorder)
+        );
+
+        var shadow;
+
+        if (p < 0.55) {
+
+          shadow =
+            "0 8px 40px rgba(0,0,0," +
+            lerp(
+              0.45,
+              0.25,
+              p / 0.55
+            ).toFixed(3) +
+            ")";
+
+        } else {
+
+          shadow =
+            "0 10px 40px rgba(24,48,74," +
+            lerp(
+              0.10,
+              0.12,
+              (p - 0.55) / 0.45
+            ).toFixed(3) +
+            ")";
+
+        }
+
+        root.setProperty(
+          "--nav-shadow",
+          shadow
+        );
+
+        ticking = false;
+
+      }
+
+      function onScroll() {
+
+        if (!ticking) {
+
+          ticking = true;
+
+          requestAnimationFrame(
+            update
+          );
+
+        }
+
+      }
+
+      window.addEventListener(
+        "scroll",
+        onScroll,
+        {
+          passive: true
+        }
+      );
+
+      window.addEventListener(
+        "resize",
+        onScroll
+      );
+
+      update();
+
+    })();
+  </script>
+
+</body>
+</html>
