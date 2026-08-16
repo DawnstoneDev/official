@@ -356,6 +356,44 @@
       opacity: 0.6;
     }
 
+    .language-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.25rem;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(255,255,255,0.12);
+}
+
+.language-switch a {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  color: rgba(245,247,251,0.42);
+  transition:
+    color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.language-switch a:hover {
+  color: rgba(245,247,251,0.9);
+}
+
+.language-switch a.active {
+  color: rgba(245,247,251,0.9);
+}
+
+.language-switch span {
+  font-size: 10px;
+  color: rgba(245,247,251,0.2);
+}
+
+@media (max-width: 639px) {
+  .language-switch {
+    display: none;
+  }
+}
+
     /* =========================================================
        Mobile navigation
        ========================================================= */
@@ -491,6 +529,21 @@
 
       color: #F5F7FB;
     }
+
+    .mobile-language-switch {
+  display: flex;
+  margin-top: auto;
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+  padding-top: 2rem;
+}
+
+@media (min-width: 640px) {
+  .mobile-language-switch {
+    display: none;
+  }
+}
 
     /* =========================================================
        Layout
@@ -1731,6 +1784,12 @@
         <a href="#about">About</a>
         <a href="#contact">Contact</a>
       </div>
+      
+      <div class="language-switch" aria-label="Language">
+        <a href="index.html" class="active">EN</a>
+        <span>/</span>
+        <a href="ja/index.html">JA</a>
+      </div>
 
       <button
         class="burger"
@@ -1741,6 +1800,12 @@
         <span></span>
         <span></span>
       </button>
+
+      <div class="language-switch mobile-language-switch" aria-label="Language">
+        <a href="../index.html">EN</a>
+        <span>/</span>
+        <a href="index.html" class="active">JA</a>
+      </div>
 
     </nav>
   </div>
