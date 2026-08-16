@@ -1,881 +1,1532 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="description" content="STRATA is a native development environment for macOS, made by Dawnstone. A workspace built for the platform, not around it." />
-<meta name="theme-color" content="#071019" />
-<meta property="og:title" content="STRATA — A native development environment for macOS." />
-<meta property="og:description" content="A native development environment for macOS, from Dawnstone. Currently in development." />
-<meta property="og:type" content="website" />
-<title>STRATA — A native development environment for macOS.</title>
-<link rel="icon" type="image/png" href="assets/favicon.png">
-
-<style>
-  /* =========================================================
-     STRATA — Design Tokens
-     A single mineral arc: near-black   cold blue light   near-black again.
-     Slate, not sky. Layers, not weather.
-     ========================================================= */
-  :root{
-    --bg-top:#071019;
-    --bg-bottom:#0D1822;
-    --horizon-color: rgba(95,168,255,0.04);
-
-    --glow-y: 44vh;
-    --glow-opacity: 0.18;
-    --glow-scale: 0.78;
-
-    --text-tint:#F5F7FB;
-    --text:#F5F7FB;
-    --text-secondary: rgba(245,247,251,0.72);
-    --text-muted: rgba(245,247,251,0.48);
-
-    --nav-bg: rgba(255,255,255,0.05);
-    --nav-border: rgba(255,255,255,0.11);
-    --nav-shadow: 0 8px 40px rgba(0,0,0,0.5);
-
-    --slate-deep:#243746;
-    --mineral:#5FA8FF;
-    --mineral-light:#8FC1FF;
-    --stone-pale:#B9DDFF;
-
-    --scroll-progress:0;
-  }
-
-  *{ box-sizing:border-box; margin:0; padding:0; }
-  html{ scroll-behavior:smooth; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
-
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
-    background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
-    color:var(--text);
-    overflow-x:hidden;
-    line-height:1.6;
-    transition:color .2s linear;
-  }
-
-  ::selection{ background:rgba(143,193,255,0.85); color:#05121e; }
-  a:focus-visible, button:focus-visible{ outline:2px solid var(--mineral-light); outline-offset:3px; border-radius:4px; }
-
-  .serif-italic{
-    font-family:"New York","Iowan Old Style","Apple Garamond",Georgia,"Times New Roman",serif;
-    font-style:italic; font-weight:400;
-  }
-  .display{
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-weight:600; letter-spacing:-0.04em;
-  }
-
-  /* =========================================================
-     Sky — here, a section cut through rock. Faint strata bands,
-     a cold mineral glow, and fine flecked light in the seams.
-     ========================================================= */
-  .sky{
-    position:fixed; inset:0; z-index:-10; overflow:hidden; pointer-events:none;
-    background:
-      radial-gradient(120% 70% at 50% 46%, var(--horizon-color) 0%, transparent 60%),
-      linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
-    transition:background .1s linear;
-  }
-  .layers{
-    position:absolute; left:0; right:0; top:-10%; height:120%;
-    background-image:repeating-linear-gradient(
-      180deg,
-      rgba(95,168,255,0.05) 0px,
-      rgba(95,168,255,0.05) 1px,
-      transparent 1px,
-      transparent 96px
-    );
-    opacity:.55;
-    will-change:transform;
-  }
-  .glow{
-    position:absolute; left:50%; top:0; width:58vw; height:58vw;
-    transform:translate(-50%,var(--glow-y)) scale(var(--glow-scale));
-    opacity:var(--glow-opacity); border-radius:50%;
-    background:radial-gradient(circle at 50% 50%, rgba(185,221,255,0.9) 0%, rgba(95,168,255,0.5) 32%, rgba(95,168,255,0) 68%);
-    filter:blur(14px); pointer-events:none;
-  }
-  .flecks{ position:absolute; left:0; top:0; width:1px; height:1px; pointer-events:none; }
-
-  /* =========================================================
-     Navigation
-     ========================================================= */
-  .nav-wrap{ position:fixed; top:0; left:0; right:0; z-index:50; display:flex; justify-content:center; padding:1rem; }
-  @media (min-width:640px){ .nav-wrap{ padding-top:1.5rem; } }
-
-  .nav{
-    width:100%; max-width:64rem;
-    display:flex; align-items:center; justify-content:space-between; gap:1rem;
-    padding:0.75rem 1.25rem; border-radius:9999px;
-    background:var(--nav-bg); border:0.5px solid var(--nav-border); box-shadow:var(--nav-shadow);
-    backdrop-filter:blur(40px) saturate(150%); -webkit-backdrop-filter:blur(40px) saturate(150%);
-    color:var(--text);
-    transition:background .2s linear, border-color .2s linear, box-shadow .2s linear;
-  }
-  @media (min-width:640px){ .nav{ padding:0.875rem 1.75rem; } }
-
-  .brand{ font-size:.875rem; font-weight:600; letter-spacing:0.22em; text-decoration:none; color:inherit; display:flex; align-items:baseline; gap:.5rem; }
-  .brand .of{ font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:currentColor; opacity:.4; font-weight:400; }
-  @media (min-width:640px){ .brand{ font-size:1rem; } }
-
-  .nav-center{ display:none; align-items:center; gap:2rem; flex:1; justify-content:center; }
-  @media (min-width:640px){ .nav-center{ display:flex; } }
-  .nav-center a{ font-size:13px; letter-spacing:.04em; text-decoration:none; color:inherit; opacity:.85; transition:opacity .3s; }
-  .nav-center a:hover{ opacity:1; }
-
-  .lang-toggle{ display:none; align-items:center; gap:.4rem; font-size:11px; letter-spacing:.08em; }
-  @media (min-width:640px){ .lang-toggle{ display:flex; } }
-  .lang-toggle .en{ color:var(--text); opacity:.92; }
-  .lang-toggle .sep{ color:var(--text-muted); }
-  .lang-toggle .ja{ color:var(--text-muted); cursor:default; }
-
-  .burger{ display:flex; flex-direction:column; justify-content:center; gap:5px; width:2rem; height:2rem; background:none; border:none; cursor:pointer; color:inherit; }
-  @media (min-width:640px){ .burger{ display:none; } }
-  .burger span{ display:block; height:1.5px; width:1.25rem; background:currentColor; }
-
-  .mobile-menu{ position:fixed; inset:0; z-index:60; display:none; flex-direction:column; }
-  .mobile-menu.open{ display:flex; }
-  .mobile-menu .scrim{ position:absolute; inset:0; background:rgba(0,0,0,.5); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); }
-  .mobile-menu .panel{
-    position:relative; margin:1rem; flex:1; display:flex; flex-direction:column;
-    border-radius:2rem; border:1px solid rgba(255,255,255,.13); background:rgba(10,18,26,.55);
-    padding:2rem; backdrop-filter:blur(32px); -webkit-backdrop-filter:blur(32px);
-  }
-  .mobile-menu .close-row{ display:flex; justify-content:flex-end; }
-  .mobile-menu .close{ width:2.25rem; height:2.25rem; background:none; border:none; cursor:pointer; color:#F5F7FB; font-size:1.5rem; line-height:1; }
-  .mobile-menu nav{ flex:1; display:flex; flex-direction:column; justify-content:center; gap:1.5rem; }
-  .mobile-menu nav a{ font-size:1.875rem; letter-spacing:-0.02em; text-decoration:none; color:#F5F7FB; }
-  .mobile-menu nav a.back{ font-size:1rem; opacity:.55; }
-  .mobile-menu .m-lang{ margin-top:1rem; font-size:.8rem; letter-spacing:.08em; color:rgba(245,247,251,.5); }
-  .mobile-menu .m-lang span:first-child{ color:#F5F7FB; }
-
-  /* =========================================================
-     Layout
-     ========================================================= */
-  main{ position:relative; z-index:10; }
-  section{ position:relative; width:100%; padding-left:1.5rem; padding-right:1.5rem; }
-  @media (min-width:640px){ section{ padding-left:3rem; padding-right:3rem; } }
-  @media (min-width:768px){ section{ padding-left:5rem; padding-right:5rem; } }
-  @media (min-width:1024px){ section{ padding-left:10rem; padding-right:10rem; } }
-
-  .label{ font-size:11px; text-transform:uppercase; letter-spacing:.34em; color:rgba(245,247,251,0.42); }
-
-  /* Hero */
-  .hero{ min-height:100svh; display:flex; flex-direction:column; justify-content:center; padding-top:8rem; padding-bottom:6rem; }
-  .hero h1{ font-size:clamp(2.75rem,17vw,10rem); line-height:1; white-space:nowrap; color:var(--text); }
-  .hero p{ margin-top:1.5rem; font-size:clamp(1.5rem,4vw,2.25rem); line-height:1.2; color:rgba(245,247,251,.85); }
-  .hero p .qc{ color:var(--mineral-light); }
-  .hero .tag{ margin-top:1.25rem; font-size:1rem; letter-spacing:.02em; color:rgba(245,247,251,.48); }
-
-  .scroll-hint{ position:absolute; left:0; right:0; bottom:2rem; display:flex; flex-direction:column; align-items:center; gap:.75rem; color:rgba(245,247,251,.48); }
-  .scroll-hint .txt{ font-size:10px; text-transform:uppercase; letter-spacing:.34em; }
-  .scroll-hint .arrow{ font-size:1.125rem; color:rgba(245,247,251,.6); animation:float 2.6s ease-in-out infinite; }
-  @keyframes float{ 0%,100%{ transform:translateY(0); opacity:.5; } 50%{ transform:translateY(7px); opacity:.9; } }
-
-  /* Generic prose sections */
-  .prose-section{ padding-top:8rem; padding-bottom:8rem; }
-  @media (min-width:768px){ .prose-section{ padding-top:11rem; padding-bottom:13rem; } }
-  .prose-section h2{ margin-top:2.25rem; max-width:42rem; font-size:clamp(2rem,6vw,4.25rem); line-height:1.14; color:var(--text); }
-  .prose-section h2 .accent{ color:var(--mineral-light); }
-  .prose-section .body{ margin-top:2.25rem; max-width:32rem; font-size:1.125rem; color:var(--text-secondary); }
-  @media (min-width:640px){ .prose-section .body{ font-size:1.3rem; } }
-  .prose-section .body p + p{ margin-top:1rem; }
-
-  .punchline{
-    margin-top:1.75rem; max-width:32rem;
-    font-size:1.05rem; color:var(--stone-pale);
-  }
-  @media (min-width:640px){ .punchline{ font-size:1.2rem; } }
-
-  /* Spec line (Native section) */
-  .spec-line{ margin-top:2.25rem; font-size:.95rem; letter-spacing:.02em; color:var(--text-muted); }
-  .spec-line span{ color:rgba(245,247,251,.68); }
-  .spec-line .dot{ margin:0 .65em; opacity:.4; }
-
-  /* Feature grid — large glass cards */
-  .feature-grid{
-    margin-top:2.75rem; max-width:44rem;
-    display:grid; grid-template-columns:1fr; gap:1.1rem;
-  }
-  @media (min-width:640px){
-    .feature-grid{ grid-template-columns:1fr 1fr; gap:1.25rem; }
-  }
-  .feature-card{
-    border-radius:1.75rem; padding:1.9rem;
-    background:rgba(255,255,255,.03); border:0.5px solid rgba(255,255,255,.09);
-    box-shadow:0 20px 70px rgba(0,0,0,.4);
-    backdrop-filter:blur(36px) saturate(150%); -webkit-backdrop-filter:blur(36px) saturate(150%);
-    transition:background .3s, border-color .3s, transform .3s;
-  }
-  .feature-card:hover{ background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.16); transform:translateY(-2px); }
-  .feature-card .f-title{ font-size:1.15rem; color:var(--text); }
-  .feature-card .f-title .f-dot{ display:inline-block; width:5px; height:5px; border-radius:50%; background:var(--mineral-light); margin-right:.6rem; vertical-align:middle; }
-  .feature-card .f-body{ margin-top:.6rem; font-size:.92rem; line-height:1.55; color:var(--text-muted); }
-
-  /* Control list */
-  .ctrl-list{ margin-top:2.5rem; display:flex; flex-direction:column; gap:.9rem; max-width:26rem; }
-  .ctrl-item{ display:flex; align-items:center; gap:1rem; font-size:1.02rem; color:var(--text-secondary); }
-  .ctrl-dot{ width:5px; height:5px; border-radius:50%; background:var(--mineral-light); flex-shrink:0; }
-
-  /* Status */
-  .status-row{ margin-top:2.5rem; display:flex; align-items:center; gap:.7rem; }
-  .status-dot{ width:7px; height:7px; border-radius:50%; background:var(--mineral-light); box-shadow:0 0 12px rgba(143,193,255,.7); }
-  .status-row span:last-child{ font-size:.72rem; text-transform:uppercase; letter-spacing:.26em; color:var(--mineral-light); }
-  .status-facts{ margin-top:1.75rem; display:flex; flex-direction:column; gap:.55rem; max-width:26rem; font-size:1rem; color:var(--text-secondary); }
-
-  /* Contact */
-  .contact .lead{ margin-top:2.25rem; font-size:1.05rem; color:var(--text-muted); }
-  .contact h2{ margin-top:1rem; font-size:clamp(2.5rem,7vw,5.5rem); line-height:1.05; color:var(--text); }
-  .contact h2 .accent{ color:var(--mineral-light); }
-  .contact .links{ margin-top:2.5rem; display:flex; flex-direction:column; gap:.9rem; }
-  .contact .mail, .contact .home{
-    display:inline-flex; align-items:center; gap:.75rem; text-decoration:none; color:var(--text); font-size:1.15rem; width:fit-content;
-    transition:color .3s;
-  }
-  @media (min-width:640px){ .contact .mail, .contact .home{ font-size:1.35rem; } }
-  .contact .mail span:first-child, .contact .home span:first-child{ border-bottom:1px solid transparent; transition:border-color .3s, color .3s; }
-  .contact .mail:hover span:first-child, .contact .home:hover span:first-child{ border-color:var(--mineral-light); color:var(--mineral-light); }
-  .contact .arrow{ font-size:1rem; transition:transform .3s; }
-  .contact .mail:hover .arrow, .contact .home:hover .arrow{ transform:translate(4px,-4px); }
-
-  /* Footer */
-
-.footer {
-  position: relative;
-
-  padding-top: 3rem;
-  padding-bottom: 2rem;
-
-  color: rgba(245,247,251,0.9);
-
-  /*
-   * Footer stays transparent.
-   * The dark background comes from the page itself.
-   */
-}
-
-.footer-inner {
-  width: 100%;
-  max-width: 90rem;
-
-  margin: 0 auto;
-
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .footer-inner {
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .footer-inner {
-    padding-left: 5rem;
-    padding-right: 5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .footer-inner {
-    padding-left: 7rem;
-    padding-right: 7rem;
-  }
-}
-
-
-/* =========================================================
-   Footer top
-   ========================================================= */
-
-.footer-top {
-  display: grid;
-
-  grid-template-columns:
-    1fr;
-
-  gap: 2rem;
-
-  padding-top: 2rem;
-  padding-bottom: 3rem;
-
-  border-top:
-    1px solid
-    rgba(255,255,255,0.10);
-
-  align-items: center;
-}
-
-@media (min-width: 768px) {
-  .footer-top {
-    grid-template-columns:
-      1fr
-      auto
-      1fr;
-
-    padding-top: 2.5rem;
-    padding-bottom: 3.5rem;
-  }
-}
-
-
-/* =========================================================
-   Brand
-   ========================================================= */
-
-.footer-brand {
-  display: inline-block;
-
-  width: fit-content;
-
-  font-size: 0.875rem;
-
-  font-weight: 600;
-
-  letter-spacing: 0.24em;
-
-  text-decoration: none;
-
-  color: rgba(245,247,251,0.92);
-
-  transition:
-    color 0.3s ease,
-    opacity 0.3s ease;
-}
-
-.footer-brand:hover {
-  color: #8FC1FF;
-
-  opacity: 0.9;
-}
-
-
-/* =========================================================
-   Statement
-   ========================================================= */
-
-.footer-statement {
-  font-size: 1.25rem;
-
-  line-height: 1.2;
-
-  color:
-    rgba(245,247,251,0.48);
-
-  text-align: left;
-}
-
-@media (min-width: 768px) {
-  .footer-statement {
-    text-align: center;
-
-    font-size: 1.375rem;
-  }
-}
-
-
-/* =========================================================
-   Back to top
-   ========================================================= */
-
-.footer-back {
-  display: inline-flex;
-
-  align-items: center;
-
-  justify-content: flex-start;
-
-  gap: 0.65rem;
-
-  width: fit-content;
-
-  text-decoration: none;
-
-  font-size: 0.6875rem;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.22em;
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta
+    name="description"
+    content="STRATA is a native development environment for macOS, made by Dawnstone. A workspace built for the platform, not around it."
+  />
+
+  <meta
+    name="theme-color"
+    content="#071019"
+  />
+
+  <meta
+    property="og:title"
+    content="STRATA — A native development environment for macOS."
+  />
+
+  <meta
+    property="og:description"
+    content="A native development environment for macOS, from Dawnstone. Currently in development."
+  />
+
+  <meta
+    property="og:type"
+    content="website"
+  />
+
+  <title>
+    STRATA — A native development environment for macOS.
+  </title>
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="assets/favicon.png"
+  />
+
+  <style>
+
+    /* =========================================================
+       STRATA — Design Tokens
+       ========================================================= */
+
+    :root {
+      --bg-top: #071019;
+      --bg-bottom: #0D1822;
+
+      --horizon-color: rgba(95, 168, 255, 0.04);
+
+      --glow-y: 44vh;
+      --glow-opacity: 0.18;
+      --glow-scale: 0.78;
+
+      --text-tint: #F5F7FB;
+      --text: #F5F7FB;
+      --text-secondary: rgba(245, 247, 251, 0.72);
+      --text-muted: rgba(245, 247, 251, 0.48);
+
+      --nav-bg: rgba(255, 255, 255, 0.05);
+      --nav-border: rgba(255, 255, 255, 0.11);
+      --nav-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+
+      --slate-deep: #243746;
+      --mineral: #5FA8FF;
+      --mineral-light: #8FC1FF;
+      --stone-pale: #B9DDFF;
+
+      --scroll-progress: 0;
+    }
+
+
+    /* =========================================================
+       Reset
+       ========================================================= */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Text",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      background:
+        linear-gradient(
+          180deg,
+          var(--bg-top) 0%,
+          var(--bg-bottom) 100%
+        );
+
+      color: var(--text);
+
+      overflow-x: hidden;
+
+      line-height: 1.6;
+
+      transition: color 0.2s linear;
+    }
+
+    ::selection {
+      background: rgba(143, 193, 255, 0.85);
+      color: #05121e;
+    }
 
-  color:
-    rgba(245,247,251,0.48);
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--mineral-light);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
 
-  transition:
-    color 0.3s ease;
-}
 
-@media (min-width: 768px) {
-  .footer-back {
-    justify-self: end;
-  }
-}
+    /* =========================================================
+       Typography
+       ========================================================= */
 
-.footer-back-arrow {
-  display: inline-flex;
+    .serif-italic {
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        "Apple Garamond",
+        Georgia,
+        "Times New Roman",
+        serif;
 
-  align-items: center;
-  justify-content: center;
+      font-style: italic;
+      font-weight: 400;
+    }
 
-  width: 1.75rem;
-  height: 1.75rem;
+    .display {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
 
-  border:
-    1px solid
-    rgba(255,255,255,0.14);
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
 
-  border-radius: 50%;
 
-  font-size: 0.8rem;
+    /* =========================================================
+       Background
+       ========================================================= */
 
-  color:
-    rgba(245,247,251,0.7);
+    .sky {
+      position: fixed;
+      inset: 0;
 
-  transition:
-    transform 0.35s
-      cubic-bezier(.23,1,.32,1),
-    background 0.3s ease,
-    border-color 0.3s ease,
-    color 0.3s ease;
-}
+      z-index: -10;
 
-.footer-back:hover {
-  color: #5FA8FF;
-}
+      overflow: hidden;
 
-.footer-back:hover
-.footer-back-arrow {
-  transform:
-    translateY(-3px);
+      pointer-events: none;
 
-  background:
-    rgba(95,168,255,0.10);
+      background:
+        radial-gradient(
+          120% 70% at 50% 46%,
+          var(--horizon-color) 0%,
+          transparent 60%
+        ),
+        linear-gradient(
+          180deg,
+          var(--bg-top) 0%,
+          var(--bg-bottom) 100%
+        );
 
-  border-color:
-    rgba(95,168,255,0.35);
+      transition: background 0.1s linear;
+    }
 
-  color:
-    #5FA8FF;
-}
+    .layers {
+      position: absolute;
 
+      left: 0;
+      right: 0;
 
-/* =========================================================
-   Footer main
-   ========================================================= */
+      top: -10%;
 
-.footer-main {
-  display: flex;
+      height: 120%;
 
-  flex-direction: column;
+      background-image:
+        repeating-linear-gradient(
+          180deg,
+          rgba(95, 168, 255, 0.05) 0px,
+          rgba(95, 168, 255, 0.05) 1px,
+          transparent 1px,
+          transparent 96px
+        );
 
-  gap: 3rem;
+      opacity: 0.55;
 
-  padding-top: 3rem;
-  padding-bottom: 3.5rem;
-}
+      will-change: transform;
+    }
 
-@media (min-width: 768px) {
-  .footer-main {
-    flex-direction: row;
+    .glow {
+      position: absolute;
 
-    align-items: flex-start;
+      left: 50%;
+      top: 0;
 
-    justify-content: space-between;
+      width: 58vw;
+      height: 58vw;
 
-    padding-top: 3.5rem;
-    padding-bottom: 4rem;
-  }
-}
+      transform:
+        translate(-50%, var(--glow-y))
+        scale(var(--glow-scale));
 
+      opacity: var(--glow-opacity);
 
-/* =========================================================
-   Footer note
-   ========================================================= */
+      border-radius: 50%;
 
-.footer-note {
-  display: flex;
+      background:
+        radial-gradient(
+          circle at 50% 50%,
+          rgba(185, 221, 255, 0.9) 0%,
+          rgba(95, 168, 255, 0.5) 32%,
+          rgba(95, 168, 255, 0) 68%
+        );
 
-  flex-direction: column;
+      filter: blur(14px);
 
-  gap: 0.4rem;
-}
+      pointer-events: none;
+    }
 
-.footer-note p {
-  margin: 0;
+    .flecks {
+      position: absolute;
 
-  font-size: 0.8125rem;
+      left: 0;
+      top: 0;
 
-  line-height: 1.5;
+      width: 1px;
+      height: 1px;
 
-  color:
-    rgba(245,247,251,0.40);
-}
+      pointer-events: none;
+    }
 
-.footer-note p:first-child {
-  color:
-    rgba(245,247,251,0.68);
 
-  font-weight: 500;
+    /* =========================================================
+       Header / Navigation
+       ========================================================= */
 
-  letter-spacing: 0.01em;
-}
+    .nav-wrap {
+      position: fixed;
 
+      top: 0;
+      left: 0;
+      right: 0;
 
-/* =========================================================
-   Footer links
-   ========================================================= */
+      z-index: 50;
 
-.footer-links {
-  display: grid;
+      display: flex;
+      justify-content: center;
 
-  grid-template-columns:
-    repeat(2, minmax(90px, 1fr));
+      padding: 1rem;
+    }
 
-  column-gap: 3rem;
-  row-gap: 1rem;
-}
+    @media (min-width: 640px) {
+      .nav-wrap {
+        padding-top: 1.5rem;
+      }
+    }
 
-@media (min-width: 640px) {
-  .footer-links {
-    display: flex;
+    .nav {
+      width: 100%;
+      max-width: 64rem;
 
-    gap: 2rem;
-  }
-}
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
 
-.footer-links a {
-  position: relative;
+      gap: 1rem;
 
-  width: fit-content;
+      padding: 0.75rem 1.25rem;
 
-  font-size: 0.75rem;
+      border-radius: 9999px;
 
-  text-decoration: none;
+      background: var(--nav-bg);
 
-  color:
-    rgba(245,247,251,0.58);
+      border: 0.5px solid var(--nav-border);
 
-  transition:
-    color 0.3s ease;
-}
+      box-shadow: var(--nav-shadow);
 
-.footer-links a::after {
-  content: "";
+      backdrop-filter: blur(40px) saturate(150%);
+      -webkit-backdrop-filter: blur(40px) saturate(150%);
 
-  position: absolute;
+      color: var(--text);
 
-  left: 0;
-  bottom: -0.3rem;
+      transition:
+        background 0.2s linear,
+        border-color 0.2s linear,
+        box-shadow 0.2s linear;
+    }
 
-  width: 100%;
-  height: 1px;
+    @media (min-width: 640px) {
+      .nav {
+        padding: 0.875rem 1.75rem;
+      }
+    }
 
-  background:
-    #5FA8FF;
+    .brand {
+      font-size: 0.875rem;
 
-  transform:
-    scaleX(0);
+      font-weight: 600;
 
-  transform-origin:
-    right center;
+      letter-spacing: 0.22em;
 
-  transition:
-    transform 0.35s
-    cubic-bezier(.23,1,.32,1);
-}
+      text-decoration: none;
 
-.footer-links a:hover {
-  color:
-    #5FA8FF;
-}
+      color: inherit;
 
-.footer-links a:hover::after {
-  transform:
-    scaleX(1);
+      display: flex;
 
-  transform-origin:
-    left center;
-}
+      align-items: baseline;
 
+      gap: 0.5rem;
 
-/* =========================================================
-   Footer bottom
-   ========================================================= */
+      white-space: nowrap;
+    }
 
-.footer-bottom {
-  display: flex;
+    .brand .of {
+      font-size: 9px;
 
-  flex-direction: column;
+      letter-spacing: 0.16em;
 
-  gap: 0.5rem;
+      text-transform: uppercase;
 
-  padding-top: 1.5rem;
+      color: currentColor;
 
-  border-top:
-    1px solid
-    rgba(255,255,255,0.08);
+      opacity: 0.4;
 
-  font-size: 0.6875rem;
+      font-weight: 400;
+    }
 
-  letter-spacing: 0.02em;
+    @media (min-width: 640px) {
+      .brand {
+        font-size: 1rem;
+      }
+    }
 
-  color:
-    rgba(245,247,251,0.32);
-}
+    .nav-center {
+      display: none;
 
-@media (min-width: 640px) {
-  .footer-bottom {
-    flex-direction: row;
+      align-items: center;
 
-    align-items: center;
+      gap: 2rem;
 
-    justify-content: space-between;
-  }
-}
+      flex: 1;
 
-  /* Reveal */
-  .reveal{ opacity:0; transform:translateY(26px); filter:blur(12px); transition:opacity 1.1s cubic-bezier(.23,1,.32,1), transform 1.1s cubic-bezier(.23,1,.32,1), filter 1.1s cubic-bezier(.23,1,.32,1); }
-  .reveal.in{ opacity:1; transform:none; filter:blur(0); }
+      justify-content: center;
+    }
 
-  @media (prefers-reduced-motion: reduce){
-    html{ scroll-behavior:auto; }
-    .reveal{ opacity:1; transform:none; filter:none; transition:none; }
-    .scroll-hint .arrow{ animation:none; }
-  }
-</style>
+    @media (min-width: 640px) {
+      .nav-center {
+        display: flex;
+      }
+    }
+
+    .nav-center a {
+      font-size: 13px;
+
+      letter-spacing: 0.04em;
+
+      text-decoration: none;
+
+      color: inherit;
+
+      opacity: 0.78;
+
+      transition:
+        opacity 0.3s,
+        color 0.3s;
+    }
+
+    .nav-center a:hover {
+      opacity: 1;
+
+      color: var(--mineral-light);
+    }
+
+
+    /* =========================================================
+       Mobile Navigation
+       ========================================================= */
+
+    .burger {
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
+
+      gap: 5px;
+
+      width: 2rem;
+      height: 2rem;
+
+      background: none;
+
+      border: none;
+
+      cursor: pointer;
+
+      color: inherit;
+    }
+
+    @media (min-width: 640px) {
+      .burger {
+        display: none;
+      }
+    }
+
+    .burger span {
+      display: block;
+
+      height: 1.5px;
+
+      width: 1.25rem;
+
+      background: currentColor;
+    }
+
+    .mobile-menu {
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 60;
+
+      display: none;
+
+      flex-direction: column;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu .scrim {
+      position: absolute;
+
+      inset: 0;
+
+      background: rgba(0, 0, 0, 0.5);
+
+      backdrop-filter: blur(24px);
+
+      -webkit-backdrop-filter: blur(24px);
+    }
+
+    .mobile-menu .panel {
+      position: relative;
+
+      margin: 1rem;
+
+      flex: 1;
+
+      display: flex;
+
+      flex-direction: column;
+
+      border-radius: 2rem;
+
+      border: 1px solid rgba(255, 255, 255, 0.13);
+
+      background: rgba(10, 18, 26, 0.55);
+
+      padding: 2rem;
+
+      backdrop-filter: blur(32px);
+
+      -webkit-backdrop-filter: blur(32px);
+    }
+
+    .mobile-menu .close-row {
+      display: flex;
+
+      justify-content: flex-end;
+    }
+
+    .mobile-menu .close {
+      width: 2.25rem;
+      height: 2.25rem;
+
+      background: none;
+
+      border: none;
+
+      cursor: pointer;
+
+      color: #F5F7FB;
+
+      font-size: 1.5rem;
+
+      line-height: 1;
+    }
+
+    .mobile-menu nav {
+      flex: 1;
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
+
+      gap: 1.5rem;
+    }
+
+    .mobile-menu nav a {
+      font-size: 1.875rem;
+
+      letter-spacing: -0.02em;
+
+      text-decoration: none;
+
+      color: #F5F7FB;
+    }
+
+    .mobile-menu nav a:hover {
+      color: var(--mineral-light);
+    }
+
+    .mobile-menu nav a.back {
+      font-size: 1rem;
+
+      opacity: 0.55;
+    }
+
+
+    /* =========================================================
+       Layout
+       ========================================================= */
+
+    main {
+      position: relative;
+
+      z-index: 10;
+    }
+
+    section {
+      position: relative;
+
+      width: 100%;
+
+      padding-left: 1.5rem;
+
+      padding-right: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      section {
+        padding-left: 3rem;
+        padding-right: 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      section {
+        padding-left: 5rem;
+        padding-right: 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      section {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .label {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.34em;
+
+      color: rgba(245, 247, 251, 0.42);
+    }
+
+
+    /* =========================================================
+       Hero
+       ========================================================= */
+
+    .hero {
+      min-height: 100svh;
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
+
+      padding-top: 8rem;
+
+      padding-bottom: 6rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.75rem, 17vw, 10rem);
+
+      line-height: 1;
+
+      white-space: nowrap;
+
+      color: var(--text);
+    }
+
+    .hero p {
+      margin-top: 1.5rem;
+
+      font-size: clamp(1.5rem, 4vw, 2.25rem);
+
+      line-height: 1.2;
+
+      color: rgba(245, 247, 251, 0.85);
+    }
+
+    .hero p .qc {
+      color: var(--mineral-light);
+    }
+
+    .hero .tag {
+      margin-top: 1.25rem;
+
+      font-size: 1rem;
+
+      letter-spacing: 0.02em;
+
+      color: rgba(245, 247, 251, 0.48);
+    }
+
+    .scroll-hint {
+      position: absolute;
+
+      left: 0;
+      right: 0;
+
+      bottom: 2rem;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      gap: 0.75rem;
+
+      color: rgba(245, 247, 251, 0.48);
+    }
+
+    .scroll-hint .txt {
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.34em;
+    }
+
+    .scroll-hint .arrow {
+      font-size: 1.125rem;
+
+      color: rgba(245, 247, 251, 0.6);
+
+      animation: float 2.6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%,
+      100% {
+        transform: translateY(0);
+
+        opacity: 0.5;
+      }
+
+      50% {
+        transform: translateY(7px);
+
+        opacity: 0.9;
+      }
+    }
+
+
+    /* =========================================================
+       Generic Prose Sections
+       ========================================================= */
+
+    .prose-section {
+      padding-top: 8rem;
+
+      padding-bottom: 8rem;
+    }
+
+    @media (min-width: 768px) {
+      .prose-section {
+        padding-top: 11rem;
+
+        padding-bottom: 13rem;
+      }
+    }
+
+    .prose-section h2 {
+      margin-top: 2.25rem;
+
+      max-width: 42rem;
+
+      font-size: clamp(2rem, 6vw, 4.25rem);
+
+      line-height: 1.14;
+
+      color: var(--text);
+    }
+
+    .prose-section h2 .accent {
+      color: var(--mineral-light);
+    }
+
+    .prose-section .body {
+      margin-top: 2.25rem;
+
+      max-width: 32rem;
+
+      font-size: 1.125rem;
+
+      color: var(--text-secondary);
+    }
+
+    @media (min-width: 640px) {
+      .prose-section .body {
+        font-size: 1.3rem;
+      }
+    }
+
+    .prose-section .body p + p {
+      margin-top: 1rem;
+    }
+
+    .punchline {
+      margin-top: 1.75rem;
+
+      max-width: 32rem;
+
+      font-size: 1.05rem;
+
+      color: var(--stone-pale);
+    }
+
+    @media (min-width: 640px) {
+      .punchline {
+        font-size: 1.2rem;
+      }
+    }
+
+
+    /* =========================================================
+       Feature Grid
+       ========================================================= */
+
+    .feature-grid {
+      margin-top: 2.75rem;
+
+      max-width: 44rem;
+
+      display: grid;
+
+      grid-template-columns: 1fr;
+
+      gap: 1.1rem;
+    }
+
+    @media (min-width: 640px) {
+      .feature-grid {
+        grid-template-columns: 1fr 1fr;
+
+        gap: 1.25rem;
+      }
+    }
+
+    .feature-card {
+      border-radius: 1.75rem;
+
+      padding: 1.9rem;
+
+      background: rgba(255, 255, 255, 0.03);
+
+      border: 0.5px solid rgba(255, 255, 255, 0.09);
+
+      box-shadow:
+        0 20px 70px rgba(0, 0, 0, 0.4);
+
+      backdrop-filter: blur(36px) saturate(150%);
+
+      -webkit-backdrop-filter: blur(36px) saturate(150%);
+
+      transition:
+        background 0.3s,
+        border-color 0.3s,
+        transform 0.3s;
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+
+      border-color: rgba(255, 255, 255, 0.16);
+
+      transform: translateY(-2px);
+    }
+
+    .feature-card .f-title {
+      font-size: 1.15rem;
+
+      color: var(--text);
+    }
+
+    .feature-card .f-title .f-dot {
+      display: inline-block;
+
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: var(--mineral-light);
+
+      margin-right: 0.6rem;
+
+      vertical-align: middle;
+    }
+
+    .feature-card .f-body {
+      margin-top: 0.6rem;
+
+      font-size: 0.92rem;
+
+      line-height: 1.55;
+
+      color: var(--text-muted);
+    }
+
+
+    /* =========================================================
+       Control List
+       ========================================================= */
+
+    .ctrl-list {
+      margin-top: 2.5rem;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0.9rem;
+
+      max-width: 26rem;
+    }
+
+    .ctrl-item {
+      display: flex;
+
+      align-items: center;
+
+      gap: 1rem;
+
+      font-size: 1.02rem;
+
+      color: var(--text-secondary);
+    }
+
+    .ctrl-dot {
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: var(--mineral-light);
+
+      flex-shrink: 0;
+    }
+
+
+    /* =========================================================
+       Status
+       ========================================================= */
+
+    .status-row {
+      margin-top: 2.5rem;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 0.7rem;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: var(--mineral-light);
+
+      box-shadow:
+        0 0 12px rgba(143, 193, 255, 0.7);
+    }
+
+    .status-row span:last-child {
+      font-size: 0.72rem;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.26em;
+
+      color: var(--mineral-light);
+    }
+
+    .status-facts {
+      margin-top: 1.75rem;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0.55rem;
+
+      max-width: 26rem;
+
+      font-size: 1rem;
+
+      color: var(--text-secondary);
+    }
+
+
+    /* =========================================================
+       Contact
+       ========================================================= */
+
+    .contact .lead {
+      margin-top: 2.25rem;
+
+      font-size: 1.05rem;
+
+      color: var(--text-muted);
+    }
+
+    .contact h2 {
+      margin-top: 1rem;
+
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+
+      line-height: 1.05;
+
+      color: var(--text);
+    }
+
+    .contact h2 .accent {
+      color: var(--mineral-light);
+    }
+
+    .contact .links {
+      margin-top: 2.5rem;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0.9rem;
+    }
+
+    .contact .mail,
+    .contact .home {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.75rem;
+
+      text-decoration: none;
+
+      color: var(--text);
+
+      font-size: 1.15rem;
+
+      width: fit-content;
+
+      transition: color 0.3s;
+    }
+
+    @media (min-width: 640px) {
+      .contact .mail,
+      .contact .home {
+        font-size: 1.35rem;
+      }
+    }
+
+    .contact .mail span:first-child,
+    .contact .home span:first-child {
+      border-bottom: 1px solid transparent;
+
+      transition:
+        border-color 0.3s,
+        color 0.3s;
+    }
+
+    .contact .mail:hover span:first-child,
+    .contact .home:hover span:first-child {
+      border-color: var(--mineral-light);
+
+      color: var(--mineral-light);
+    }
+
+    .contact .arrow {
+      font-size: 1rem;
+
+      transition: transform 0.3s;
+    }
+
+    .contact .mail:hover .arrow,
+    .contact .home:hover .arrow {
+      transform: translate(4px, -4px);
+    }
+
+
+    /* =========================================================
+       Footer
+       ========================================================= */
+
+    .footer {
+      position: relative;
+
+      padding-top: 3rem;
+
+      padding-bottom: 2rem;
+
+      color: rgba(245, 247, 251, 0.9);
+    }
+
+    .footer-inner {
+      width: 100%;
+
+      max-width: 90rem;
+
+      margin: 0 auto;
+
+      padding-left: 1.5rem;
+
+      padding-right: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer-inner {
+        padding-left: 3rem;
+
+        padding-right: 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .footer-inner {
+        padding-left: 5rem;
+
+        padding-right: 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .footer-inner {
+        padding-left: 7rem;
+
+        padding-right: 7rem;
+      }
+    }
+
+
+    /* Footer top */
+
+    .footer-top {
+      display: grid;
+
+      grid-template-columns: 1fr;
+
+      gap: 2rem;
+
+      padding-top: 2rem;
+
+      padding-bottom: 3rem;
+
+      border-top:
+        1px solid
+        rgba(255, 255, 255, 0.10);
+
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .footer-top {
+        grid-template-columns:
+          1fr
+          auto
+          1fr;
+
+        padding-top: 2.5rem;
+
+        padding-bottom: 3.5rem;
+      }
+    }
+
+
+    /* Footer brand */
+
+    .footer-brand {
+      display: inline-block;
+
+      width: fit-content;
+
+      font-size: 0.875rem;
+
+      font-weight: 600;
+
+      letter-spacing: 0.24em;
+
+      text-decoration: none;
+
+      color: rgba(245, 247, 251, 0.92);
+
+      transition:
+        color 0.3s ease,
+        opacity 0.3s ease;
+    }
+
+    .footer-brand:hover {
+      color: var(--mineral-light);
+
+      opacity: 0.9;
+    }
+
+
+    /* Footer statement */
+
+    .footer-statement {
+      font-size: 1.25rem;
+
+      line-height: 1.2;
+
+      color: rgba(245, 247, 251, 0.48);
+
+      text-align: left;
+    }
+
+    @media (min-width: 768px) {
+      .footer-statement {
+        text-align: center;
+
+        font-size: 1.375rem;
+      }
+    }
+
+
+    /* Footer back */
+
+    .footer-back {
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: flex-start;
+
+      gap: 0.65rem;
+
+      width: fit-content;
+
+      text-decoration: none;
+
+      font-size: 0.6875rem;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.22em;
+
+      color: rgba(245, 247, 251, 0.48);
+
+      transition:
+        color 0.3s ease;
+    }
+
+    @media (min-width: 768px) {
+      .footer-back {
+        justify-self: end;
+      }
+    }
+
+    .footer-back-arrow {
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      width: 1.75rem;
+
+      height: 1.75rem;
+
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.14);
+
+      border-radius: 50%;
+
+      font-size: 0.8rem;
+
+      color: rgba(245, 247, 251, 0.7);
+
+      transition:
+        transform 0.35s cubic-bezier(.23,1,.32,1),
+        background 0.3s ease,
+        border-color 0.3s ease,
+        color 0.3s ease;
+    }
+
+    .footer-back:hover {
+      color: var(--mineral-light);
+    }
+
+    .footer-back:hover .footer-back-arrow {
+      transform: translateY(-3px);
+
+      background: rgba(95, 168, 255, 0.10);
+
+      border-color: rgba(95, 168, 255, 0.35);
+
+      color: var(--mineral-light);
+    }
+
+
+    /* Footer main */
+
+    .footer-main {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 3rem;
+
+      padding-top: 3rem;
+
+      padding-bottom: 3.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .footer-main {
+        flex-direction: row;
+
+        align-items: flex-start;
+
+        justify-content: space-between;
+
+        padding-top: 3.5rem;
+
+        padding-bottom: 4rem;
+      }
+    }
+
+
+    /* Footer note */
+
+    .footer-note {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0.4rem;
+    }
+
+    .footer-note p {
+      margin: 0;
+
+      font-size: 0.8125rem;
+
+      line-height: 1.5;
+
+      color: rgba(245, 247, 251, 0.40);
+    }
+
+    .footer-note p:first-child {
+      color: rgba(245, 247, 251, 0.68);
+
+      font-weight: 500;
+
+      letter-spacing: 0.01em;
+    }
+
+
+    /* Footer links */
+
+    .footer-links {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, minmax(90px, 1fr));
+
+      column-gap: 3rem;
+
+      row-gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer-links {
+        display: flex;
+
+        gap: 2rem;
+      }
+    }
+
+    .footer-links a {
+      position: relative;
+
+      width: fit-content;
+
+      font-size: 0.75rem;
+
+      text-decoration: none;
+
+      color: rgba(245, 247, 251, 0.58);
+
+      transition:
+        color 0.3s ease;
+    }
+
+    .footer-links a::after {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+
+      bottom: -0.3rem;
+
+      width: 100%;
+
+      height: 1px;
+
+      background: var(--mineral-light);
+
+      transform: scaleX(0);
+
+      transform-origin: right center;
+
+      transition:
+        transform 0.35s
+        cubic-bezier(.23,1,.32,1);
+    }
+
+    .footer-links a:hover {
+      color: var(--mineral-light);
+    }
+
+    .footer-links a:hover::after {
+      transform: scaleX(1);
+
+      transform-origin: left center;
+    }
+
+
+    /* Footer bottom */
+
+    .footer-bottom {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0.5rem;
+
+      padding-top: 1.5rem;
+
+      border-top:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
+      font-size: 0.6875rem;
+
+      letter-spacing: 0.02em;
+
+      color: rgba(245, 247, 251, 0.32);
+    }
+
+    @media (min-width: 640px) {
+      .footer-bottom {
+        flex-direction: row;
+
+        align-items: center;
+
+        justify-content: space-between;
+      }
+    }
+
+
+    /* =========================================================
+       Reveal
+       ========================================================= */
+
+    .reveal {
+      opacity: 0;
+
+      transform: translateY(26px);
+
+      filter: blur(12px);
+
+      transition:
+        opacity 1.1s cubic-bezier(.23,1,.32,1),
+        transform 1.1s cubic-bezier(.23,1,.32,1),
+        filter 1.1s cubic-bezier(.23,1,.32,1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+
+      transform: none;
+
+      filter: blur(0);
+    }
+
+
+    /* =========================================================
+       Reduced Motion
+       ========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal {
+        opacity: 1;
+
+        transform: none;
+
+        filter: none;
+
+        transition: none;
+      }
+
+      .scroll-hint .arrow {
+        animation: none;
+      }
+
+    }
+
+  </style>
 </head>
+
+
 <body>
 
-  <!-- Background -->
-  <div class="sky" aria-hidden="true">
-    <div class="layers" id="layers"></div>
+  <!-- =========================================================
+       Background
+       ========================================================= -->
+
+  <div
+    class="sky"
+    aria-hidden="true"
+  >
+
+    <div
+      class="layers"
+      id="layers"
+    ></div>
+
     <div class="glow"></div>
-    <div class="flecks" id="flecks"></div>
+
+    <div
+      class="flecks"
+      id="flecks"
+    ></div>
+
   </div>
 
-  <!-- Navigation -->
-  <div class="nav-wrap">
-    <nav class="nav" aria-label="Primary">
 
-      <a class="brand display" href="index.html#top">
-        DAWNSTONE <span class="of">/ Strata</span>
+  <!-- =========================================================
+       Header
+       ========================================================= -->
+
+  <header class="nav-wrap">
+
+    <nav
+      class="nav"
+      aria-label="Primary"
+    >
+
+      <a
+        class="brand display"
+        href="index.html#top"
+      >
+        DAWNSTONE
+
+        <span class="of">
+          / STRATA
+        </span>
       </a>
+
 
       <div class="nav-center">
-        <a href="index.html#projects">Projects</a>
-        <a href="#philosophy">Philosophy</a>
-        <a href="index.html#about">About</a>
-        <a href="#contact">Contact</a>
-      </div>
-
-      <button
-        class="burger"
-        id="burger"
-        aria-label="Open menu"
-        aria-expanded="false"
-      >
-        <span></span>
-        <span></span>
-      </button>
-
-    </nav>
-  </div>
-
-  <!-- Mobile menu -->
-  <div class="mobile-menu" id="mobileMenu">
-
-    <div class="scrim" id="scrim"></div>
-
-    <div class="panel">
-
-      <div class="close-row">
-        <button
-          class="close"
-          id="closeMenu"
-          aria-label="Close menu"
-        >
-          ✕
-        </button>
-      </div>
-
-      <nav>
-        <a href="index.html#projects" class="m-link">Projects</a>
-        <a href="#philosophy" class="m-link">Philosophy</a>
-        <a href="index.html#about" class="m-link">About</a>
-        <a href="#contact" class="m-link">Contact</a>
-        <a href="index.html" class="m-link back">← Dawnstone</a>
-      </nav>
-    </div>
-  </div>
-
-  <main>
-
-    <!-- HERO -->
-    <section id="top" class="hero">
-      <h1 class="display reveal">STRATA</h1>
-      <p class="reveal">A native<br><span class="serif-italic qc">development environment</span></p>
-      <p class="tag reveal">Built for macOS.</p>
-      <div class="scroll-hint">
-        <span class="txt">Scroll to explore</span>
-        <span class="arrow">↓</span>
-      </div>
-    </section>
-
-    <!-- 01 / THE FOUNDATION -->
-    <section id="foundation" class="prose-section">
-      <p class="label reveal">01 / The Foundation</p>
-      <h2 class="display reveal">Development,<br><span class="serif-italic accent">quietly powerful.</span></h2>
-      <div class="body reveal">
-        <p>Most environments compete for your attention — panels, extensions, notifications. STRATA doesn't.</p>
-        <p>It gives your code a place to live, and stays quiet around it.</p>
-      </div>
-    </section>
-
-    <!-- 02 / STRATA -->
-    <section id="strata" class="prose-section">
-      <p class="label reveal">02 / STRATA</p>
-      <h2 class="display reveal">A development environment,<br><span class="serif-italic accent">built for macOS.</span></h2>
-      <div class="body reveal">
-        <p>STRATA is a native development environment designed specifically for macOS.</p>
-        <p>It brings code, projects, files, and development tools into one focused workspace.</p>
-      </div>
-      <p class="punchline serif-italic reveal">Built for the platform. Not around it.</p>
-
-      <div class="feature-grid reveal" aria-hidden="true">
-        <div class="feature-card">
-          <div class="f-title"><span class="f-dot"></span>Native</div>
-          <div class="f-body">Designed specifically for macOS.</div>
-        </div>
-        <div class="feature-card">
-          <div class="f-title"><span class="f-dot"></span>Focused</div>
-          <div class="f-body">A workspace that keeps development close and distraction-free.</div>
-        </div>
-        <div class="feature-card">
-          <div class="f-title"><span class="f-dot"></span>Integrated</div>
-          <div class="f-body">Projects, files, code, and tools in one environment.</div>
-        </div>
-        <div class="feature-card">
-          <div class="f-title"><span class="f-dot"></span>Modern</div>
-          <div class="f-body">Designed around the interaction language of modern macOS.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 03 / PHILOSOPHY -->
-    <section id="philosophy" class="prose-section">
-      <p class="label reveal">03 / Philosophy</p>
-      <h2 class="display reveal">The best environment<br><span class="serif-italic accent">stays out of the way.</span></h2>
-      <div class="body reveal">
-        <p>STRATA is designed to make the environment disappear.</p>
-        <p>The interface should help you work, not ask you to think about the interface.</p>
-      </div>
-      <p class="punchline serif-italic reveal">Native where it matters. Quiet where it can be.</p>
-    </section>
-
-    <!-- 04 / NATIVE -->
-    <section id="native" class="prose-section">
-      <p class="label reveal">04 / Native</p>
-      <h2 class="display reveal">Made for<br><span class="serif-italic accent">the Mac.</span></h2>
-      <div class="body reveal">
-        <p>STRATA is designed around macOS, not simply ported to it.</p>
-      </div>
-      <div class="ctrl-list reveal">
-        <div class="ctrl-item"><span class="ctrl-dot"></span>Use native interactions</div>
-        <div class="ctrl-item"><span class="ctrl-dot"></span>Respect the platform</div>
-        <div class="ctrl-item"><span class="ctrl-dot"></span>Feel at home</div>
-      </div>
-      <p class="spec-line reveal"><span>Swift</span><span class="dot"> </span><span>SwiftUI</span><span class="dot"> </span><span>macOS Tahoe</span><span class="dot"> </span><span>Liquid Glass</span></p>
-    </section>
-
-    <!-- 05 / DEVELOPMENT -->
-    <section id="development" class="prose-section">
-      <p class="label reveal">05 / Development</p>
-      <h2 class="display reveal">Building the<br><span class="serif-italic accent">foundation.</span></h2>
-      <div class="body reveal">
-        <p>STRATA is currently in development.</p>
-        <p>The foundation is being built carefully, one layer at a time.</p>
-      </div>
-      <div class="status-row reveal">
-        <span class="status-dot"></span>
-        <span>In Development</span>
-      </div>
-      <div class="status-facts reveal">
-        <div>Built by Dawnstone</div>
-        <div>For macOS</div>
-        <div>Planned to be free</div>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="contact" class="prose-section contact">
-      <p class="label reveal">06 / Contact</p>
-      <p class="lead reveal">Curious about STRATA?</p>
-      <h2 class="display reveal">Let&rsquo;s build<br><span class="serif-italic accent">something native.</span></h2>
-      <div class="links">
-        <a class="mail reveal" href="mailto:dawnstone@outlook.jp">
-          <span>dawnstone@outlook.jp</span>
-          <span class="arrow" aria-hidden="true">↗</span>
-        </a>
-        <a class="home reveal" href="index.html">
-          <span>Back to Dawnstone</span>
-          <span class="arrow" aria-hidden="true">↗</span>
-        </a>
-      </div>
-    </section>
-
-    <footer class="footer">
-
-  <div class="footer-inner">
-
-    <!-- Top -->
-    <div class="footer-top">
-
-      <a
-        href="#top"
-        class="footer-brand display"
-      >
-        STRATA
-      </a>
-
-      <p class="footer-statement serif-italic">
-        Development, structured.
-      </p>
-
-      <a
-        href="#top"
-        class="footer-back"
-        aria-label="Back to top"
-      >
-        <span>Back to top</span>
-        <span class="footer-back-arrow">↑</span>
-      </a>
-
-    </div>
-
-
-    <!-- Main -->
-    <div class="footer-main">
-
-      <div class="footer-note">
-
-        <p>
-          Independent software studio
-        </p>
-
-        <p>
-          Native applications for macOS.
-        </p>
-
-      </div>
-
-
-      <nav
-        class="footer-links"
-        aria-label="Footer"
-      >
 
         <a href="index.html#projects">
           Projects
@@ -893,199 +1544,1437 @@
           Contact
         </a>
 
+      </div>
+
+
+      <button
+        class="burger"
+        id="burger"
+        aria-label="Open menu"
+        aria-expanded="false"
+      >
+
+        <span></span>
+        <span></span>
+
+      </button>
+
+    </nav>
+
+  </header>
+
+
+  <!-- =========================================================
+       Mobile Menu
+       ========================================================= -->
+
+  <div
+    class="mobile-menu"
+    id="mobileMenu"
+  >
+
+    <div
+      class="scrim"
+      id="scrim"
+    ></div>
+
+
+    <div class="panel">
+
+      <div class="close-row">
+
+        <button
+          class="close"
+          id="closeMenu"
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
+
+      </div>
+
+
+      <nav>
+
+        <a
+          href="index.html#projects"
+          class="m-link"
+        >
+          Projects
+        </a>
+
+        <a
+          href="#philosophy"
+          class="m-link"
+        >
+          Philosophy
+        </a>
+
+        <a
+          href="index.html#about"
+          class="m-link"
+        >
+          About
+        </a>
+
+        <a
+          href="#contact"
+          class="m-link"
+        >
+          Contact
+        </a>
+
+        <a
+          href="index.html"
+          class="m-link back"
+        >
+          ← Dawnstone
+        </a>
+
       </nav>
-
-    </div>
-
-
-    <!-- Bottom -->
-    <div class="footer-bottom">
-
-      <p>
-        © 2026 Dawnstone
-      </p>
-
-      <p>
-        Made with care.
-      </p>
 
     </div>
 
   </div>
 
-</footer>
+
+  <!-- =========================================================
+       Main
+       ========================================================= -->
+
+  <main>
+
+    <!-- HERO -->
+
+    <section
+      id="top"
+      class="hero"
+    >
+
+      <h1 class="display reveal">
+        STRATA
+      </h1>
+
+      <p class="reveal">
+        A native<br>
+        <span class="serif-italic qc">
+          development environment
+        </span>
+      </p>
+
+      <p class="tag reveal">
+        Built for macOS.
+      </p>
+
+
+      <div class="scroll-hint">
+
+        <span class="txt">
+          Scroll to explore
+        </span>
+
+        <span class="arrow">
+          ↓
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- 01 / THE FOUNDATION -->
+
+    <section
+      id="foundation"
+      class="prose-section"
+    >
+
+      <p class="label reveal">
+        01 / The Foundation
+      </p>
+
+      <h2 class="display reveal">
+        Development,<br>
+        <span class="serif-italic accent">
+          quietly powerful.
+        </span>
+      </h2>
+
+      <div class="body reveal">
+
+        <p>
+          Most environments compete for your attention —
+          panels, extensions, notifications. STRATA doesn't.
+        </p>
+
+        <p>
+          It gives your code a place to live,
+          and stays quiet around it.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- 02 / STRATA -->
+
+    <section
+      id="strata"
+      class="prose-section"
+    >
+
+      <p class="label reveal">
+        02 / STRATA
+      </p>
+
+      <h2 class="display reveal">
+        A development environment,<br>
+        <span class="serif-italic accent">
+          built for macOS.
+        </span>
+      </h2>
+
+      <div class="body reveal">
+
+        <p>
+          STRATA is a native development environment
+          designed specifically for macOS.
+        </p>
+
+        <p>
+          It brings code, projects, files, and development
+          tools into one focused workspace.
+        </p>
+
+      </div>
+
+      <p class="punchline serif-italic reveal">
+        Built for the platform. Not around it.
+      </p>
+
+
+      <div
+        class="feature-grid reveal"
+        aria-hidden="true"
+      >
+
+        <div class="feature-card">
+
+          <div class="f-title">
+            <span class="f-dot"></span>
+            Native
+          </div>
+
+          <div class="f-body">
+            Designed specifically for macOS.
+          </div>
+
+        </div>
+
+
+        <div class="feature-card">
+
+          <div class="f-title">
+            <span class="f-dot"></span>
+            Focused
+          </div>
+
+          <div class="f-body">
+            A workspace that keeps development
+            close and distraction-free.
+          </div>
+
+        </div>
+
+
+        <div class="feature-card">
+
+          <div class="f-title">
+            <span class="f-dot"></span>
+            Integrated
+          </div>
+
+          <div class="f-body">
+            Projects, files, code, and tools
+            in one environment.
+          </div>
+
+        </div>
+
+
+        <div class="feature-card">
+
+          <div class="f-title">
+            <span class="f-dot"></span>
+            Modern
+          </div>
+
+          <div class="f-body">
+            Designed around the interaction
+            language of modern macOS.
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- 03 / PHILOSOPHY -->
+
+    <section
+      id="philosophy"
+      class="prose-section"
+    >
+
+      <p class="label reveal">
+        03 / Philosophy
+      </p>
+
+      <h2 class="display reveal">
+        The best environment<br>
+        <span class="serif-italic accent">
+          stays out of the way.
+        </span>
+      </h2>
+
+      <div class="body reveal">
+
+        <p>
+          STRATA is designed to make the environment disappear.
+        </p>
+
+        <p>
+          The interface should help you work,
+          not ask you to think about the interface.
+        </p>
+
+      </div>
+
+      <p class="punchline serif-italic reveal">
+        Native where it matters.
+        Quiet where it can be.
+      </p>
+
+    </section>
+
+
+    <!-- 04 / NATIVE -->
+
+    <section
+      id="native"
+      class="prose-section"
+    >
+
+      <p class="label reveal">
+        04 / Native
+      </p>
+
+      <h2 class="display reveal">
+        Made for<br>
+        <span class="serif-italic accent">
+          the Mac.
+        </span>
+      </h2>
+
+      <div class="body reveal">
+
+        <p>
+          STRATA is designed around macOS,
+          not simply ported to it.
+        </p>
+
+      </div>
+
+
+      <div class="ctrl-list reveal">
+
+        <div class="ctrl-item">
+          <span class="ctrl-dot"></span>
+          Use native interactions
+        </div>
+
+        <div class="ctrl-item">
+          <span class="ctrl-dot"></span>
+          Respect the platform
+        </div>
+
+        <div class="ctrl-item">
+          <span class="ctrl-dot"></span>
+          Feel at home
+        </div>
+
+      </div>
+
+
+      <p class="spec-line reveal">
+
+        <span>Swift</span>
+
+        <span class="dot">
+          •
+        </span>
+
+        <span>SwiftUI</span>
+
+        <span class="dot">
+          •
+        </span>
+
+        <span>macOS Tahoe</span>
+
+        <span class="dot">
+          •
+        </span>
+
+        <span>Liquid Glass</span>
+
+      </p>
+
+    </section>
+
+
+    <!-- 05 / DEVELOPMENT -->
+
+    <section
+      id="development"
+      class="prose-section"
+    >
+
+      <p class="label reveal">
+        05 / Development
+      </p>
+
+      <h2 class="display reveal">
+        Building the<br>
+        <span class="serif-italic accent">
+          foundation.
+        </span>
+      </h2>
+
+      <div class="body reveal">
+
+        <p>
+          STRATA is currently in development.
+        </p>
+
+        <p>
+          The foundation is being built carefully,
+          one layer at a time.
+        </p>
+
+      </div>
+
+
+      <div class="status-row reveal">
+
+        <span class="status-dot"></span>
+
+        <span>
+          In Development
+        </span>
+
+      </div>
+
+
+      <div class="status-facts reveal">
+
+        <div>
+          Built by Dawnstone
+        </div>
+
+        <div>
+          For macOS
+        </div>
+
+        <div>
+          Planned to be free
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- 06 / CONTACT -->
+
+    <section
+      id="contact"
+      class="prose-section contact"
+    >
+
+      <p class="label reveal">
+        06 / Contact
+      </p>
+
+      <p class="lead reveal">
+        Curious about STRATA?
+      </p>
+
+      <h2 class="display reveal">
+        Let&rsquo;s build<br>
+        <span class="serif-italic accent">
+          something native.
+        </span>
+      </h2>
+
+
+      <div class="links">
+
+        <a
+          class="mail reveal"
+          href="mailto:dawnstone@outlook.jp"
+        >
+
+          <span>
+            dawnstone@outlook.jp
+          </span>
+
+          <span
+            class="arrow"
+            aria-hidden="true"
+          >
+            ↗
+          </span>
+
+        </a>
+
+
+        <a
+          class="home reveal"
+          href="index.html"
+        >
+
+          <span>
+            Back to Dawnstone
+          </span>
+
+          <span
+            class="arrow"
+            aria-hidden="true"
+          >
+            ↗
+          </span>
+
+        </a>
+
+      </div>
+
+    </section>
+
   </main>
 
+
+  <!-- =========================================================
+       Footer
+       ========================================================= -->
+
+  <footer class="footer">
+
+    <div class="footer-inner">
+
+      <div class="footer-top">
+
+        <a
+          href="#top"
+          class="footer-brand display"
+        >
+          STRATA
+        </a>
+
+
+        <p class="footer-statement serif-italic">
+          Development, structured.
+        </p>
+
+
+        <a
+          href="#top"
+          class="footer-back"
+          aria-label="Back to top"
+        >
+
+          <span>
+            Back to top
+          </span>
+
+          <span class="footer-back-arrow">
+            ↑
+          </span>
+
+        </a>
+
+      </div>
+
+
+      <div class="footer-main">
+
+        <div class="footer-note">
+
+          <p>
+            Independent software studio
+          </p>
+
+          <p>
+            Native applications for macOS.
+          </p>
+
+        </div>
+
+
+        <nav
+          class="footer-links"
+          aria-label="Footer"
+        >
+
+          <a href="index.html#projects">
+            Projects
+          </a>
+
+          <a href="#philosophy">
+            Philosophy
+          </a>
+
+          <a href="index.html#about">
+            About
+          </a>
+
+          <a href="#contact">
+            Contact
+          </a>
+
+        </nav>
+
+      </div>
+
+
+      <div class="footer-bottom">
+
+        <p>
+          © 2026 Dawnstone
+        </p>
+
+        <p>
+          Made with care.
+        </p>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =========================================================
+       Scripts
+       ========================================================= -->
+
   <script>
-  (function(){
 
-    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    (function () {
 
-    /* ---------------------------------------------------------
-       Flecks — cold mineral specks caught in the seams of rock,
-       replacing Amber's embers with STRATA's own register.
-       --------------------------------------------------------- */
-    (function(){
-      var count = reduce ? 40 : 90;
-      var shadows = [];
-      for (var i=0;i<count;i++){
-        var x = (Math.random()*100).toFixed(2);
-        var y = (Math.random()*100).toFixed(2);
-        var o = (Math.random()*0.4+0.06).toFixed(2);
-        var big = Math.random() > 0.92;
-        var r = big ? 1.5 : 0.75;
-        var cool = Math.random() > 0.5;
-        var color = cool ? "143,193,255" : "245,247,251";
-        shadows.push(x+"vw "+y+"vh 0 "+r+"px rgba("+color+","+o+")");
-      }
-      document.getElementById("flecks").style.boxShadow = shadows.join(", ");
-    })();
+      var reduce =
+        window.matchMedia &&
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
 
-    /* Reveal animations */
-    (function(){
-      if (reduce){
-        document.querySelectorAll(".reveal").forEach(function(el){ el.classList.add("in"); });
-        return;
-      }
-      var io = new IntersectionObserver(function(entries){
-        entries.forEach(function(entry){
-          if (entry.isIntersecting){
-            entry.target.classList.add("in");
-            io.unobserve(entry.target);
+
+      /* =======================================================
+         Flecks
+         ======================================================= */
+
+      (function () {
+
+        var count = reduce ? 40 : 90;
+
+        var shadows = [];
+
+
+        for (var i = 0; i < count; i++) {
+
+          var x =
+            (Math.random() * 100).toFixed(2);
+
+          var y =
+            (Math.random() * 100).toFixed(2);
+
+          var o =
+            (Math.random() * 0.4 + 0.06).toFixed(2);
+
+          var big =
+            Math.random() > 0.92;
+
+          var r =
+            big ? 1.5 : 0.75;
+
+          var cool =
+            Math.random() > 0.5;
+
+          var color =
+            cool
+              ? "143,193,255"
+              : "245,247,251";
+
+
+          shadows.push(
+            x +
+            "vw " +
+            y +
+            "vh 0 " +
+            r +
+            "px rgba(" +
+            color +
+            "," +
+            o +
+            ")"
+          );
+
+        }
+
+
+        document
+          .getElementById("flecks")
+          .style.boxShadow =
+          shadows.join(", ");
+
+      })();
+
+
+      /* =======================================================
+         Reveal Animations
+         ======================================================= */
+
+      (function () {
+
+        if (reduce) {
+
+          document
+            .querySelectorAll(".reveal")
+            .forEach(function (el) {
+
+              el.classList.add("in");
+
+            });
+
+          return;
+
+        }
+
+
+        var io =
+          new IntersectionObserver(
+            function (entries) {
+
+              entries.forEach(function (entry) {
+
+                if (entry.isIntersecting) {
+
+                  entry.target.classList.add("in");
+
+                  io.unobserve(entry.target);
+
+                }
+
+              });
+
+            },
+            {
+              threshold: 0.12,
+
+              rootMargin:
+                "0px 0px -10% 0px"
+            }
+          );
+
+
+        document
+          .querySelectorAll(".reveal")
+          .forEach(function (el) {
+
+            io.observe(el);
+
+          });
+
+      })();
+
+
+      /* =======================================================
+         Mobile Menu
+         ======================================================= */
+
+      (function () {
+
+        var menu =
+          document.getElementById("mobileMenu");
+
+        var open =
+          document.getElementById("burger");
+
+        var close =
+          document.getElementById("closeMenu");
+
+        var scrim =
+          document.getElementById("scrim");
+
+
+        function show(v) {
+
+          menu.classList.toggle(
+            "open",
+            v
+          );
+
+          open.setAttribute(
+            "aria-expanded",
+            v ? "true" : "false"
+          );
+
+          document.body.style.overflow =
+            v ? "hidden" : "";
+
+        }
+
+
+        open.addEventListener(
+          "click",
+          function () {
+
+            show(true);
+
           }
-        });
-      }, { threshold:0.12, rootMargin:"0px 0px -10% 0px" });
-      document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+        );
+
+
+        close.addEventListener(
+          "click",
+          function () {
+
+            show(false);
+
+          }
+        );
+
+
+        scrim.addEventListener(
+          "click",
+          function () {
+
+            show(false);
+
+          }
+        );
+
+
+        menu
+          .querySelectorAll(".m-link")
+          .forEach(function (a) {
+
+            a.addEventListener(
+              "click",
+              function () {
+
+                show(false);
+
+              }
+            );
+
+          });
+
+      })();
+
+
+      /* =======================================================
+         Scroll-driven Color Interpolation
+         ======================================================= */
+
+      var root =
+        document.documentElement.style;
+
+
+      var backgroundStops = [
+
+        {
+          p: 0.00,
+          top: [7, 16, 25],
+          bottom: [13, 24, 34],
+          horizon: [95, 168, 255, 0.03],
+          text: [245, 247, 251]
+        },
+
+        {
+          p: 0.16,
+          top: [11, 21, 30],
+          bottom: [20, 34, 46],
+          horizon: [95, 168, 255, 0.07],
+          text: [242, 246, 250]
+        },
+
+        {
+          p: 0.32,
+          top: [18, 30, 40],
+          bottom: [36, 55, 70],
+          horizon: [95, 168, 255, 0.13],
+          text: [236, 243, 248]
+        },
+
+        {
+          p: 0.46,
+          top: [30, 47, 60],
+          bottom: [54, 80, 100],
+          horizon: [120, 180, 255, 0.20],
+          text: [232, 241, 248]
+        },
+
+        {
+          p: 0.56,
+          top: [46, 70, 92],
+          bottom: [86, 124, 158],
+          horizon: [143, 193, 255, 0.28],
+          text: [236, 244, 250]
+        },
+
+        {
+          p: 0.68,
+          top: [28, 44, 57],
+          bottom: [48, 72, 92],
+          horizon: [110, 170, 235, 0.17],
+          text: [236, 243, 248]
+        },
+
+        {
+          p: 0.84,
+          top: [13, 23, 32],
+          bottom: [22, 36, 48],
+          horizon: [95, 168, 255, 0.07],
+          text: [241, 245, 249]
+        },
+
+        {
+          p: 1.00,
+          top: [6, 14, 22],
+          bottom: [10, 20, 28],
+          horizon: [95, 168, 255, 0.02],
+          text: [245, 247, 251]
+        }
+
+      ];
+
+
+      var glowStops = [
+
+        {
+          p: 0,
+          y: 44,
+          opacity: 0.12,
+          scale: 0.76
+        },
+
+        {
+          p: 0.22,
+          y: 34,
+          opacity: 0.24,
+          scale: 0.84
+        },
+
+        {
+          p: 0.42,
+          y: 20,
+          opacity: 0.40,
+          scale: 0.96
+        },
+
+        {
+          p: 0.56,
+          y: 8,
+          opacity: 0.50,
+          scale: 1.05
+        },
+
+        {
+          p: 0.70,
+          y: 20,
+          opacity: 0.34,
+          scale: 0.98
+        },
+
+        {
+          p: 0.85,
+          y: 34,
+          opacity: 0.18,
+          scale: 0.88
+        },
+
+        {
+          p: 1,
+          y: 44,
+          opacity: 0.10,
+          scale: 0.78
+        }
+
+      ];
+
+
+      function lerp(a, b, t) {
+
+        return a + (b - a) * t;
+
+      }
+
+
+      function interpColor(a, b, t) {
+
+        return [
+          lerp(a[0], b[0], t),
+          lerp(a[1], b[1], t),
+          lerp(a[2], b[2], t)
+        ];
+
+      }
+
+
+      function interpRGBA(a, b, t) {
+
+        return [
+          lerp(a[0], b[0], t),
+          lerp(a[1], b[1], t),
+          lerp(a[2], b[2], t),
+          lerp(a[3], b[3], t)
+        ];
+
+      }
+
+
+      function rgb(c) {
+
+        return (
+          "rgb(" +
+          Math.round(c[0]) +
+          "," +
+          Math.round(c[1]) +
+          "," +
+          Math.round(c[2]) +
+          ")"
+        );
+
+      }
+
+
+      function rgba(c) {
+
+        return (
+          "rgba(" +
+          Math.round(c[0]) +
+          "," +
+          Math.round(c[1]) +
+          "," +
+          Math.round(c[2]) +
+          "," +
+          c[3].toFixed(3) +
+          ")"
+        );
+
+      }
+
+
+      function sampleNumeric(
+        stops,
+        p,
+        key
+      ) {
+
+        if (p <= stops[0].p) {
+
+          return stops[0][key];
+
+        }
+
+
+        if (
+          p >=
+          stops[stops.length - 1].p
+        ) {
+
+          return stops[
+            stops.length - 1
+          ][key];
+
+        }
+
+
+        for (
+          var i = 0;
+          i < stops.length - 1;
+          i++
+        ) {
+
+          var a = stops[i];
+
+          var b = stops[i + 1];
+
+
+          if (
+            p >= a.p &&
+            p <= b.p
+          ) {
+
+            var t =
+              (p - a.p) /
+              (b.p - a.p);
+
+            return lerp(
+              a[key],
+              b[key],
+              t
+            );
+
+          }
+
+        }
+
+      }
+
+
+      function sampleColor(
+        stops,
+        p,
+        key
+      ) {
+
+        if (p <= stops[0].p) {
+
+          return stops[0][key];
+
+        }
+
+
+        if (
+          p >=
+          stops[stops.length - 1].p
+        ) {
+
+          return stops[
+            stops.length - 1
+          ][key];
+
+        }
+
+
+        for (
+          var i = 0;
+          i < stops.length - 1;
+          i++
+        ) {
+
+          var a = stops[i];
+
+          var b = stops[i + 1];
+
+
+          if (
+            p >= a.p &&
+            p <= b.p
+          ) {
+
+            var t =
+              (p - a.p) /
+              (b.p - a.p);
+
+            return interpColor(
+              a[key],
+              b[key],
+              t
+            );
+
+          }
+
+        }
+
+      }
+
+
+      function sampleRGBA(
+        stops,
+        p,
+        key
+      ) {
+
+        if (p <= stops[0].p) {
+
+          return stops[0][key];
+
+        }
+
+
+        if (
+          p >=
+          stops[stops.length - 1].p
+        ) {
+
+          return stops[
+            stops.length - 1
+          ][key];
+
+        }
+
+
+        for (
+          var i = 0;
+          i < stops.length - 1;
+          i++
+        ) {
+
+          var a = stops[i];
+
+          var b = stops[i + 1];
+
+
+          if (
+            p >= a.p &&
+            p <= b.p
+          ) {
+
+            var t =
+              (p - a.p) /
+              (b.p - a.p);
+
+            return interpRGBA(
+              a[key],
+              b[key],
+              t
+            );
+
+          }
+
+        }
+
+      }
+
+
+      var ticking = false;
+
+
+      function update() {
+
+        var max =
+          document.documentElement
+            .scrollHeight -
+          window.innerHeight;
+
+
+        var p =
+          max > 0
+            ? Math.min(
+                1,
+                Math.max(
+                  0,
+                  window.scrollY / max
+                )
+              )
+            : 0;
+
+
+        root.setProperty(
+          "--scroll-progress",
+          p
+        );
+
+
+        var top =
+          sampleColor(
+            backgroundStops,
+            p,
+            "top"
+          );
+
+
+        var bottom =
+          sampleColor(
+            backgroundStops,
+            p,
+            "bottom"
+          );
+
+
+        var horizon =
+          sampleRGBA(
+            backgroundStops,
+            p,
+            "horizon"
+          );
+
+
+        var text =
+          sampleColor(
+            backgroundStops,
+            p,
+            "text"
+          );
+
+
+        root.setProperty(
+          "--bg-top",
+          rgb(top)
+        );
+
+        root.setProperty(
+          "--bg-bottom",
+          rgb(bottom)
+        );
+
+        root.setProperty(
+          "--horizon-color",
+          rgba(horizon)
+        );
+
+        root.setProperty(
+          "--text-tint",
+          rgb(text)
+        );
+
+        root.setProperty(
+          "--text",
+          rgb(text)
+        );
+
+
+        var gy =
+          sampleNumeric(
+            glowStops,
+            p,
+            "y"
+          );
+
+
+        var go =
+          sampleNumeric(
+            glowStops,
+            p,
+            "opacity"
+          );
+
+
+        var gs =
+          sampleNumeric(
+            glowStops,
+            p,
+            "scale"
+          );
+
+
+        root.setProperty(
+          "--glow-y",
+          gy + "vh"
+        );
+
+        root.setProperty(
+          "--glow-opacity",
+          go
+        );
+
+        root.setProperty(
+          "--glow-scale",
+          gs
+        );
+
+
+        var fleckOpacity =
+          0.85 - go * 0.6;
+
+
+        var flecksEl =
+          document.getElementById(
+            "flecks"
+          );
+
+
+        if (flecksEl) {
+
+          flecksEl.style.opacity =
+            Math.max(
+              0.3,
+              fleckOpacity
+            );
+
+        }
+
+
+        var layersEl =
+          document.getElementById(
+            "layers"
+          );
+
+
+        if (
+          layersEl &&
+          !reduce
+        ) {
+
+          layersEl.style.transform =
+            "translateY(" +
+            (p * -40) +
+            "px)";
+
+        }
+
+
+        var shadow =
+          "0 8px 40px rgba(0,0,0," +
+          lerp(
+            0.5,
+            0.35,
+            go
+          ).toFixed(3) +
+          ")";
+
+
+        root.setProperty(
+          "--nav-shadow",
+          shadow
+        );
+
+
+        ticking = false;
+
+      }
+
+
+      function onScroll() {
+
+        if (!ticking) {
+
+          ticking = true;
+
+          requestAnimationFrame(
+            update
+          );
+
+        }
+
+      }
+
+
+      window.addEventListener(
+        "scroll",
+        onScroll,
+        {
+          passive: true
+        }
+      );
+
+
+      window.addEventListener(
+        "resize",
+        onScroll
+      );
+
+
+      update();
+
     })();
 
-    /* Mobile menu */
-    (function(){
-      var menu = document.getElementById("mobileMenu");
-      var open = document.getElementById("burger");
-      var close = document.getElementById("closeMenu");
-      var scrim = document.getElementById("scrim");
-      function show(v){
-        menu.classList.toggle("open", v);
-        open.setAttribute("aria-expanded", v ? "true":"false");
-        document.body.style.overflow = v ? "hidden" : "";
-      }
-      open.addEventListener("click", function(){ show(true); });
-      close.addEventListener("click", function(){ show(false); });
-      scrim.addEventListener("click", function(){ show(false); });
-      menu.querySelectorAll(".m-link").forEach(function(a){
-        a.addEventListener("click", function(){ show(false); });
-      });
-    })();
-
-    /* =========================================================
-       Scroll-driven color interpolation.
-       One mineral arc: dark navy   deep slate   blue gray
-       mineral blue   deep slate   dark navy — the page opens
-       and closes in the same near-black it starts in, so no
-       bright flash on load and a legible, dark footer, while
-       the named STRATA palette runs through the middle of the
-       page exactly as the layers are read top to bottom.
-       ========================================================= */
-    var root = document.documentElement.style;
-
-    var backgroundStops = [
-      { p:0.00, top:[7,16,25],   bottom:[13,24,34],  horizon:[95,168,255,0.03],  text:[245,247,251] },
-      { p:0.16, top:[11,21,30],  bottom:[20,34,46],  horizon:[95,168,255,0.07],  text:[242,246,250] },
-      { p:0.32, top:[18,30,40],  bottom:[36,55,70],  horizon:[95,168,255,0.13],  text:[236,243,248] },
-      { p:0.46, top:[30,47,60],  bottom:[54,80,100], horizon:[120,180,255,0.20], text:[232,241,248] },
-      { p:0.56, top:[46,70,92],  bottom:[86,124,158],horizon:[143,193,255,0.28], text:[236,244,250] },
-      { p:0.68, top:[28,44,57],  bottom:[48,72,92],  horizon:[110,170,235,0.17], text:[236,243,248] },
-      { p:0.84, top:[13,23,32],  bottom:[22,36,48],  horizon:[95,168,255,0.07],  text:[241,245,249] },
-      { p:1.00, top:[6,14,22],   bottom:[10,20,28],  horizon:[95,168,255,0.02],  text:[245,247,251] }
-    ];
-
-    var glowStops = [
-      { p:0,    y:44, opacity:0.12, scale:0.76 },
-      { p:0.22, y:34, opacity:0.24, scale:0.84 },
-      { p:0.42, y:20, opacity:0.40, scale:0.96 },
-      { p:0.56, y:8,  opacity:0.50, scale:1.05 },
-      { p:0.70, y:20, opacity:0.34, scale:0.98 },
-      { p:0.85, y:34, opacity:0.18, scale:0.88 },
-      { p:1,    y:44, opacity:0.10, scale:0.78 }
-    ];
-
-    function lerp(a,b,t){ return a+(b-a)*t; }
-    function interpColor(a,b,t){ return [lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)]; }
-    function interpRGBA(a,b,t){ return [lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t),lerp(a[3],b[3],t)]; }
-    function rgb(c){ return "rgb("+Math.round(c[0])+","+Math.round(c[1])+","+Math.round(c[2])+")"; }
-    function rgba(c){ return "rgba("+Math.round(c[0])+","+Math.round(c[1])+","+Math.round(c[2])+","+c[3].toFixed(3)+")"; }
-
-    function sampleNumeric(stops,p,key){
-      if (p<=stops[0].p) return stops[0][key];
-      if (p>=stops[stops.length-1].p) return stops[stops.length-1][key];
-      for (var i=0;i<stops.length-1;i++){
-        var a=stops[i], b=stops[i+1];
-        if (p>=a.p && p<=b.p){ var t=(p-a.p)/(b.p-a.p); return lerp(a[key],b[key],t); }
-      }
-    }
-    function sampleColor(stops,p,key){
-      if (p<=stops[0].p) return stops[0][key];
-      if (p>=stops[stops.length-1].p) return stops[stops.length-1][key];
-      for (var i=0;i<stops.length-1;i++){
-        var a=stops[i], b=stops[i+1];
-        if (p>=a.p && p<=b.p){ var t=(p-a.p)/(b.p-a.p); return interpColor(a[key],b[key],t); }
-      }
-    }
-    function sampleRGBA(stops,p,key){
-      if (p<=stops[0].p) return stops[0][key];
-      if (p>=stops[stops.length-1].p) return stops[stops.length-1][key];
-      for (var i=0;i<stops.length-1;i++){
-        var a=stops[i], b=stops[i+1];
-        if (p>=a.p && p<=b.p){ var t=(p-a.p)/(b.p-a.p); return interpRGBA(a[key],b[key],t); }
-      }
-    }
-
-    var ticking = false;
-
-    function update(){
-      var max = document.documentElement.scrollHeight - window.innerHeight;
-      var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-      root.setProperty("--scroll-progress", p);
-
-      var top = sampleColor(backgroundStops, p, "top");
-      var bottom = sampleColor(backgroundStops, p, "bottom");
-      var horizon = sampleRGBA(backgroundStops, p, "horizon");
-      var text = sampleColor(backgroundStops, p, "text");
-      root.setProperty("--bg-top", rgb(top));
-      root.setProperty("--bg-bottom", rgb(bottom));
-      root.setProperty("--horizon-color", rgba(horizon));
-      root.setProperty("--text-tint", rgb(text));
-      root.setProperty("--text", rgb(text));
-
-      var gy = sampleNumeric(glowStops, p, "y");
-      var go = sampleNumeric(glowStops, p, "opacity");
-      var gs = sampleNumeric(glowStops, p, "scale");
-      root.setProperty("--glow-y", gy + "vh");
-      root.setProperty("--glow-opacity", go);
-      root.setProperty("--glow-scale", gs);
-
-      var fleckOpacity = 0.85 - go * 0.6;
-      var flecksEl = document.getElementById("flecks");
-      if (flecksEl) flecksEl.style.opacity = Math.max(0.3, fleckOpacity);
-
-      var layersEl = document.getElementById("layers");
-      if (layersEl && !reduce) layersEl.style.transform = "translateY(" + (p * -40) + "px)";
-
-      var shadow = "0 8px 40px rgba(0,0,0," + lerp(0.5,0.35,go).toFixed(3) + ")";
-      root.setProperty("--nav-shadow", shadow);
-
-      ticking = false;
-    }
-
-    function onScroll(){
-      if (!ticking){ ticking = true; requestAnimationFrame(update); }
-    }
-
-    window.addEventListener("scroll", onScroll, { passive:true });
-    window.addEventListener("resize", onScroll);
-    update();
-
-  })();
   </script>
 
 </body>
