@@ -1,0 +1,2147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta
+    name="description"
+    content="Amber is now available on the web. A quiet music player by Dawnstone, designed around local music, thoughtful playback, and a calm listening experience."
+  />
+
+  <meta
+    name="theme-color"
+    content="#100B08"
+  />
+
+  <meta
+    property="og:title"
+    content="Amber is now available. — Dawnstone Field Note"
+  />
+
+  <meta
+    property="og:description"
+    content="Amber, Dawnstone's quiet music player, is now available on the web."
+  />
+
+  <meta
+    property="og:type"
+    content="article"
+  />
+
+  <title>Amber is now available. — Field Note</title>
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="../assets/favicon.png"
+  >
+
+  <style>
+    :root {
+      --night-top: #0b0806;
+      --night-bottom: #100b08;
+
+      --amber-deep: #b5672d;
+      --amber: #f5a45b;
+      --amber-light: #ffcb7a;
+      --gold: #ffe0ad;
+
+      --white: #f5f7fb;
+      --muted: rgba(245,247,251,0.58);
+      --soft: rgba(245,247,251,0.72);
+
+      --nav-bg: rgba(255,255,255,0.045);
+      --nav-border: rgba(255,255,255,0.11);
+
+      --border: rgba(255,255,255,0.10);
+      --border-warm: rgba(255,203,122,0.20);
+
+      --article-progress: 0;
+    }
+
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+
+    body {
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Text",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      color: var(--white);
+
+      background:
+        radial-gradient(
+          100% 55% at 50% 15%,
+          rgba(245,164,91,0.08),
+          transparent 62%
+        ),
+        linear-gradient(
+          180deg,
+          var(--night-top) 0%,
+          var(--night-bottom) 100%
+        );
+
+      line-height: 1.7;
+
+      overflow-x: hidden;
+    }
+
+
+    ::selection {
+      background: rgba(255,203,122,0.85);
+      color: #100b08;
+    }
+
+
+    a {
+      color: inherit;
+    }
+
+
+    a:focus-visible {
+      outline: 2px solid var(--amber-light);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+
+    .display {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+
+
+    .serif {
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        "Apple Garamond",
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-style: italic;
+      font-weight: 400;
+    }
+
+
+    .accent {
+      color: var(--amber-light);
+    }
+
+
+    /* =========================================================
+       Background
+       ========================================================= */
+
+
+    .sky {
+      position: fixed;
+      inset: 0;
+
+      z-index: -10;
+
+      overflow: hidden;
+      pointer-events: none;
+
+      background:
+        radial-gradient(
+          100% 60% at 50% 25%,
+          rgba(245,164,91,0.09),
+          transparent 65%
+        ),
+        linear-gradient(
+          180deg,
+          var(--night-top),
+          var(--night-bottom)
+        );
+    }
+
+
+    .glow {
+      position: absolute;
+
+      left: 50%;
+      top: 8%;
+
+      width: 52vw;
+      height: 52vw;
+
+      max-width: 800px;
+      max-height: 800px;
+
+      transform: translateX(-50%);
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(255,203,122,0.16) 0%,
+          rgba(245,164,91,0.08) 32%,
+          transparent 70%
+        );
+
+      filter: blur(22px);
+    }
+
+
+    .glow-secondary {
+      position: absolute;
+
+      right: -15%;
+      bottom: 5%;
+
+      width: 42vw;
+      height: 42vw;
+
+      max-width: 620px;
+      max-height: 620px;
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(181,103,45,0.08),
+          transparent 70%
+        );
+
+      filter: blur(35px);
+    }
+
+
+    .stars {
+      position: absolute;
+
+      width: 1px;
+      height: 1px;
+
+      left: 0;
+      top: 0;
+
+      opacity: 0.78;
+    }
+
+
+    /* =========================================================
+       Navigation
+       ========================================================= */
+
+
+    .nav-wrap {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      right: 0;
+
+      z-index: 50;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 1rem;
+    }
+
+
+    @media (min-width: 640px) {
+
+      .nav-wrap {
+        padding-top: 1.5rem;
+      }
+
+    }
+
+
+    .nav {
+      width: 100%;
+      max-width: 64rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0.75rem 1.25rem;
+
+      border-radius: 9999px;
+
+      background: var(--nav-bg);
+
+      border:
+        0.5px solid
+        var(--nav-border);
+
+      backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      -webkit-backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      box-shadow:
+        0 8px 40px rgba(0,0,0,0.35);
+    }
+
+
+    @media (min-width: 640px) {
+
+      .nav {
+        padding: 0.875rem 1.75rem;
+      }
+
+    }
+
+
+    .brand {
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+
+      color: var(--white);
+    }
+
+
+    @media (min-width: 640px) {
+
+      .brand {
+        font-size: 1rem;
+      }
+
+    }
+
+
+    .nav-back {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.65rem;
+
+      font-size: 11px;
+
+      letter-spacing: 0.12em;
+
+      text-transform: uppercase;
+
+      text-decoration: none;
+
+      color:
+        rgba(245,247,251,0.65);
+
+      transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+    }
+
+
+    .nav-back:hover {
+      color: var(--white);
+
+      transform: translateX(-3px);
+    }
+
+
+    /* =========================================================
+       Article
+       ========================================================= */
+
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+
+    .article-header {
+      min-height: 78svh;
+
+      display: flex;
+      flex-direction: column;
+
+      justify-content: flex-end;
+
+      padding:
+        9rem 1.5rem
+        6rem;
+    }
+
+
+    @media (min-width: 640px) {
+
+      .article-header {
+        padding:
+          10rem 3rem
+          7rem;
+      }
+
+    }
+
+
+    @media (min-width: 768px) {
+
+      .article-header {
+        padding:
+          11rem 5rem
+          8rem;
+      }
+
+    }
+
+
+    @media (min-width: 1024px) {
+
+      .article-header {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+
+    }
+
+
+    .article-header-inner {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+    }
+
+
+    .eyebrow {
+      display: flex;
+
+      align-items: center;
+
+      gap: 0.8rem;
+
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.3em;
+
+      color:
+        rgba(245,247,251,0.48);
+    }
+
+
+    .eyebrow .dot {
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: var(--amber);
+
+      box-shadow:
+        0 0 18px
+        rgba(245,164,91,0.75);
+    }
+
+
+    .article-title {
+      max-width: 64rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          3.4rem,
+          10vw,
+          9rem
+        );
+
+      line-height: 0.96;
+
+      letter-spacing: -0.055em;
+    }
+
+
+    .article-title .accent {
+      color: var(--amber-light);
+    }
+
+
+    .article-deck {
+      max-width: 45rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          1.2rem,
+          2.8vw,
+          1.75rem
+        );
+
+      line-height: 1.35;
+
+      color:
+        rgba(245,247,251,0.68);
+    }
+
+
+    .article-meta {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 1rem 1.5rem;
+
+      margin-top: 3rem;
+
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.2em;
+
+      color:
+        rgba(245,247,251,0.4);
+    }
+
+
+    .article-meta span + span {
+      position: relative;
+
+      padding-left: 1.5rem;
+    }
+
+
+    .article-meta span + span::before {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+      top: 50%;
+
+      width: 3px;
+      height: 3px;
+
+      border-radius: 50%;
+
+      background:
+        rgba(245,247,251,0.3);
+
+      transform: translateY(-50%);
+    }
+
+
+    /* =========================================================
+       Divider
+       ========================================================= */
+
+
+    .article-divider {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        0 1.5rem;
+    }
+
+
+    @media (min-width: 640px) {
+
+      .article-divider {
+        padding: 0 3rem;
+      }
+
+    }
+
+
+    @media (min-width: 768px) {
+
+      .article-divider {
+        padding: 0 5rem;
+      }
+
+    }
+
+
+    @media (min-width: 1024px) {
+
+      .article-divider {
+        padding:
+          0 10rem;
+      }
+
+    }
+
+
+    .article-divider::after {
+      content: "";
+
+      display: block;
+
+      height: 1px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0.12),
+          transparent
+        );
+    }
+
+
+    /* =========================================================
+       Article Body
+       ========================================================= */
+
+
+    .article-body {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        6rem 1.5rem
+        10rem;
+    }
+
+
+    @media (min-width: 640px) {
+
+      .article-body {
+        padding:
+          7rem 3rem
+          12rem;
+      }
+
+    }
+
+
+    @media (min-width: 768px) {
+
+      .article-body {
+        padding:
+          8rem 5rem
+          14rem;
+      }
+
+    }
+
+
+    @media (min-width: 1024px) {
+
+      .article-body {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+
+    }
+
+
+    .article-copy {
+      max-width: 42rem;
+
+      margin: 0 auto;
+    }
+
+
+    .article-copy p {
+      font-size:
+        clamp(
+          1.1rem,
+          2vw,
+          1.35rem
+        );
+
+      line-height: 1.85;
+
+      color:
+        rgba(245,247,251,0.78);
+    }
+
+
+    .article-copy p + p {
+      margin-top: 1.75rem;
+    }
+
+
+    .article-copy .lead {
+      font-size:
+        clamp(
+          1.45rem,
+          3vw,
+          2rem
+        );
+
+      line-height: 1.45;
+
+      color: var(--white);
+    }
+
+
+    .article-copy .lead .accent {
+      color: var(--amber-light);
+    }
+
+
+    .article-copy .section-title {
+      margin-top: 5rem;
+      margin-bottom: 1.5rem;
+
+      font-size:
+        clamp(
+          1.8rem,
+          4vw,
+          3rem
+        );
+
+      line-height: 1.1;
+
+      color: var(--white);
+    }
+
+
+    .article-copy .section-title .accent {
+      color: var(--amber-light);
+    }
+
+
+    .article-copy blockquote {
+      margin:
+        4rem 0;
+
+      padding:
+        2rem 0 2rem 1.75rem;
+
+      border-left:
+        1px solid
+        rgba(255,203,122,0.5);
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(
+          1.5rem,
+          3.5vw,
+          2.25rem
+        );
+
+      line-height: 1.35;
+
+      font-style: italic;
+
+      color:
+        rgba(255,203,122,0.9);
+    }
+
+
+    /* =========================================================
+       Amber Feature Card
+       ========================================================= */
+
+
+    .amber-card {
+      position: relative;
+
+      margin:
+        4rem 0;
+
+      padding: 2rem;
+
+      border-radius: 28px;
+
+      border:
+        1px solid
+        rgba(255,203,122,0.16);
+
+      background:
+        radial-gradient(
+          circle at 80% 10%,
+          rgba(245,164,91,0.13),
+          transparent 40%
+        ),
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,0.055),
+          rgba(255,255,255,0.018)
+        );
+
+      box-shadow:
+        0 30px 80px
+        rgba(0,0,0,0.25);
+
+      overflow: hidden;
+    }
+
+
+    .amber-card::after {
+      content: "";
+
+      position: absolute;
+
+      width: 240px;
+      height: 240px;
+
+      right: -110px;
+      top: -110px;
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(255,203,122,0.13),
+          transparent 70%
+        );
+
+      filter: blur(10px);
+
+      pointer-events: none;
+    }
+
+
+    .amber-card-label {
+      position: relative;
+
+      color: var(--amber);
+
+      font-size: 9px;
+
+      font-weight: 700;
+
+      letter-spacing: 0.2em;
+
+      text-transform: uppercase;
+    }
+
+
+    .amber-card-title {
+      position: relative;
+
+      margin-top: 0.8rem;
+
+      font-size:
+        clamp(
+          1.8rem,
+          4vw,
+          2.8rem
+        );
+
+      line-height: 1.05;
+
+      letter-spacing: -0.045em;
+    }
+
+
+    .amber-card-text {
+      position: relative;
+
+      margin-top: 0.8rem;
+
+      color:
+        rgba(245,247,251,0.58);
+
+      font-size: 0.95rem !important;
+
+      line-height: 1.7 !important;
+    }
+
+
+    .amber-details {
+      position: relative;
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(0,1fr)
+        );
+
+      gap: 1rem;
+
+      margin-top: 1.8rem;
+    }
+
+
+    .amber-detail {
+      padding: 1rem;
+
+      border-radius: 16px;
+
+      background:
+        rgba(255,255,255,0.035);
+
+      border:
+        1px solid
+        rgba(255,255,255,0.055);
+    }
+
+
+    .amber-detail-label {
+      color:
+        rgba(245,247,251,0.35);
+
+      font-size: 8px;
+
+      letter-spacing: 0.15em;
+
+      text-transform: uppercase;
+    }
+
+
+    .amber-detail-value {
+      margin-top: 0.35rem;
+
+      color:
+        rgba(245,247,251,0.78);
+
+      font-size: 0.85rem;
+    }
+
+
+    /* =========================================================
+       Web Link
+       ========================================================= */
+
+
+    .amber-link-wrap {
+      margin-top: 5rem;
+
+      text-align: center;
+    }
+
+
+    .amber-link {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.55rem;
+
+      padding:
+        0.65rem
+        0.9rem;
+
+      border-radius: 9999px;
+
+      color:
+        rgba(255,203,122,0.62);
+
+      background:
+        rgba(255,255,255,0.025);
+
+      border:
+        1px solid
+        rgba(255,203,122,0.08);
+
+      text-decoration: none;
+
+      font-size: 10px;
+
+      letter-spacing: 0.13em;
+
+      text-transform: uppercase;
+
+      transition:
+        color 0.3s ease,
+        background 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
+    }
+
+
+    .amber-link:hover {
+      color: var(--amber-light);
+
+      background:
+        rgba(245,164,91,0.06);
+
+      border-color:
+        rgba(255,203,122,0.18);
+
+      transform: translateY(-2px);
+    }
+
+
+    .amber-link-arrow {
+      font-size: 12px;
+
+      transition:
+        transform 0.3s ease;
+    }
+
+
+    .amber-link:hover .amber-link-arrow {
+      transform: translateX(3px);
+    }
+
+
+    /* =========================================================
+       Closing
+       ========================================================= */
+
+
+    .article-end {
+      margin-top: 6rem;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,0.1);
+    }
+
+
+    .article-end p {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.24em;
+
+      color:
+        rgba(245,247,251,0.38);
+    }
+
+
+    .article-end .signature {
+      margin-top: 1rem;
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size: 1.6rem;
+
+      text-transform: none;
+
+      letter-spacing: 0;
+
+      color:
+        rgba(255,203,122,0.85);
+    }
+
+
+    /* =========================================================
+       Footer
+       ========================================================= */
+
+
+    .footer {
+      padding:
+        0 1.5rem
+        2rem;
+    }
+
+
+    @media (min-width: 640px) {
+
+      .footer {
+        padding:
+          0 3rem
+          2rem;
+      }
+
+    }
+
+
+    @media (min-width: 768px) {
+
+      .footer {
+        padding:
+          0 5rem
+          2rem;
+      }
+
+    }
+
+
+    @media (min-width: 1024px) {
+
+      .footer {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+
+    }
+
+
+    .footer-inner {
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,0.1);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 1.5rem;
+    }
+
+
+    .footer-brand {
+      font-size: 11px;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+
+      color:
+        rgba(245,247,251,0.55);
+    }
+
+
+    .footer-note {
+      font-size: 10px;
+
+      letter-spacing: 0.08em;
+
+      color:
+        rgba(245,247,251,0.32);
+    }
+
+
+    /* =========================================================
+       Reveal
+       ========================================================= */
+
+
+    .reveal {
+      opacity: 0;
+
+      transform:
+        translateY(22px);
+
+      filter:
+        blur(10px);
+
+      transition:
+        opacity 1s
+          cubic-bezier(.23,1,.32,1),
+        transform 1s
+          cubic-bezier(.23,1,.32,1),
+        filter 1s
+          cubic-bezier(.23,1,.32,1);
+    }
+
+
+    .reveal.in {
+      opacity: 1;
+
+      transform: none;
+
+      filter: blur(0);
+    }
+
+
+    /* =========================================================
+       Responsive
+       ========================================================= */
+
+
+    @media (max-width: 639px) {
+
+      .nav-back span:first-child {
+        display: none;
+      }
+
+
+      .article-header {
+        min-height: 72svh;
+      }
+
+
+      .footer-inner {
+        align-items: flex-start;
+
+        flex-direction: column;
+      }
+
+
+      .amber-card {
+        padding: 1.4rem;
+
+        border-radius: 22px;
+      }
+
+
+      .amber-details {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+
+    /* =========================================================
+       Reduced Motion
+       ========================================================= */
+
+
+    @media (prefers-reduced-motion: reduce) {
+
+      html {
+        scroll-behavior: auto;
+      }
+
+
+      .reveal {
+        opacity: 1;
+
+        transform: none;
+
+        filter: none;
+
+        transition: none;
+      }
+
+
+      .amber-link,
+      .amber-link-arrow {
+        transition: none;
+      }
+
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <!-- =========================================================
+       BACKGROUND
+       ========================================================= -->
+
+  <div
+    class="sky"
+    aria-hidden="true"
+  >
+    <div class="glow"></div>
+    <div class="glow-secondary"></div>
+    <div
+      class="stars"
+      id="stars"
+    ></div>
+  </div>
+
+
+  <!-- =========================================================
+       NAVIGATION
+       ========================================================= -->
+
+  <div class="nav-wrap">
+
+    <nav
+      class="nav"
+      aria-label="Primary"
+    >
+
+      <a
+        href="../index.html"
+        class="brand display"
+      >
+        DAWNSTONE
+      </a>
+
+
+      <a
+        href="../posts.html"
+        class="nav-back"
+      >
+        <span>Field Note</span>
+        <span>←</span>
+      </a>
+
+    </nav>
+
+  </div>
+
+
+  <!-- =========================================================
+       ARTICLE
+       ========================================================= -->
+
+  <main>
+
+    <!-- =======================================================
+         HEADER
+         ======================================================= -->
+
+    <header class="article-header">
+
+      <div class="article-header-inner">
+
+        <div class="eyebrow reveal">
+
+          <span class="dot"></span>
+
+          <span>
+            Field Note / 002
+          </span>
+
+        </div>
+
+
+        <h1
+          class="article-title display reveal"
+        >
+          Amber is
+          <span class="serif accent">
+            now available.
+          </span>
+        </h1>
+
+
+        <p class="article-deck reveal">
+          A quiet music player from Dawnstone,
+          now available on the web.
+        </p>
+
+
+        <div class="article-meta reveal">
+
+          <span>
+            August 2026
+          </span>
+
+          <span>
+            Amber
+          </span>
+
+          <span>
+            3 min read
+          </span>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="article-divider"></div>
+
+
+    <!-- =======================================================
+         ARTICLE BODY
+         ======================================================= -->
+
+    <article class="article-body">
+
+      <div class="article-copy">
+
+
+        <p class="lead reveal">
+
+          We built Amber around a simple idea:
+
+          <span class="accent">
+            listening should feel quiet.
+          </span>
+
+        </p>
+
+
+        <p class="reveal">
+
+          Today, Amber is available on the web.
+
+          It is the first public web edition of
+          Dawnstone's music player — a small experiment
+          in building a music experience that feels calm,
+          focused, and deliberately uncomplicated.
+
+        </p>
+
+
+        <p class="reveal">
+
+          Amber is made for the music you already have.
+
+          Instead of asking you to move your library
+          somewhere else, it lets you bring local music
+          directly into the player and begin listening.
+
+        </p>
+
+
+        <!-- ===================================================
+             AMBER CARD
+             =================================================== -->
+
+        <div class="amber-card reveal">
+
+          <div class="amber-card-label">
+            Amber / Web Edition
+          </div>
+
+
+          <div class="amber-card-title display">
+            Your music,
+            <span class="serif accent">
+              your way.
+            </span>
+          </div>
+
+
+          <p class="amber-card-text">
+            Amber reads your music metadata, keeps your
+            listening experience organized, and gives you
+            the controls you need without getting in the way.
+          </p>
+
+
+          <div class="amber-details">
+
+            <div class="amber-detail">
+
+              <div class="amber-detail-label">
+                Library
+              </div>
+
+              <div class="amber-detail-value">
+                Local music and metadata
+              </div>
+
+            </div>
+
+
+            <div class="amber-detail">
+
+              <div class="amber-detail-label">
+                Playlists
+              </div>
+
+              <div class="amber-detail-value">
+                Create, edit, and play
+              </div>
+
+            </div>
+
+
+            <div class="amber-detail">
+
+              <div class="amber-detail-label">
+                Playback
+              </div>
+
+              <div class="amber-detail-value">
+                Queue, shuffle, and repeat
+              </div>
+
+            </div>
+
+
+            <div class="amber-detail">
+
+              <div class="amber-detail-label">
+                Sound
+              </div>
+
+              <div class="amber-detail-value">
+                Equalizer and visualizer
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ===================================================
+             SECTION
+             =================================================== -->
+
+
+        <h2
+          class="section-title display reveal"
+        >
+          Music without
+          <span class="serif accent">
+            the noise.
+          </span>
+        </h2>
+
+
+        <p class="reveal">
+
+          Music players can become complicated very quickly.
+
+          Libraries become crowded.
+          Controls multiply.
+          Features compete for attention.
+
+          Amber takes a different approach.
+
+        </p>
+
+
+        <p class="reveal">
+
+          The interface stays intentionally restrained.
+
+          Dark surfaces.
+          Warm amber light.
+          Soft translucency.
+          Subtle movement.
+
+          Everything is there for a reason.
+
+        </p>
+
+
+        <blockquote class="reveal">
+
+          “The best music player is the one
+          that lets you forget you're using one.”
+
+        </blockquote>
+
+
+        <!-- ===================================================
+             SECTION
+             =================================================== -->
+
+
+        <h2
+          class="section-title display reveal"
+        >
+          Built around
+          <span class="serif accent">
+            listening.
+          </span>
+        </h2>
+
+
+        <p class="reveal">
+
+          Amber understands the details inside your music.
+
+          When you add a track, its metadata can be read
+          automatically, including its title, artist,
+          album, and artwork.
+
+        </p>
+
+
+        <p class="reveal">
+
+          Artists have their own place in the library.
+          Albums are grouped naturally.
+          Songs stay easy to browse.
+
+          And when you select an artist,
+          Amber can take you directly to their music.
+
+        </p>
+
+
+        <p class="reveal">
+
+          The result is a library that feels less like
+          a database and more like a collection.
+
+        </p>
+
+
+        <!-- ===================================================
+             SECTION
+             =================================================== -->
+
+
+        <h2
+          class="section-title display reveal"
+        >
+          Make a playlist.
+          <span class="serif accent">
+            Keep it yours.
+          </span>
+        </h2>
+
+
+        <p class="reveal">
+
+          Playlists are a central part of Amber.
+
+          Create one from your library,
+          add tracks to it,
+          reorder songs,
+          remove tracks,
+          and play the entire collection whenever
+          you want.
+
+        </p>
+
+
+        <p class="reveal">
+
+          There is no account to manage.
+          No social layer.
+          No recommendation engine trying to decide
+          what you should hear next.
+
+        </p>
+
+
+        <p class="reveal">
+
+          Just your music,
+          organized the way you want it.
+
+        </p>
+
+
+        <!-- ===================================================
+             SECTION
+             =================================================== -->
+
+
+        <h2
+          class="section-title display reveal"
+        >
+          More control,
+          <span class="serif accent">
+            when you want it.
+          </span>
+        </h2>
+
+
+        <p class="reveal">
+
+          Amber also includes a playback queue,
+          shuffle and repeat modes,
+          a nine-band equalizer,
+          and a lightweight visualizer.
+
+        </p>
+
+
+        <p class="reveal">
+
+          They are there when you need them,
+          and stay out of the way when you don't.
+
+        </p>
+
+
+        <p class="reveal">
+
+          The goal is not to turn Amber into a wall
+          of controls.
+
+          It is to give you enough control to make
+          the experience feel like your own.
+
+        </p>
+
+
+        <!-- ===================================================
+             SECTION
+             =================================================== -->
+
+
+        <h2
+          class="section-title display reveal"
+        >
+          Designed for
+          <span class="serif accent">
+            the Mac.
+          </span>
+        </h2>
+
+
+        <p class="reveal">
+
+          Amber began as a native macOS project.
+
+          That origin still shapes the way we think
+          about the application.
+
+        </p>
+
+
+        <p class="reveal">
+
+          Clear hierarchy.
+          Familiar controls.
+          Generous spacing.
+          Subtle translucency.
+          Warm light against a quiet background.
+
+        </p>
+
+
+        <p class="reveal">
+
+          The web edition brings that same design language
+          to the browser while keeping the experience
+          simple enough to open and use immediately.
+
+        </p>
+
+
+        <!-- ===================================================
+             SECTION
+             =================================================== -->
+
+
+        <h2
+          class="section-title display reveal"
+        >
+          This is only
+          <span class="serif accent">
+            the beginning.
+          </span>
+        </h2>
+
+
+        <p class="reveal">
+
+          Amber is still evolving.
+
+          There are ideas we have not built yet,
+          interactions we want to refine,
+          and details we are still learning from.
+
+        </p>
+
+
+        <p class="reveal">
+
+          That is part of what makes this release
+          meaningful to us.
+
+          It is not the final version of Amber.
+
+          It is the first time we can put it in front
+          of people and say:
+
+          this is what we've been building.
+
+        </p>
+
+
+        <p class="reveal">
+
+          We hope it feels good to use.
+
+        </p>
+
+
+        <!-- ===================================================
+             VISIT AMBER
+             =================================================== -->
+
+        <div class="amber-link-wrap reveal">
+
+          <a
+            href="https://dawnstonedev.github.io/official/amber-web/index.html"
+            class="amber-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <span>
+              Visit Amber on the web
+            </span>
+
+            <span class="amber-link-arrow">
+              →
+            </span>
+
+          </a>
+
+        </div>
+
+
+        <!-- ===================================================
+             END
+             =================================================== -->
+
+        <div class="article-end reveal">
+
+          <p>
+            End of Field Note / 002
+          </p>
+
+
+          <p class="signature">
+            Dawnstone
+          </p>
+
+        </div>
+
+
+      </div>
+
+    </article>
+
+  </main>
+
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+
+  <footer class="footer">
+
+    <div class="footer-inner">
+
+      <a
+        href="../index.html"
+        class="footer-brand display"
+      >
+        DAWNSTONE
+      </a>
+
+
+      <p class="footer-note">
+        Field Note / 002
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =========================================================
+       JAVASCRIPT
+       ========================================================= -->
+
+  <script>
+
+    (function () {
+
+
+      var reduce =
+        window.matchMedia &&
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+
+      /* =======================================================
+         Stars
+         ======================================================= */
+
+
+      (function () {
+
+        var count =
+          reduce
+            ? 60
+            : 140;
+
+        var shadows = [];
+
+
+        for (
+          var i = 0;
+          i < count;
+          i++
+        ) {
+
+          var x =
+            (
+              Math.random() * 100
+            ).toFixed(2);
+
+
+          var y =
+            (
+              Math.random() * 72
+            ).toFixed(2);
+
+
+          var opacity =
+            (
+              Math.random() * 0.55 +
+              0.12
+            ).toFixed(2);
+
+
+          var size =
+            Math.random() > 0.94
+              ? 1.5
+              : 0.8;
+
+
+          shadows.push(
+            x +
+            "vw " +
+            y +
+            "vh 0 " +
+            size +
+            "px rgba(245,247,251," +
+            opacity +
+            ")"
+          );
+
+        }
+
+
+        var stars =
+          document.getElementById(
+            "stars"
+          );
+
+
+        if (stars) {
+
+          stars.style.boxShadow =
+            shadows.join(", ");
+
+        }
+
+      })();
+
+
+      /* =======================================================
+         Reveal
+         ======================================================= */
+
+
+      (function () {
+
+        var elements =
+          document.querySelectorAll(
+            ".reveal"
+          );
+
+
+        if (reduce) {
+
+          elements.forEach(
+            function (element) {
+
+              element.classList.add(
+                "in"
+              );
+
+            }
+          );
+
+          return;
+        }
+
+
+        var observer =
+          new IntersectionObserver(
+            function (entries) {
+
+              entries.forEach(
+                function (entry) {
+
+                  if (
+                    entry.isIntersecting
+                  ) {
+
+                    entry.target.classList.add(
+                      "in"
+                    );
+
+
+                    observer.unobserve(
+                      entry.target
+                    );
+
+                  }
+
+                }
+              );
+
+            },
+            {
+              threshold: 0.12,
+
+              rootMargin:
+                "0px 0px -8% 0px"
+            }
+          );
+
+
+        elements.forEach(
+          function (element) {
+
+            observer.observe(
+              element
+            );
+
+          }
+        );
+
+      })();
+
+
+      /* =======================================================
+         Subtle background movement
+         ======================================================= */
+
+
+      var ticking = false;
+
+
+      function updateBackground() {
+
+        var max =
+          document.documentElement
+            .scrollHeight -
+          window.innerHeight;
+
+
+        var progress =
+          max > 0
+            ? Math.min(
+                1,
+                Math.max(
+                  0,
+                  window.scrollY / max
+                )
+              )
+            : 0;
+
+
+        var glow =
+          0.17 -
+          progress * 0.10;
+
+
+        var glowElement =
+          document.querySelector(
+            ".glow"
+          );
+
+
+        if (glowElement) {
+
+          glowElement.style.opacity =
+            Math.max(
+              0.04,
+              glow
+            );
+
+        }
+
+
+        var stars =
+          document.getElementById(
+            "stars"
+          );
+
+
+        if (stars) {
+
+          stars.style.transform =
+            reduce
+              ? "none"
+              : "translateY(" +
+                progress * 80 +
+                "px)";
+
+        }
+
+
+        ticking = false;
+
+      }
+
+
+      function onScroll() {
+
+        if (!ticking) {
+
+          ticking = true;
+
+
+          requestAnimationFrame(
+            updateBackground
+          );
+
+        }
+
+      }
+
+
+      window.addEventListener(
+        "scroll",
+        onScroll,
+        {
+          passive: true
+        }
+      );
+
+
+      window.addEventListener(
+        "resize",
+        onScroll
+      );
+
+
+      updateBackground();
+
+
+    })();
+
+  </script>
+
+</body>
+</html>
