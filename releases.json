@@ -1,5 +1,15 @@
 [
   {
+  "title": "Quartz",
+  "version": "1.0",
+  "project": "Quartz",
+  "date": "2026-08-17",
+  "category": "Release",
+  "excerpt": "The first public release of Quartz, a small and quiet utility app for macOS.",
+  "tag": "macOS",
+  "url": "./releases/quartz-v-1-0.html"
+  }、
+  {
     "title": "Amber",
     "version": "0.1",
     "project": "Amber",
