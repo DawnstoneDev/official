@@ -1,11 +1,18 @@
 {
   "posts": [
     {
-    "title": "Amber is now available on web.",
-    "date": "2026-08-17",
-    "category": "Development",
-    "excerpt": "Amber, Dawnstone's quiet music player, is now available on the web.",
-    "url": "./posts/web-amber-available.html"
+      "title": "Quartz v1.0 is now available.",
+      "date": "2026-08-17",
+      "category": "Release",
+      "excerpt": "Quartz, Dawnstone's native archive utility for macOS, is now available.",
+      "url": "./posts/release-quartz-v-1-0.html"
+    },
+    {
+      "title": "Amber is now available on web.",
+      "date": "2026-08-17",
+      "category": "Development",
+      "excerpt": "Amber, Dawnstone's quiet music player, is now available on the web.",
+      "url": "./posts/web-amber-available.html"
     },
     {
       "title": "Why Amber.",
