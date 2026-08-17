@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100B08">
+  <title>Amber — Music Player</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="ambient-glow"></div>
+  <div class="ambient-glow secondary"></div>
+</div>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div>
+        <div class="brand-title">AMBER</div>
+        <div class="brand-sub">DAWNSTONE</div>
+      </div>
+    </div>
+
+    <nav class="primary-nav">
+      <div class="nav-label">LIBRARY</div>
+
+      <button class="nav-item active" data-view="home">
+        <span class="nav-icon">⌂</span>
+        <span>Home</span>
+      </button>
+
+      <button class="nav-item" data-view="songs">
+        <span class="nav-icon">♫</span>
+        <span>Songs</span>
+      </button>
+
+      <button class="nav-item" data-view="albums">
+        <span class="nav-icon">▣</span>
+        <span>Albums</span>
+      </button>
+
+      <button class="nav-item" data-view="artists">
+        <span class="nav-icon">◎</span>
+        <span>Artists</span>
+      </button>
+    </nav>
+
+    <div class="playlist-section">
+      <div class="section-heading">
+        <span>PLAYLISTS</span>
+        <button id="create-playlist" class="add-button" title="New Playlist">+</button>
+      </div>
+
+      <div id="playlist-list" class="playlist-list"></div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button id="add-music" class="add-music-button">
+        <span>＋</span>
+        <span>Add Music</span>
+      </button>
+
+      <input id="file-input" type="file" accept="audio/*" multiple hidden>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+      <button id="mobile-menu" class="mobile-menu-button">☰</button>
+
+      <div class="search">
+        <span class="search-icon">⌕</span>
+        <input id="search" type="search" placeholder="Search songs, artists, albums...">
+        <button id="clear-search" class="clear-search hidden">×</button>
+      </div>
+
+      <div class="top-actions">
+        <button id="open-eq" class="top-button">Equalizer</button>
+        <button id="open-settings" class="top-button">Settings</button>
+      </div>
+    </header>
+
+    <section id="content" class="content"></section>
+
+  </main>
+
+  <aside id="queue-panel" class="queue-panel hidden">
+
+    <div class="panel-top">
+      <div>
+        <div class="panel-kicker">PLAYING</div>
+        <h3>Queue</h3>
+      </div>
+
+      <button id="close-queue" class="close-button">×</button>
+    </div>
+
+    <div id="queue-current" class="queue-current"></div>
+
+    <div class="queue-upnext">
+      <div class="queue-heading">
+        <span>Next Up</span>
+        <button id="clear-queue" class="text-button">Clear</button>
+      </div>
+
+      <div id="queue-list" class="queue-list"></div>
+    </div>
+
+  </aside>
+
+  <div id="mobile-player" class="mobile-player hidden">
+    <div class="mobile-player-main">
+      <div id="mobile-player-art" class="mobile-player-art"></div>
+
+      <div class="mobile-player-info">
+        <strong id="mobile-player-title">Not Playing</strong>
+        <span id="mobile-player-artist">—</span>
+      </div>
+
+      <button id="mobile-player-play" class="mobile-player-play">▶</button>
+    </div>
+
+    <div class="mobile-progress">
+      <div id="mobile-progress-fill"></div>
+    </div>
+  </div>
+
+  <footer class="player">
+
+    <div class="player-left">
+      <div id="player-art" class="player-art"></div>
+
+      <div class="player-info">
+        <strong id="player-title">Not Playing</strong>
+        <button id="player-artist" class="artist-link">—</button>
+      </div>
+
+      <button id="player-like" class="like-button">♡</button>
+    </div>
+
+    <div class="player-center">
+
+      <div class="controls">
+        <button id="shuffle" class="control-button" title="Shuffle">⇄</button>
+
+        <button id="previous" class="control-button" title="Previous">◀</button>
+
+        <button id="play" class="play-button" title="Play/Pause">
+          <span id="play-icon">▶</span>
+        </button>
+
+        <button id="next" class="control-button" title="Next">▶</button>
+
+        <button id="repeat" class="control-button" title="Repeat">↻</button>
+      </div>
+
+      <div class="timeline">
+        <span id="current-time">0:00</span>
+
+        <div id="progress" class="progress">
+          <div id="progress-fill"></div>
+        </div>
+
+        <span id="duration">0:00</span>
+      </div>
+
+    </div>
+
+    <div class="player-right">
+
+      <canvas id="visualizer" width="120" height="34"></canvas>
+
+      <div class="volume">
+        <span>⌕</span>
+        <input id="volume" type="range" min="0" max="1" step="0.01" value="0.8">
+      </div>
+
+      <button id="open-queue" class="control-button">☷</button>
+
+    </div>
+
+  </footer>
+
+  <nav class="mobile-nav">
+
+    <button class="mobile-nav-item active" data-view="home">
+      <span>⌂</span>
+      <small>Home</small>
+    </button>
+
+    <button class="mobile-nav-item" data-view="songs">
+      <span>♫</span>
+      <small>Songs</small>
+    </button>
+
+    <button class="mobile-nav-item" data-view="albums">
+      <span>▣</span>
+      <small>Albums</small>
+    </button>
+
+    <button class="mobile-nav-item" data-view="artists">
+      <span>◎</span>
+      <small>Artists</small>
+    </button>
+
+    <button id="mobile-library" class="mobile-nav-item">
+      <span>☷</span>
+      <small>Library</small>
+    </button>
+
+  </nav>
+
+  <div id="mobile-library-sheet" class="mobile-sheet hidden">
+
+    <div class="sheet-handle"></div>
+
+    <div class="sheet-header">
+      <h2>Your Library</h2>
+      <button id="close-library-sheet">×</button>
+    </div>
+
+    <button id="mobile-add-music" class="sheet-action">
+      <span>＋</span>
+      Add Music
+    </button>
+
+    <div class="sheet-heading">
+      <span>Playlists</span>
+      <button id="mobile-create-playlist">+</button>
+    </div>
+
+    <div id="mobile-playlist-list"></div>
+
+  </div>
+
+  <div id="now-playing-modal" class="now-playing-modal hidden">
+
+    <div class="now-playing-background"></div>
+
+    <div class="now-playing-content">
+
+      <button id="close-now-playing" class="now-playing-close">×</button>
+
+      <div id="now-playing-art" class="now-playing-art"></div>
+
+      <div class="now-playing-details">
+        <div id="now-playing-title">Not Playing</div>
+        <button id="now-playing-artist" class="artist-link">—</button>
+      </div>
+
+      <div class="now-playing-timeline">
+        <div id="now-playing-progress" class="progress">
+          <div id="now-playing-progress-fill"></div>
+        </div>
+
+        <div class="now-playing-times">
+          <span id="now-playing-current">0:00</span>
+          <span id="now-playing-duration">0:00</span>
+        </div>
+      </div>
+
+      <div class="now-playing-controls">
+        <button id="mobile-shuffle">⇄</button>
+        <button id="mobile-previous">◀</button>
+        <button id="mobile-play" class="large-play">▶</button>
+        <button id="mobile-next">▶</button>
+        <button id="mobile-repeat">↻</button>
+      </div>
+
+      <div class="now-playing-volume">
+        <span>−</span>
+        <input id="mobile-volume" type="range" min="0" max="1" step="0.01" value="0.8">
+        <span>＋</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="context-menu" class="context-menu hidden"></div>
+
+  <div id="modal" class="modal hidden">
+    <div id="modal-content" class="modal-card"></div>
+  </div>
+
+  <div id="drop-overlay" class="drop-overlay hidden">
+    <div class="drop-card">
+      <div class="drop-icon">♫</div>
+      <strong>Drop music here</strong>
+      <span>Add tracks to Amber</span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
