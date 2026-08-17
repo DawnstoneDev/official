@@ -1,0 +1,1647 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta
+    name="description"
+    content="Quartz — a small, quiet utility for macOS. Dawnstone Field Note 005."
+  />
+
+  <meta name="theme-color" content="#17263a" />
+
+  <meta
+    property="og:title"
+    content="Quartz. — Dawnstone Field Note"
+  />
+
+  <meta
+    property="og:description"
+    content="A small utility for macOS, designed to stay quiet until you need it."
+  />
+
+  <meta property="og:type" content="article" />
+
+  <title>Quartz. — Field Note</title>
+
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+
+  <style>
+    :root {
+      --sky-top: #101e31;
+      --sky-bottom: #52647c;
+
+      --horizon-glow: rgba(245,174,112,0.42);
+      --glow-inner: rgba(255,222,163,0.26);
+      --glow-outer: rgba(245,143,75,0.13);
+
+      --gold: #FFDEA3;
+      --orange: #F58F4B;
+      --teal: #7BDDD1;
+
+      --white: #F5F7FB;
+      --muted: rgba(245,247,251,0.6);
+
+      --glass-bg: rgba(255,255,255,0.075);
+      --glass-border: rgba(255,255,255,0.16);
+
+      --soft-border: rgba(255,255,255,0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Text",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      color: var(--white);
+
+      background:
+        linear-gradient(
+          180deg,
+          var(--sky-top) 0%,
+          var(--sky-bottom) 100%
+        );
+
+      line-height: 1.7;
+
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: rgba(255,222,163,0.82);
+      color: #142235;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    a:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    .display {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+
+    .serif {
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        "Apple Garamond",
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-style: italic;
+      font-weight: 400;
+    }
+
+
+    /* =========================================================
+       Background
+       ========================================================= */
+
+    .sky {
+      position: fixed;
+      inset: 0;
+
+      z-index: -10;
+
+      overflow: hidden;
+      pointer-events: none;
+
+      background:
+        radial-gradient(
+          120% 70% at 50% 100%,
+          var(--horizon-glow) 0%,
+          transparent 65%
+        ),
+        radial-gradient(
+          80% 60% at 50% 25%,
+          rgba(255,255,255,0.045),
+          transparent 70%
+        ),
+        linear-gradient(
+          180deg,
+          var(--sky-top) 0%,
+          var(--sky-bottom) 100%
+        );
+    }
+
+    .sky::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background:
+        radial-gradient(
+          circle at 50% 65%,
+          rgba(255,255,255,0.035),
+          transparent 45%
+        );
+
+      opacity: 0.9;
+    }
+
+    .glow {
+      position: absolute;
+
+      left: 50%;
+      bottom: -20%;
+
+      width: 70vw;
+      height: 70vw;
+
+      max-width: 960px;
+      max-height: 960px;
+
+      transform: translateX(-50%);
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          var(--glow-inner) 0%,
+          var(--glow-outer) 38%,
+          transparent 70%
+        );
+
+      filter: blur(30px);
+
+      opacity: 0.8;
+    }
+
+    .glow-top {
+      position: absolute;
+
+      left: 50%;
+      top: -28%;
+
+      width: 65vw;
+      height: 65vw;
+
+      max-width: 900px;
+      max-height: 900px;
+
+      transform: translateX(-50%);
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(255,255,255,0.055),
+          transparent 68%
+        );
+
+      filter: blur(40px);
+
+      opacity: 0.75;
+    }
+
+    .stars {
+      position: absolute;
+
+      width: 1px;
+      height: 1px;
+
+      left: 0;
+      top: 0;
+
+      opacity: 0.42;
+    }
+
+
+    /* =========================================================
+       Navigation
+       ========================================================= */
+
+    .nav-wrap {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      right: 0;
+
+      z-index: 50;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .nav-wrap {
+        padding-top: 1.5rem;
+      }
+    }
+
+    .nav {
+      width: 100%;
+      max-width: 64rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0.75rem 1.25rem;
+
+      border-radius: 9999px;
+
+      background:
+        rgba(255,255,255,0.075);
+
+      border:
+        0.5px solid
+        rgba(255,255,255,0.17);
+
+      backdrop-filter:
+        blur(42px)
+        saturate(155%);
+
+      -webkit-backdrop-filter:
+        blur(42px)
+        saturate(155%);
+
+      box-shadow:
+        0 8px 40px rgba(0,0,0,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    @media (min-width: 640px) {
+      .nav {
+        padding: 0.875rem 1.75rem;
+      }
+    }
+
+    .brand {
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+    }
+
+    @media (min-width: 640px) {
+      .brand {
+        font-size: 1rem;
+      }
+    }
+
+    .nav-back {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.65rem;
+
+      font-size: 11px;
+
+      letter-spacing: 0.12em;
+
+      text-transform: uppercase;
+
+      text-decoration: none;
+
+      color:
+        rgba(245,247,251,0.68);
+
+      transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .nav-back:hover {
+      color: var(--white);
+
+      transform: translateX(-3px);
+    }
+
+
+    /* =========================================================
+       Article
+       ========================================================= */
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    .article-header {
+      min-height: 78svh;
+
+      display: flex;
+      flex-direction: column;
+
+      justify-content: flex-end;
+
+      padding:
+        9rem 1.5rem
+        6rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-header {
+        padding:
+          10rem 3rem
+          7rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-header {
+        padding:
+          11rem 5rem
+          8rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-header {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .article-header-inner {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: flex;
+
+      align-items: center;
+
+      gap: 0.8rem;
+
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.3em;
+
+      color:
+        rgba(245,247,251,0.52);
+    }
+
+    .eyebrow .dot {
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: var(--orange);
+
+      box-shadow:
+        0 0 18px
+        rgba(245,143,75,0.72);
+    }
+
+    .article-title {
+      max-width: 64rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          3.8rem,
+          10vw,
+          9rem
+        );
+
+      line-height: 0.94;
+
+      letter-spacing: -0.06em;
+    }
+
+    .article-title .accent {
+      color: var(--gold);
+    }
+
+    .article-deck {
+      max-width: 43rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          1.2rem,
+          2.8vw,
+          1.75rem
+        );
+
+      line-height: 1.38;
+
+      color:
+        rgba(245,247,251,0.73);
+    }
+
+    .article-meta {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 1rem 1.5rem;
+
+      margin-top: 3rem;
+
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.2em;
+
+      color:
+        rgba(245,247,251,0.44);
+    }
+
+    .article-meta span + span {
+      position: relative;
+
+      padding-left: 1.5rem;
+    }
+
+    .article-meta span + span::before {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+      top: 50%;
+
+      width: 3px;
+      height: 3px;
+
+      border-radius: 50%;
+
+      background:
+        rgba(245,247,251,0.32);
+
+      transform: translateY(-50%);
+    }
+
+
+    /* =========================================================
+       Divider
+       ========================================================= */
+
+    .article-divider {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        0 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-divider {
+        padding: 0 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-divider {
+        padding: 0 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-divider {
+        padding:
+          0 10rem;
+      }
+    }
+
+    .article-divider::after {
+      content: "";
+
+      display: block;
+
+      height: 1px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0.17),
+          transparent
+        );
+    }
+
+
+    /* =========================================================
+       Body
+       ========================================================= */
+
+    .article-body {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        6rem 1.5rem
+        10rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-body {
+        padding:
+          7rem 3rem
+          12rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-body {
+        padding:
+          8rem 5rem
+          14rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-body {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .article-copy {
+      max-width: 42rem;
+
+      margin: 0 auto;
+    }
+
+    .article-copy p {
+      font-size:
+        clamp(
+          1.1rem,
+          2vw,
+          1.35rem
+        );
+
+      line-height: 1.85;
+
+      color:
+        rgba(245,247,251,0.81);
+    }
+
+    .article-copy p + p {
+      margin-top: 1.75rem;
+    }
+
+    .article-copy .lead {
+      font-size:
+        clamp(
+          1.45rem,
+          3vw,
+          2rem
+        );
+
+      line-height: 1.45;
+
+      color: var(--white);
+    }
+
+    .article-copy .lead .accent {
+      color: var(--gold);
+    }
+
+    .article-copy .section-title {
+      margin-top: 5rem;
+      margin-bottom: 1.5rem;
+
+      font-size:
+        clamp(
+          1.8rem,
+          4vw,
+          3rem
+        );
+
+      line-height: 1.1;
+
+      color: var(--white);
+    }
+
+    .article-copy .section-title .accent {
+      color: var(--gold);
+    }
+
+    .article-copy ul {
+      margin: 2rem 0;
+
+      padding-left: 1.25rem;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 0.75rem;
+    }
+
+    .article-copy li {
+      font-size:
+        clamp(
+          1.05rem,
+          1.8vw,
+          1.25rem
+        );
+
+      line-height: 1.6;
+
+      color:
+        rgba(245,247,251,0.79);
+    }
+
+    .article-copy li::marker {
+      color: var(--teal);
+    }
+
+    .article-copy blockquote {
+      margin:
+        4rem 0;
+
+      padding:
+        2rem 0 2rem 1.75rem;
+
+      border-left:
+        1px solid
+        rgba(255,222,163,0.52);
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(
+          1.5rem,
+          3.5vw,
+          2.25rem
+        );
+
+      line-height: 1.35;
+
+      font-style: italic;
+
+      color:
+        rgba(255,222,163,0.92);
+    }
+
+
+    /* =========================================================
+       Quartz Detail Card
+       ========================================================= */
+
+    .quartz-card {
+      margin:
+        4rem 0
+        1rem;
+
+      padding: 1.5rem;
+
+      border-radius: 2rem;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,0.09),
+          rgba(255,255,255,0.035)
+        );
+
+      border:
+        0.5px solid
+        rgba(255,255,255,0.15);
+
+      backdrop-filter:
+        blur(32px)
+        saturate(145%);
+
+      -webkit-backdrop-filter:
+        blur(32px)
+        saturate(145%);
+
+      box-shadow:
+        0 30px 80px rgba(0,0,0,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+
+    .quartz-card-label {
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.22em;
+
+      color:
+        rgba(245,247,251,0.42);
+    }
+
+    .quartz-card-title {
+      margin-top: 0.75rem;
+
+      font-size: 1.5rem;
+
+      letter-spacing: -0.03em;
+    }
+
+    .quartz-card-text {
+      margin-top: 0.55rem;
+
+      font-size: 0.98rem;
+
+      line-height: 1.7;
+
+      color:
+        rgba(245,247,251,0.6);
+    }
+
+    .quartz-card-line {
+      height: 1px;
+
+      margin:
+        1.25rem 0;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0.14),
+          transparent
+        );
+    }
+
+    .quartz-card-meta {
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 1rem;
+
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.14em;
+
+      color:
+        rgba(245,247,251,0.38);
+    }
+
+
+    /* =========================================================
+       Closing
+       ========================================================= */
+
+    .article-end {
+      margin-top: 6rem;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,0.13);
+    }
+
+    .article-end p {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.24em;
+
+      color:
+        rgba(245,247,251,0.4);
+    }
+
+    .article-end .signature {
+      margin-top: 1rem;
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size: 1.6rem;
+
+      text-transform: none;
+
+      letter-spacing: 0;
+
+      color:
+        rgba(255,222,163,0.86);
+    }
+
+
+    /* =========================================================
+       Footer
+       ========================================================= */
+
+    .footer {
+      padding:
+        0 1.5rem
+        2rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer {
+        padding:
+          0 3rem
+          2rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .footer {
+        padding:
+          0 5rem
+          2rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .footer {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .footer-inner {
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,0.12);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 1.5rem;
+    }
+
+    .footer-brand {
+      font-size: 11px;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+
+      color:
+        rgba(245,247,251,0.6);
+    }
+
+    .footer-note {
+      font-size: 10px;
+
+      letter-spacing: 0.08em;
+
+      color:
+        rgba(245,247,251,0.36);
+    }
+
+
+    /* =========================================================
+       Reveal
+       ========================================================= */
+
+    .reveal {
+      opacity: 0;
+
+      transform:
+        translateY(22px);
+
+      filter:
+        blur(10px);
+
+      transition:
+        opacity 1s
+          cubic-bezier(.23,1,.32,1),
+        transform 1s
+          cubic-bezier(.23,1,.32,1),
+        filter 1s
+          cubic-bezier(.23,1,.32,1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+
+      transform: none;
+
+      filter: blur(0);
+    }
+
+
+    /* =========================================================
+       Responsive
+       ========================================================= */
+
+    @media (max-width: 639px) {
+
+      .nav-back span:first-child {
+        display: none;
+      }
+
+      .article-header {
+        min-height: 72svh;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+
+        flex-direction: column;
+      }
+
+      .quartz-card-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+    }
+
+
+    /* =========================================================
+       Reduced Motion
+       ========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        filter: none;
+
+        transition: none;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================================================
+       BACKGROUND
+       ========================================================= -->
+
+  <div class="sky" aria-hidden="true">
+
+    <div class="glow"></div>
+
+    <div class="glow-top"></div>
+
+    <div class="stars" id="stars"></div>
+
+  </div>
+
+
+  <!-- =========================================================
+       NAVIGATION
+       ========================================================= -->
+
+  <div class="nav-wrap">
+
+    <nav class="nav" aria-label="Primary">
+
+      <a
+        href="../index.html"
+        class="brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <a
+        href="../posts.html"
+        class="nav-back"
+      >
+        <span>Field Note</span>
+        <span>←</span>
+      </a>
+
+    </nav>
+
+  </div>
+
+
+  <!-- =========================================================
+       ARTICLE
+       ========================================================= -->
+
+  <main>
+
+    <header class="article-header">
+
+      <div class="article-header-inner">
+
+        <div class="eyebrow reveal">
+
+          <span class="dot"></span>
+
+          <span>
+            Field Note / 005
+          </span>
+
+        </div>
+
+
+        <h1 class="article-title display reveal">
+
+          Quartz
+          <span class="serif accent">
+            is here.
+          </span>
+
+        </h1>
+
+
+        <p class="article-deck reveal">
+
+          We built a small utility for macOS —
+          quiet enough to disappear,
+          useful enough to keep around.
+
+        </p>
+
+
+        <div class="article-meta reveal">
+
+          <span>
+            August 2026
+          </span>
+
+          <span>
+            Quartz
+          </span>
+
+          <span>
+            Release 001
+          </span>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="article-divider"></div>
+
+
+    <!-- =======================================================
+         ARTICLE BODY
+         ======================================================= -->
+
+    <article class="article-body">
+
+      <div class="article-copy">
+
+
+        <p class="lead reveal">
+
+          Quartz began with a simple idea:
+
+          <span class="accent">
+            not every Mac app needs to become a workspace.
+          </span>
+
+        </p>
+
+
+        <p class="reveal">
+
+          Some tools should simply do one small thing,
+          do it well, and get out of the way.
+
+          No dashboard.
+          No account.
+          No complicated setup.
+
+          Just a small window,
+          a focused utility,
+          and a moment where the thing you needed
+          is already done.
+
+        </p>
+
+
+        <p class="reveal">
+
+          That's what Quartz is.
+
+          It's the second generation of a direction
+          we've been exploring at Dawnstone:
+          small, native applications that respect
+          the space around them.
+
+        </p>
+
+
+        <h2 class="section-title display reveal">
+
+          Small
+          <span class="serif accent">
+            by design.
+          </span>
+
+        </h2>
+
+
+        <p class="reveal">
+
+          Quartz isn't trying to become another application
+          that lives permanently in the background of your Mac.
+
+          For version 1.0, it's intentionally a normal application.
+          Open it when you need it.
+          Use it.
+          Close it.
+
+        </p>
+
+
+        <p class="reveal">
+
+          The window is small and vertical,
+          because the utility itself is small.
+
+          We wanted the interface to feel closer to a physical
+          instrument than a traditional desktop application:
+          compact, immediate, and easy to understand.
+
+        </p>
+
+
+        <div class="quartz-card reveal">
+
+          <div class="quartz-card-label">
+            Quartz / 001
+          </div>
+
+          <div class="quartz-card-title display">
+            A quiet utility for macOS.
+          </div>
+
+          <div class="quartz-card-text">
+            Native, compact, and deliberately focused.
+            Built to help without asking for attention.
+          </div>
+
+          <div class="quartz-card-line"></div>
+
+          <div class="quartz-card-meta">
+
+            <span>
+              macOS
+            </span>
+
+            <span>
+              Version 1.0
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <h2 class="section-title display reveal">
+
+          Native,
+          <span class="serif accent">
+            quietly.
+          </span>
+
+        </h2>
+
+
+        <p class="reveal">
+
+          Like the other Dawnstone projects,
+          Quartz is built with the Mac in mind first.
+
+          We didn't want a web wrapper that happened to
+          run on macOS.
+
+          We wanted something that feels like it belongs there.
+
+        </p>
+
+
+        <p class="reveal">
+
+          That means a small window,
+          familiar interactions,
+          proper macOS typography,
+          and an interface that doesn't need
+          to explain itself every time you open it.
+
+        </p>
+
+
+        <blockquote class="reveal">
+
+          "The best utility is often the one
+          you barely notice using."
+
+        </blockquote>
+
+
+        <p class="reveal">
+
+          That's probably the most important decision
+          we made while building Quartz.
+
+          We removed things more often than we added them.
+
+          If something didn't make the utility faster,
+          clearer, or calmer,
+          it probably didn't belong.
+
+        </p>
+
+
+        <h2 class="section-title display reveal">
+
+          Version
+          <span class="serif accent">
+            one.
+          </span>
+
+        </h2>
+
+
+        <p class="reveal">
+
+          Quartz 1.0 is deliberately small.
+
+          This first release is about establishing
+          the foundation rather than filling every possible
+          corner with features.
+
+        </p>
+
+
+        <p class="reveal">
+
+          Future versions may grow,
+          but they should grow carefully.
+
+          We would rather keep Quartz focused
+          than turn a small utility into another
+          application that demands your attention.
+
+        </p>
+
+
+        <p class="reveal">
+
+          This is the beginning of Quartz,
+          not the final definition of it.
+
+          For now, though,
+          it's ready.
+
+          A small piece of software,
+          built for the Mac,
+          designed to stay quiet.
+
+        </p>
+
+
+        <div class="article-end reveal">
+
+          <p>
+            End of Field Note / 005
+          </p>
+
+          <p class="signature">
+            Dawnstone
+          </p>
+
+        </div>
+
+
+      </div>
+
+    </article>
+
+  </main>
+
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+
+  <footer class="footer">
+
+    <div class="footer-inner">
+
+      <a
+        href="../index.html"
+        class="footer-brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <p class="footer-note">
+        Field Note / 005
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =========================================================
+       JAVASCRIPT
+       ========================================================= -->
+
+  <script>
+    (function () {
+
+      var reduce =
+        window.matchMedia &&
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+
+      /* =======================================================
+         Stars
+         ======================================================= */
+
+      (function () {
+
+        var count =
+          reduce
+            ? 30
+            : 65;
+
+        var shadows = [];
+
+        for (var i = 0; i < count; i++) {
+
+          var x =
+            (Math.random() * 100)
+              .toFixed(2);
+
+          var y =
+            (Math.random() * 48)
+              .toFixed(2);
+
+          var opacity =
+            (Math.random() * 0.3 + 0.07)
+              .toFixed(2);
+
+          var size =
+            Math.random() > 0.94
+              ? 1.4
+              : 0.8;
+
+          shadows.push(
+            x +
+            "vw " +
+            y +
+            "vh 0 " +
+            size +
+            "px rgba(245,247,251," +
+            opacity +
+            ")"
+          );
+
+        }
+
+        document
+          .getElementById("stars")
+          .style.boxShadow =
+          shadows.join(", ");
+
+      })();
+
+
+      /* =======================================================
+         Reveal
+         ======================================================= */
+
+      (function () {
+
+        var elements =
+          document.querySelectorAll(
+            ".reveal"
+          );
+
+        if (reduce) {
+
+          elements.forEach(
+            function (element) {
+
+              element.classList.add(
+                "in"
+              );
+
+            }
+          );
+
+          return;
+        }
+
+        var observer =
+          new IntersectionObserver(
+            function (entries) {
+
+              entries.forEach(
+                function (entry) {
+
+                  if (
+                    entry.isIntersecting
+                  ) {
+
+                    entry.target.classList.add(
+                      "in"
+                    );
+
+                    observer.unobserve(
+                      entry.target
+                    );
+
+                  }
+
+                }
+              );
+
+            },
+            {
+              threshold: 0.12,
+              rootMargin:
+                "0px 0px -8% 0px"
+            }
+          );
+
+        elements.forEach(
+          function (element) {
+
+            observer.observe(
+              element
+            );
+
+          }
+        );
+
+      })();
+
+
+      /* =======================================================
+         Background movement
+         ======================================================= */
+
+      var ticking = false;
+
+      function updateBackground() {
+
+        var max =
+          document.documentElement
+            .scrollHeight -
+          window.innerHeight;
+
+        var progress =
+          max > 0
+            ? Math.min(
+                1,
+                Math.max(
+                  0,
+                  window.scrollY / max
+                )
+              )
+            : 0;
+
+
+        var glow =
+          0.82 -
+          progress * 0.28;
+
+
+        document
+          .querySelector(".glow")
+          .style.opacity =
+          Math.max(
+            0.42,
+            glow
+          );
+
+
+        document
+          .querySelector(".glow-top")
+          .style.transform =
+          reduce
+            ? "translateX(-50%)"
+            : "translateX(-50%) translateY(" +
+              progress * 35 +
+              "px)";
+
+
+        document
+          .getElementById("stars")
+          .style.transform =
+          reduce
+            ? "none"
+            : "translateY(" +
+              progress * 60 +
+              "px)";
+
+
+        ticking = false;
+
+      }
+
+
+      function onScroll() {
+
+        if (!ticking) {
+
+          ticking = true;
+
+          requestAnimationFrame(
+            updateBackground
+          );
+
+        }
+
+      }
+
+
+      window.addEventListener(
+        "scroll",
+        onScroll,
+        {
+          passive: true
+        }
+      );
+
+
+      window.addEventListener(
+        "resize",
+        onScroll
+      );
+
+
+      updateBackground();
+
+    })();
+  </script>
+
+</body>
+</html>
