@@ -1,0 +1,3005 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta
+    name="description"
+    content="Releases — software releases from Dawnstone."
+  />
+
+  <meta name="theme-color" content="#f6edda" />
+
+  <meta property="og:title" content="Releases — Dawnstone" />
+  <meta
+    property="og:description"
+    content="Software releases from Dawnstone."
+  />
+  <meta property="og:type" content="website" />
+
+  <title>Releases — Dawnstone</title>
+
+  <link rel="icon" type="image/png" href="./assets/favicon.png">
+
+  <style>
+    :root {
+      --bg-top: #efe3ca;
+      --bg-bottom: #f6edda;
+
+      --ink: #18304A;
+      --warm-ink: #C26A2E;
+      --gold: #FFDEA3;
+
+      --nav-color: #18304A;
+      --nav-bg: rgba(255,255,255,0.5);
+      --nav-border: rgba(24,48,74,0.12);
+      --nav-shadow: 0 10px 40px rgba(24,48,74,0.10);
+    }
+
+
+    /* =========================================================
+       Reset
+       ========================================================= */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Text",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      background:
+        linear-gradient(
+          180deg,
+          var(--bg-top) 0%,
+          var(--bg-bottom) 100%
+        );
+
+      background-attachment: fixed;
+
+      color: var(--ink);
+
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    ::selection {
+      background: rgba(194,106,46,0.22);
+      color: var(--ink);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--warm-ink);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+
+    /* =========================================================
+       Typography
+       ========================================================= */
+
+    .serif-italic {
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        "Apple Garamond",
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .display {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+
+
+    /* =========================================================
+       Navigation
+       ========================================================= */
+
+    .nav-wrap {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      right: 0;
+
+      z-index: 50;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .nav-wrap {
+        padding-top: 1.5rem;
+      }
+    }
+
+    .nav {
+      width: 100%;
+      max-width: 64rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 1rem;
+
+      padding:
+        0.75rem
+        1.25rem;
+
+      border-radius: 9999px;
+
+      background: var(--nav-bg);
+
+      border:
+        0.5px solid
+        var(--nav-border);
+
+      box-shadow:
+        var(--nav-shadow);
+
+      backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      -webkit-backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      color: var(--nav-color);
+    }
+
+    @media (min-width: 640px) {
+      .nav {
+        padding:
+          0.875rem
+          1.75rem;
+      }
+    }
+
+    .brand {
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+
+      color: inherit;
+    }
+
+    @media (min-width: 640px) {
+      .brand {
+        font-size: 1rem;
+      }
+    }
+
+    .nav-links {
+      display: none;
+
+      align-items: center;
+      gap: 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .nav-links {
+        display: flex;
+      }
+    }
+
+    .nav-links a {
+      position: relative;
+
+      font-size: 13px;
+      letter-spacing: 0.04em;
+
+      text-decoration: none;
+
+      color: inherit;
+
+      opacity: 0.7;
+
+      transition:
+        opacity 0.3s;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+    }
+
+    .nav-links a.active {
+      opacity: 1;
+    }
+
+    .burger {
+      display: flex;
+
+      flex-direction: column;
+      justify-content: center;
+
+      gap: 5px;
+
+      width: 2rem;
+      height: 2rem;
+
+      background: none;
+      border: none;
+
+      cursor: pointer;
+
+      color: inherit;
+    }
+
+    @media (min-width: 640px) {
+      .burger {
+        display: none;
+      }
+    }
+
+    .burger span {
+      display: block;
+
+      height: 1.5px;
+      width: 1.25rem;
+
+      background: currentColor;
+    }
+
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+
+      z-index: 60;
+
+      display: none;
+
+      flex-direction: column;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu .scrim {
+      position: absolute;
+      inset: 0;
+
+      background:
+        rgba(3,8,17,0.5);
+
+      backdrop-filter:
+        blur(24px);
+
+      -webkit-backdrop-filter:
+        blur(24px);
+    }
+
+    .mobile-menu .panel {
+      position: relative;
+
+      margin: 1rem;
+
+      flex: 1;
+
+      display: flex;
+      flex-direction: column;
+
+      border-radius: 2rem;
+
+      border:
+        1px solid
+        rgba(255,255,255,0.15);
+
+      background:
+        rgba(15,25,38,0.55);
+
+      padding: 2rem;
+
+      backdrop-filter:
+        blur(32px);
+
+      -webkit-backdrop-filter:
+        blur(32px);
+    }
+
+    .mobile-menu .close-row {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .mobile-menu .close {
+      width: 2.25rem;
+      height: 2.25rem;
+
+      background: none;
+      border: none;
+
+      cursor: pointer;
+
+      color: #F5F7FB;
+
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .mobile-menu nav {
+      flex: 1;
+
+      display: flex;
+      flex-direction: column;
+
+      justify-content: center;
+
+      gap: 1.5rem;
+    }
+
+    .mobile-menu nav a {
+      font-size: 1.875rem;
+
+      letter-spacing: -0.02em;
+
+      text-decoration: none;
+
+      color: #F5F7FB;
+
+      opacity: 0.85;
+
+      transition:
+        opacity 0.3s;
+    }
+
+    .mobile-menu nav a:hover,
+    .mobile-menu nav a.active {
+      opacity: 1;
+    }
+
+
+    /* =========================================================
+       Layout
+       ========================================================= */
+
+    main {
+      position: relative;
+      z-index: 10;
+    }
+
+    section {
+      position: relative;
+
+      width: 100%;
+
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      section {
+        padding-left: 3rem;
+        padding-right: 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      section {
+        padding-left: 5rem;
+        padding-right: 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      section {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .label {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.34em;
+
+      color:
+        rgba(24,48,74,0.5);
+    }
+
+
+    /* =========================================================
+       Hero
+       ========================================================= */
+
+    .hero {
+      padding-top: 9rem;
+      padding-bottom: 4rem;
+    }
+
+    @media (min-width: 768px) {
+      .hero {
+        padding-top: 11rem;
+        padding-bottom: 5rem;
+      }
+    }
+
+    .hero h1 {
+      font-size:
+        clamp(4rem, 11vw, 10rem);
+
+      line-height: 0.9;
+
+      letter-spacing: -0.05em;
+
+      color: var(--ink);
+    }
+
+    .hero h1 .word-release {
+      display: block;
+
+      color: var(--warm-ink);
+    }
+
+    .hero p {
+      margin-top: 2rem;
+
+      max-width: 34rem;
+
+      font-size:
+        clamp(1.125rem, 2.4vw, 1.5rem);
+
+      line-height: 1.4;
+
+      color:
+        rgba(24,48,74,0.65);
+    }
+
+
+    /* =========================================================
+       Search
+       ========================================================= */
+
+    .search-wrap {
+      margin-bottom: 2.25rem;
+    }
+
+    .search-input-shell {
+      position: relative;
+
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+
+      left: 1.25rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      pointer-events: none;
+
+      color:
+        rgba(24,48,74,0.4);
+    }
+
+    .search-input {
+      width: 100%;
+
+      padding: 0.95rem 1.25rem 0.95rem 2.75rem;
+
+      font-size: 1rem;
+
+      font-family: inherit;
+
+      color: var(--ink);
+
+      background: rgba(255,255,255,0.35);
+
+      border:
+        0.5px solid
+        rgba(24,48,74,0.10);
+
+      border-radius: 9999px;
+
+      box-shadow:
+        0 12px 40px
+        rgba(24,48,74,0.06);
+
+      outline: none;
+
+      transition:
+        background 0.4s,
+        border-color 0.4s,
+        box-shadow 0.4s;
+    }
+
+    .search-input::placeholder {
+      color:
+        rgba(24,48,74,0.42);
+    }
+
+    .search-input:hover {
+      background: rgba(255,255,255,0.45);
+    }
+
+    .search-input:focus {
+      background: rgba(255,255,255,0.6);
+
+      border-color:
+        rgba(194,106,46,0.3);
+
+      box-shadow:
+        0 18px 56px
+        rgba(24,48,74,0.10);
+    }
+
+    .search-clear {
+      position: absolute;
+
+      right: 0.6rem;
+
+      display: none;
+
+      align-items: center;
+      justify-content: center;
+
+      width: 2rem;
+      height: 2rem;
+
+      border-radius: 50%;
+
+      border: none;
+
+      background: transparent;
+
+      color:
+        rgba(24,48,74,0.45);
+
+      font-size: 1rem;
+
+      cursor: pointer;
+
+      transition:
+        background 0.3s,
+        color 0.3s;
+    }
+
+    .search-clear.show {
+      display: flex;
+    }
+
+    .search-clear:hover {
+      background:
+        rgba(24,48,74,0.08);
+
+      color: var(--warm-ink);
+    }
+
+    .search-meta {
+      margin-top: 0.85rem;
+
+      font-size: 0.8125rem;
+
+      letter-spacing: 0.02em;
+
+      color:
+        rgba(24,48,74,0.48);
+    }
+
+
+    /* =========================================================
+       Releases
+       ========================================================= */
+
+    .releases-section {
+      padding-top: 2rem;
+      padding-bottom: 10rem;
+    }
+
+    @media (min-width: 768px) {
+      .releases-section {
+        padding-bottom: 14rem;
+      }
+    }
+
+    .releases-label {
+      margin-bottom: 2.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .releases-label {
+        margin-bottom: 3.5rem;
+      }
+    }
+
+    .release-list {
+      display: flex;
+      flex-direction: column;
+
+      gap: 1.25rem;
+    }
+
+    .release-row {
+      position: relative;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 1rem;
+
+      padding: 1.75rem;
+
+      text-decoration: none;
+      color: inherit;
+
+      border-radius: 1.75rem;
+
+      background: rgba(255,255,255,0.35);
+
+      border:
+        0.5px solid
+        rgba(24,48,74,0.10);
+
+      box-shadow:
+        0 12px 40px
+        rgba(24,48,74,0.06);
+
+      transition:
+        transform 0.5s cubic-bezier(.23,1,.32,1),
+        background 0.4s,
+        border-color 0.4s,
+        box-shadow 0.4s;
+    }
+
+    @media (min-width: 768px) {
+      .release-row {
+        flex-direction: row;
+        align-items: center;
+
+        gap: 2.5rem;
+
+        padding: 2.25rem 2.75rem;
+
+        border-radius: 2rem;
+      }
+    }
+
+    .release-row:hover,
+    .release-row:focus-visible {
+      transform: translateY(-3px);
+
+      background: rgba(255,255,255,0.55);
+
+      border-color:
+        rgba(24,48,74,0.16);
+
+      box-shadow:
+        0 18px 56px
+        rgba(24,48,74,0.10);
+    }
+
+    .release-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+
+      flex-shrink: 0;
+
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+
+      color:
+        rgba(24,48,74,0.5);
+    }
+
+    @media (min-width: 768px) {
+      .release-meta {
+        width: 10rem;
+      }
+    }
+
+    .release-meta .release-project {
+      color: var(--warm-ink);
+    }
+
+    .release-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .release-title {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-weight: 600;
+      letter-spacing: -0.02em;
+
+      font-size: 1.375rem;
+      line-height: 1.25;
+
+      color: var(--ink);
+    }
+
+    @media (min-width: 640px) {
+      .release-title {
+        font-size: 1.625rem;
+      }
+    }
+
+    .release-excerpt {
+      margin-top: 0.5rem;
+
+      font-size: 1rem;
+
+      line-height: 1.5;
+
+      color:
+        rgba(24,48,74,0.62);
+
+      max-width: 42rem;
+    }
+
+    .release-version {
+      display: inline-flex;
+      align-items: center;
+
+      width: fit-content;
+
+      margin-top: 0.8rem;
+
+      padding: 0.28rem 0.7rem;
+
+      border-radius: 9999px;
+
+      background:
+        rgba(194,106,46,0.08);
+
+      border:
+        1px solid
+        rgba(194,106,46,0.16);
+
+      color:
+        var(--warm-ink);
+
+      font-size: 10px;
+
+      letter-spacing: 0.16em;
+
+      text-transform: uppercase;
+    }
+
+    .release-title mark,
+    .release-excerpt mark,
+    .release-meta mark,
+    .release-version mark {
+      background: rgba(255,222,163,0.65);
+
+      color: var(--warm-ink);
+
+      border-radius: 3px;
+
+      padding: 0 0.15em;
+    }
+
+    .release-arrow {
+      flex-shrink: 0;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      align-self: flex-end;
+
+      width: 2.5rem;
+      height: 2.5rem;
+
+      border-radius: 50%;
+
+      border:
+        1px solid
+        rgba(24,48,74,0.14);
+
+      font-size: 1rem;
+
+      color: var(--ink);
+
+      transition:
+        transform 0.4s cubic-bezier(.23,1,.32,1),
+        background 0.3s,
+        border-color 0.3s;
+    }
+
+    @media (min-width: 768px) {
+      .release-arrow {
+        align-self: center;
+      }
+    }
+
+    .release-row:hover .release-arrow {
+      transform: translate(3px,-3px);
+
+      background: rgba(194,106,46,0.08);
+
+      border-color:
+        rgba(194,106,46,0.25);
+    }
+
+
+    /* =========================================================
+       State messages
+       ========================================================= */
+
+    .state-msg {
+      padding: 3rem 0;
+
+      font-size: 1rem;
+
+      color:
+        rgba(24,48,74,0.5);
+    }
+
+    .state-msg.error-msg {
+      line-height: 1.6;
+    }
+
+
+    /* =========================================================
+       Pagination
+       ========================================================= */
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      margin-top: 3.5rem;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(24,48,74,0.10);
+    }
+
+    .page-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      font-size: 0.875rem;
+
+      letter-spacing: 0.02em;
+
+      text-decoration: none;
+
+      color: var(--ink);
+
+      padding: 0.6rem 1.1rem;
+
+      border-radius: 9999px;
+
+      border:
+        1px solid
+        rgba(24,48,74,0.14);
+
+      background: rgba(255,255,255,0.3);
+
+      transition:
+        background 0.3s,
+        border-color 0.3s,
+        transform 0.3s;
+    }
+
+    .page-link:hover {
+      background: rgba(255,255,255,0.55);
+
+      border-color:
+        rgba(194,106,46,0.3);
+
+      color: var(--warm-ink);
+    }
+
+    .page-label {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.24em;
+
+      color:
+        rgba(24,48,74,0.4);
+    }
+
+
+    /* =========================================================
+       Footer
+       ========================================================= */
+
+    .footer {
+      position: relative;
+
+      padding-top: 3rem;
+      padding-bottom: 2rem;
+
+      color: var(--ink);
+    }
+
+    .footer-inner {
+      width: 100%;
+      max-width: 90rem;
+
+      margin: 0 auto;
+
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer-inner {
+        padding-left: 3rem;
+        padding-right: 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .footer-inner {
+        padding-left: 5rem;
+        padding-right: 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .footer-inner {
+        padding-left: 7rem;
+        padding-right: 7rem;
+      }
+    }
+
+    .footer-top {
+      display: grid;
+
+      grid-template-columns:
+        1fr;
+
+      gap: 2rem;
+
+      padding-top: 2rem;
+      padding-bottom: 3rem;
+
+      border-top:
+        1px solid
+        rgba(24,48,74,0.14);
+
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .footer-top {
+        grid-template-columns:
+          1fr
+          auto
+          1fr;
+
+        padding-top: 2.5rem;
+        padding-bottom: 3.5rem;
+      }
+    }
+
+    .footer-brand {
+      display: inline-block;
+
+      width: fit-content;
+
+      font-size: 0.875rem;
+
+      font-weight: 600;
+
+      letter-spacing: 0.24em;
+
+      text-decoration: none;
+
+      color: var(--ink);
+
+      transition:
+        opacity 0.3s ease;
+    }
+
+    .footer-brand:hover {
+      opacity: 0.55;
+    }
+
+    .footer-statement {
+      font-size: 1.25rem;
+
+      line-height: 1.2;
+
+      color:
+        rgba(24,48,74,0.55);
+
+      text-align: left;
+    }
+
+    @media (min-width: 768px) {
+      .footer-statement {
+        text-align: center;
+
+        font-size: 1.375rem;
+      }
+    }
+
+    .footer-back {
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: flex-start;
+
+      gap: 0.65rem;
+
+      width: fit-content;
+
+      text-decoration: none;
+
+      font-size: 0.6875rem;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.22em;
+
+      color:
+        rgba(24,48,74,0.55);
+
+      transition:
+        color 0.3s ease;
+    }
+
+    @media (min-width: 768px) {
+      .footer-back {
+        justify-self: end;
+      }
+    }
+
+    .footer-back-arrow {
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      width: 1.75rem;
+      height: 1.75rem;
+
+      border:
+        1px solid
+        rgba(24,48,74,0.18);
+
+      border-radius: 50%;
+
+      font-size: 0.8rem;
+
+      transition:
+        transform 0.35s
+          cubic-bezier(.23,1,.32,1),
+        background 0.3s ease,
+        border-color 0.3s ease;
+    }
+
+    .footer-back:hover {
+      color: var(--warm-ink);
+    }
+
+    .footer-back:hover
+    .footer-back-arrow {
+      transform:
+        translateY(-3px);
+
+      background:
+        rgba(194,106,46,0.08);
+
+      border-color:
+        rgba(194,106,46,0.25);
+    }
+
+    .footer-main {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 3rem;
+
+      padding-top: 3rem;
+      padding-bottom: 3.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .footer-main {
+        flex-direction: row;
+
+        align-items: flex-start;
+
+        justify-content: space-between;
+
+        padding-top: 3.5rem;
+        padding-bottom: 4rem;
+      }
+    }
+
+    .footer-note {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0.4rem;
+    }
+
+    .footer-note p {
+      margin: 0;
+
+      font-size: 0.8125rem;
+
+      line-height: 1.5;
+
+      color:
+        rgba(24,48,74,0.48);
+    }
+
+    .footer-note p:first-child {
+      color:
+        rgba(24,48,74,0.72);
+
+      font-weight: 500;
+
+      letter-spacing: 0.01em;
+    }
+
+    .footer-links {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, minmax(90px, 1fr));
+
+      column-gap: 3rem;
+      row-gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer-links {
+        display: flex;
+
+        gap: 2rem;
+      }
+    }
+
+    .footer-links a {
+      position: relative;
+
+      width: fit-content;
+
+      font-size: 0.75rem;
+
+      text-decoration: none;
+
+      color:
+        rgba(24,48,74,0.62);
+
+      transition:
+        color 0.3s ease;
+    }
+
+    .footer-links a::after {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+      bottom: -0.3rem;
+
+      width: 100%;
+      height: 1px;
+
+      background:
+        var(--warm-ink);
+
+      transform:
+        scaleX(0);
+
+      transform-origin:
+        right center;
+
+      transition:
+        transform 0.35s
+        cubic-bezier(.23,1,.32,1);
+    }
+
+    .footer-links a:hover,
+    .footer-links a.active {
+      color:
+        var(--warm-ink);
+    }
+
+    .footer-links a:hover::after,
+    .footer-links a.active::after {
+      transform:
+        scaleX(1);
+
+      transform-origin:
+        left center;
+    }
+
+    .footer-bottom {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0.5rem;
+
+      padding-top: 1.5rem;
+
+      border-top:
+        1px solid
+        rgba(24,48,74,0.10);
+
+      font-size: 0.6875rem;
+
+      letter-spacing: 0.02em;
+
+      color:
+        rgba(24,48,74,0.42);
+    }
+
+    @media (min-width: 640px) {
+      .footer-bottom {
+        flex-direction: row;
+
+        align-items: center;
+
+        justify-content: space-between;
+      }
+    }
+
+
+    /* =========================================================
+       Reveal
+       ========================================================= */
+
+    .reveal {
+      opacity: 0;
+
+      transform:
+        translateY(28px);
+
+      filter:
+        blur(14px);
+
+      transition:
+        opacity 1.15s cubic-bezier(.23,1,.32,1),
+        transform 1.15s cubic-bezier(.23,1,.32,1),
+        filter 1.15s cubic-bezier(.23,1,.32,1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+
+      transform: none;
+
+      filter: blur(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        filter: none;
+
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================================================
+       NAVIGATION
+       ========================================================= -->
+
+  <div class="nav-wrap">
+
+    <nav class="nav" aria-label="Primary">
+
+      <a
+        class="brand display"
+        href="index.html"
+      >
+        DAWNSTONE
+      </a>
+
+      <div class="nav-links">
+
+        <a href="index.html#projects">
+          Projects
+        </a>
+        
+        <a href=releases.html">
+          Releases
+        </a>
+
+        <a href="index.html#philosophy">
+          Philosophy
+        </a>
+
+        <a href="index.html#about">
+          About
+        </a>
+
+        <a href="posts.html">
+          Field Note
+        </a>
+
+        <a href="index.html#contact">
+          Contact
+        </a>
+
+      </div>
+
+      <button
+        class="burger"
+        id="burger"
+        aria-label="Open menu"
+        aria-expanded="false"
+      >
+
+        <span></span>
+        <span></span>
+
+      </button>
+
+    </nav>
+
+  </div>
+
+
+  <!-- =========================================================
+       MOBILE MENU
+       ========================================================= -->
+
+  <div
+    class="mobile-menu"
+    id="mobileMenu"
+  >
+
+    <div
+      class="scrim"
+      id="scrim"
+    ></div>
+
+    <div class="panel">
+
+      <div class="close-row">
+
+        <button
+          class="close"
+          id="closeMenu"
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
+
+      </div>
+
+      <nav>
+
+        <a
+          href="index.html#projects"
+          class="m-link"
+        >
+          Projects
+        </a>
+
+        <a
+          href="index.html#philosophy"
+          class="m-link"
+        >
+          Philosophy
+        </a>
+
+        <a
+          href="index.html#about"
+          class="m-link"
+        >
+          About
+        </a>
+
+        <a
+          href="posts.html"
+          class="m-link"
+        >
+          Field Note
+        </a>
+
+        <a
+          href="index.html#contact"
+          class="m-link"
+        >
+          Contact
+        </a>
+
+      </nav>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================================================
+       CONTENT
+       ========================================================= -->
+
+  <main>
+
+    <!-- =======================================================
+         HERO
+         ======================================================= -->
+
+    <section
+      id="top"
+      class="hero"
+    >
+
+      <h1 class="display reveal">
+
+        Release
+        <span class="word-release serif-italic">
+          Notes
+        </span>
+
+      </h1>
+
+      <p class="reveal">
+
+        Software releases from Dawnstone.<br>
+        Versions, milestones, and things we've shipped.
+
+      </p>
+
+    </section>
+
+
+    <!-- =======================================================
+         RELEASES
+         ======================================================= -->
+
+    <section
+      class="releases-section"
+      id="releases"
+    >
+
+      <p class="label releases-label reveal">
+        Latest releases
+      </p>
+
+      <div
+        class="search-wrap reveal"
+        id="searchWrap"
+        hidden
+      >
+
+        <div class="search-input-shell">
+
+          <span
+            class="search-icon"
+            aria-hidden="true"
+          >
+
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+
+              <path
+                d="M21 21L16.65 16.65"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+
+            </svg>
+
+          </span>
+
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search releases by project, version, date, or tag…"
+            aria-label="Search releases by project, version, date, or tag"
+            autocomplete="off"
+          />
+
+          <button
+            type="button"
+            id="searchClear"
+            class="search-clear"
+            aria-label="Clear search"
+          >
+            ✕
+          </button>
+
+        </div>
+
+        <p
+          id="searchMeta"
+          class="search-meta"
+          hidden
+          aria-live="polite"
+        ></p>
+
+      </div>
+
+
+      <div
+        id="releaseList"
+        class="release-list"
+        aria-live="polite"
+      ></div>
+
+
+      <p
+        id="loadingState"
+        class="state-msg"
+      >
+        Loading Releases.
+      </p>
+
+
+      <p
+        id="errorState"
+        class="state-msg error-msg"
+        hidden
+      >
+        Releases couldn't be loaded.<br>
+        Please try again later.
+      </p>
+
+
+      <p
+        id="emptyState"
+        class="state-msg"
+        hidden
+      >
+        No releases yet.
+      </p>
+
+
+      <p
+        id="noResultsState"
+        class="state-msg"
+        hidden
+      >
+        No releases match your search.
+      </p>
+
+
+      <nav
+        class="pagination"
+        id="pagination"
+        hidden
+        aria-label="Releases pagination"
+      >
+
+        <a
+          href="#"
+          id="prevLink"
+          class="page-link"
+          hidden
+        >
+          ← Back
+        </a>
+
+        <span
+          id="pageLabel"
+          class="page-label"
+        ></span>
+
+        <a
+          href="#"
+          id="nextLink"
+          class="page-link"
+          hidden
+        >
+          Next  
+        </a>
+
+      </nav>
+
+    </section>
+
+
+    <!-- =======================================================
+         FOOTER
+         ======================================================= -->
+
+    <footer class="footer">
+
+      <div class="footer-inner">
+
+        <div class="footer-top">
+
+          <a
+            href="index.html"
+            class="footer-brand display"
+          >
+            DAWNSTONE
+          </a>
+
+          <p class="footer-statement serif-italic">
+            Software, quietly crafted.
+          </p>
+
+          <a
+            href="#top"
+            class="footer-back"
+            aria-label="Back to top"
+          >
+
+            <span>
+              Back to top
+            </span>
+
+            <span class="footer-back-arrow">
+              ↑
+            </span>
+
+          </a>
+
+        </div>
+
+
+        <div class="footer-main">
+
+          <div class="footer-note">
+
+            <p>
+              Independent software studio
+            </p>
+
+            <p>
+              Native applications for macOS.
+            </p>
+
+          </div>
+
+
+          <nav
+            class="footer-links"
+            aria-label="Footer"
+          >
+
+            <a href="index.html#projects">
+              Projects
+            </a>
+
+            <a href="index.html#philosophy">
+              Philosophy
+            </a>
+
+            <a href="index.html#about">
+              About
+            </a>
+
+            <a href="posts.html">
+              Field Note
+            </a>
+
+            <a
+              href="releases.html"
+              class="active"
+              aria-current="page"
+            >
+              Releases
+            </a>
+
+            <a href="index.html#contact">
+              Contact
+            </a>
+
+          </nav>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+          <p>
+            © 2026 Dawnstone
+          </p>
+
+          <p>
+            Made with care.
+          </p>
+
+        </div>
+
+      </div>
+
+    </footer>
+
+  </main>
+
+
+  <!-- =========================================================
+       JAVASCRIPT
+       ========================================================= -->
+
+  <script>
+    (function () {
+
+      var RELEASES_PER_PAGE = 10;
+
+      var MONTHS = [
+        "JAN","FEB","MAR","APR","MAY","JUN",
+        "JUL","AUG","SEP","OCT","NOV","DEC"
+      ];
+
+      var reduce =
+        window.matchMedia &&
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+
+      var listEl =
+        document.getElementById("releaseList");
+
+      var loadingEl =
+        document.getElementById("loadingState");
+
+      var errorEl =
+        document.getElementById("errorState");
+
+      var emptyEl =
+        document.getElementById("emptyState");
+
+      var noResultsEl =
+        document.getElementById("noResultsState");
+
+      var paginationEl =
+        document.getElementById("pagination");
+
+      var prevLink =
+        document.getElementById("prevLink");
+
+      var nextLink =
+        document.getElementById("nextLink");
+
+      var pageLabel =
+        document.getElementById("pageLabel");
+
+      var searchWrap =
+        document.getElementById("searchWrap");
+
+      var searchInput =
+        document.getElementById("searchInput");
+
+      var searchClear =
+        document.getElementById("searchClear");
+
+      var searchMeta =
+        document.getElementById("searchMeta");
+
+
+      var allReleases = [];
+      var filteredReleases = [];
+
+      var searchQuery = "";
+      var searchDebounce = null;
+
+
+      /*
+       * ========================================================
+       * Reveal animations
+       * ========================================================
+       */
+
+      var io = null;
+
+      function observeReveal(el) {
+
+        if (reduce) {
+
+          el.classList.add("in");
+
+          return;
+
+        }
+
+
+        if (!io) {
+
+          io = new IntersectionObserver(
+            function (entries) {
+
+              entries.forEach(function (entry) {
+
+                if (entry.isIntersecting) {
+
+                  entry.target.classList.add("in");
+
+                  io.unobserve(entry.target);
+
+                }
+
+              });
+
+            },
+            {
+              threshold: 0.12,
+              rootMargin: "0px 0px -10% 0px"
+            }
+          );
+
+        }
+
+
+        io.observe(el);
+
+      }
+
+
+      document
+        .querySelectorAll(".reveal")
+        .forEach(observeReveal);
+
+
+      /*
+       * ========================================================
+       * Mobile menu
+       * ========================================================
+       */
+
+      (function () {
+
+        var menu =
+          document.getElementById("mobileMenu");
+
+        var open =
+          document.getElementById("burger");
+
+        var close =
+          document.getElementById("closeMenu");
+
+        var scrim =
+          document.getElementById("scrim");
+
+
+        function show(value) {
+
+          menu.classList.toggle(
+            "open",
+            value
+          );
+
+          open.setAttribute(
+            "aria-expanded",
+            value ? "true" : "false"
+          );
+
+          document.body.style.overflow =
+            value
+              ? "hidden"
+              : "";
+
+        }
+
+
+        open.addEventListener(
+          "click",
+          function () {
+            show(true);
+          }
+        );
+
+
+        close.addEventListener(
+          "click",
+          function () {
+            show(false);
+          }
+        );
+
+
+        scrim.addEventListener(
+          "click",
+          function () {
+            show(false);
+          }
+        );
+
+
+        menu
+          .querySelectorAll(".m-link")
+          .forEach(function (a) {
+
+            a.addEventListener(
+              "click",
+              function () {
+                show(false);
+              }
+            );
+
+          });
+
+      })();
+
+
+      /*
+       * ========================================================
+       * Date formatting
+       * ========================================================
+       */
+
+      function formatDate(iso) {
+
+        if (typeof iso !== "string") {
+          return "";
+        }
+
+
+        var parts =
+          iso.split("-");
+
+
+        if (parts.length !== 3) {
+          return iso;
+        }
+
+
+        var y =
+          parseInt(parts[0], 10);
+
+        var m =
+          parseInt(parts[1], 10);
+
+        var d =
+          parseInt(parts[2], 10);
+
+
+        if (
+          isNaN(y) ||
+          isNaN(m) ||
+          isNaN(d) ||
+          m < 1 ||
+          m > 12
+        ) {
+
+          return iso;
+
+        }
+
+
+        return (
+          MONTHS[m - 1] +
+          " " +
+          d +
+          ", " +
+          y
+        );
+
+      }
+
+
+      /*
+       * ========================================================
+       * Safe release extraction
+       * ========================================================
+       *
+       * Supported fields:
+       *
+       * title
+       * version
+       * project
+       * date
+       * category
+       * excerpt
+       * url
+       *
+       * Optional:
+       *
+       * description
+       * tag
+       *
+       * ========================================================
+       */
+
+      function pick(release) {
+
+        return {
+
+          title:
+            release &&
+            release.title
+              ? String(release.title)
+              : "Untitled Release",
+
+          version:
+            release &&
+            release.version
+              ? String(release.version)
+              : "",
+
+          project:
+            release &&
+            release.project
+              ? String(release.project)
+              : "Dawnstone",
+
+          date:
+            release &&
+            release.date
+              ? String(release.date)
+              : "",
+
+          category:
+            release &&
+            release.category
+              ? String(release.category)
+              : "Release",
+
+          excerpt:
+            release &&
+            (
+              release.excerpt ||
+              release.description
+            )
+              ? String(
+                  release.excerpt ||
+                  release.description
+                )
+              : "",
+
+          tag:
+            release &&
+            release.tag
+              ? String(release.tag)
+              : "",
+
+          url:
+            release &&
+            release.url
+              ? String(release.url)
+              : "#"
+
+        };
+
+      }
+
+
+      /*
+       * ========================================================
+       * URL / page state
+       * ========================================================
+       */
+
+      function getPageFromUrl() {
+
+        var params =
+          new URLSearchParams(
+            window.location.search
+          );
+
+        var p =
+          parseInt(
+            params.get("page"),
+            10
+          );
+
+
+        return (
+          !isNaN(p) &&
+          p > 0
+        )
+          ? p
+          : 1;
+
+      }
+
+
+      function getQueryFromUrl() {
+
+        var params =
+          new URLSearchParams(
+            window.location.search
+          );
+
+        var q =
+          params.get("q");
+
+
+        return q
+          ? q
+          : "";
+
+      }
+
+
+      function setPageInUrl(
+        page,
+        query,
+        push
+      ) {
+
+        var url =
+          new URL(
+            window.location.href
+          );
+
+
+        if (page <= 1) {
+
+          url.searchParams.delete(
+            "page"
+          );
+
+        } else {
+
+          url.searchParams.set(
+            "page",
+            String(page)
+          );
+
+        }
+
+
+        if (query) {
+
+          url.searchParams.set(
+            "q",
+            query
+          );
+
+        } else {
+
+          url.searchParams.delete(
+            "q"
+          );
+
+        }
+
+
+        if (push) {
+
+          window.history.pushState(
+            {
+              page: page,
+              q: query
+            },
+            "",
+            url
+          );
+
+        } else {
+
+          window.history.replaceState(
+            {
+              page: page,
+              q: query
+            },
+            "",
+            url
+          );
+
+        }
+
+      }
+
+
+      /*
+       * ========================================================
+       * Search
+       * ========================================================
+       */
+
+      function escapeRegExp(str) {
+
+        return str.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          "\\$&"
+        );
+
+      }
+
+
+      function highlight(
+        text,
+        query
+      ) {
+
+        if (!query) {
+
+          return escapeHtml(text);
+
+        }
+
+
+        var escaped =
+          escapeHtml(text);
+
+        var re =
+          new RegExp(
+            "(" +
+            escapeRegExp(
+              escapeHtml(query)
+            ) +
+            ")",
+            "ig"
+          );
+
+
+        return escaped.replace(
+          re,
+          "<mark>$1</mark>"
+        );
+
+      }
+
+
+      function matchesQuery(
+        release,
+        q
+      ) {
+
+        var needle =
+          q.toLowerCase();
+
+
+        var haystacks = [
+
+          release.title.toLowerCase(),
+
+          release.version.toLowerCase(),
+
+          release.project.toLowerCase(),
+
+          release.category.toLowerCase(),
+
+          release.date.toLowerCase(),
+
+          formatDate(
+            release.date
+          ).toLowerCase(),
+
+          release.excerpt.toLowerCase(),
+
+          release.tag.toLowerCase()
+
+        ];
+
+
+        for (
+          var i = 0;
+          i < haystacks.length;
+          i++
+        ) {
+
+          if (
+            haystacks[i]
+              .indexOf(needle) > -1
+          ) {
+
+            return true;
+
+          }
+
+        }
+
+
+        return false;
+
+      }
+
+
+      function applyFilter(
+        query,
+        page,
+        push
+      ) {
+
+        searchQuery =
+          (query || "").trim();
+
+
+        if (!searchQuery) {
+
+          filteredReleases =
+            allReleases;
+
+        } else {
+
+          filteredReleases =
+            allReleases.filter(
+              function (release) {
+
+                return matchesQuery(
+                  release,
+                  searchQuery
+                );
+
+              }
+            );
+
+        }
+
+
+        searchClear.classList.toggle(
+          "show",
+          !!searchQuery
+        );
+
+
+        if (searchQuery) {
+
+          searchMeta.hidden =
+            false;
+
+          searchMeta.textContent =
+            filteredReleases.length === 1
+              ? "1 release found"
+              : filteredReleases.length +
+                " releases found";
+
+        } else {
+
+          searchMeta.hidden =
+            true;
+
+          searchMeta.textContent =
+            "";
+
+        }
+
+
+        renderPage(
+          page || 1
+        );
+
+
+        setPageInUrl(
+          page || 1,
+          searchQuery,
+          !!push
+        );
+
+      }
+
+
+      /*
+       * ========================================================
+       * Render releases
+       * ========================================================
+       */
+
+      function renderPage(page) {
+
+        var total =
+          filteredReleases.length;
+
+
+        var totalPages =
+          Math.max(
+            1,
+            Math.ceil(
+              total /
+              RELEASES_PER_PAGE
+            )
+          );
+
+
+        if (page < 1) {
+          page = 1;
+        }
+
+
+        if (page > totalPages) {
+          page = totalPages;
+        }
+
+
+        var start =
+          (page - 1) *
+          RELEASES_PER_PAGE;
+
+
+        var pageReleases =
+          filteredReleases.slice(
+            start,
+            start +
+            RELEASES_PER_PAGE
+          );
+
+
+        listEl.innerHTML =
+          "";
+
+
+        if (
+          total === 0 &&
+          searchQuery
+        ) {
+
+          noResultsEl.hidden =
+            false;
+
+        } else {
+
+          noResultsEl.hidden =
+            true;
+
+        }
+
+
+        pageReleases.forEach(
+          function (release) {
+
+            var row =
+              document.createElement(
+                "a"
+              );
+
+
+            row.className =
+              "release-row reveal";
+
+
+            row.href =
+              release.url;
+
+
+            row.innerHTML =
+
+              '<div class="release-meta">' +
+
+                '<span class="release-date">' +
+                  highlight(
+                    formatDate(
+                      release.date
+                    ),
+                    searchQuery
+                  ) +
+                '</span>' +
+
+                '<span class="release-project">' +
+                  highlight(
+                    release.project,
+                    searchQuery
+                  ) +
+                '</span>' +
+
+                '<span class="release-category">' +
+                  highlight(
+                    release.category,
+                    searchQuery
+                  ) +
+                '</span>' +
+
+              '</div>' +
+
+
+              '<div class="release-main">' +
+
+                '<h3 class="release-title">' +
+                  highlight(
+                    release.title,
+                    searchQuery
+                  ) +
+                '</h3>' +
+
+                (
+                  release.excerpt
+                    ? (
+                      '<p class="release-excerpt">' +
+                        highlight(
+                          release.excerpt,
+                          searchQuery
+                        ) +
+                      '</p>'
+                    )
+                    : ""
+                ) +
+
+                (
+                  release.version
+                    ? (
+                      '<span class="release-version">' +
+                        highlight(
+                          release.version,
+                          searchQuery
+                        ) +
+                      '</span>'
+                    )
+                    : ""
+                ) +
+
+              '</div>' +
+
+
+              '<span ' +
+                'class="release-arrow" ' +
+                'aria-hidden="true"' +
+              '>' +
+                '↗' +
+              '</span>';
+
+
+            listEl.appendChild(
+              row
+            );
+
+
+            observeReveal(
+              row
+            );
+
+          }
+        );
+
+
+        /*
+         * ======================================================
+         * Pagination
+         * ======================================================
+         */
+
+        if (
+          total >
+          RELEASES_PER_PAGE
+        ) {
+
+          paginationEl.hidden =
+            false;
+
+
+          pageLabel.textContent =
+            "Page " +
+            page;
+
+
+          prevLink.hidden =
+            page <= 1;
+
+
+          nextLink.hidden =
+            page >= totalPages;
+
+
+          var qs =
+            searchQuery
+              ? "&q=" +
+                encodeURIComponent(
+                  searchQuery
+                )
+              : "";
+
+
+          prevLink.href =
+
+            page - 1 <= 1
+
+              ? (
+                searchQuery
+                  ? "releases.html?q=" +
+                    encodeURIComponent(
+                      searchQuery
+                    )
+                  : "releases.html"
+              )
+
+              : (
+                "releases.html?page=" +
+                (page - 1) +
+                qs
+              );
+
+
+          nextLink.href =
+            "releases.html?page=" +
+            (page + 1) +
+            qs;
+
+        } else {
+
+          paginationEl.hidden =
+            true;
+
+        }
+
+      }
+
+
+      function escapeHtml(str) {
+
+        var div =
+          document.createElement(
+            "div"
+          );
+
+
+        div.textContent =
+          str;
+
+
+        return div.innerHTML;
+
+      }
+
+
+      /*
+       * ========================================================
+       * Search input
+       * ========================================================
+       */
+
+      searchInput.addEventListener(
+        "input",
+        function (e) {
+
+          var value =
+            e.target.value;
+
+
+          clearTimeout(
+            searchDebounce
+          );
+
+
+          searchDebounce =
+            setTimeout(
+              function () {
+
+                applyFilter(
+                  value,
+                  1,
+                  true
+                );
+
+              },
+              150
+            );
+
+        }
+      );
+
+
+      searchClear.addEventListener(
+        "click",
+        function () {
+
+          searchInput.value =
+            "";
+
+          searchInput.focus();
+
+
+          applyFilter(
+            "",
+            1,
+            true
+          );
+
+        }
+      );
+
+
+      /*
+       * ========================================================
+       * Pagination
+       * ========================================================
+       */
+
+      paginationEl.addEventListener(
+        "click",
+        function (e) {
+
+          var link =
+            e.target.closest(
+              "a.page-link"
+            );
+
+
+          if (
+            !link ||
+            link.hidden
+          ) {
+
+            return;
+
+          }
+
+
+          e.preventDefault();
+
+
+          var url =
+            new URL(
+              link.href,
+              window.location.href
+            );
+
+
+          var params =
+            new URLSearchParams(
+              url.search
+            );
+
+
+          var page =
+            parseInt(
+              params.get("page"),
+              10
+            ) || 1;
+
+
+          renderPage(
+            page
+          );
+
+
+          setPageInUrl(
+            page,
+            searchQuery,
+            true
+          );
+
+
+          document
+            .getElementById("releases")
+            .scrollIntoView({
+              behavior:
+                reduce
+                  ? "auto"
+                  : "smooth",
+
+              block:
+                "start"
+            });
+
+        }
+      );
+
+
+      /*
+       * ========================================================
+       * Browser navigation
+       * ========================================================
+       */
+
+      window.addEventListener(
+        "popstate",
+        function () {
+
+          var q =
+            getQueryFromUrl();
+
+
+          searchInput.value =
+            q;
+
+
+          applyFilter(
+            q,
+            getPageFromUrl(),
+            false
+          );
+
+        }
+      );
+
+
+      /*
+       * ========================================================
+       * Load releases.json
+       * ========================================================
+       */
+
+      fetch("./releases.json")
+
+        .then(
+          function (res) {
+
+            if (!res.ok) {
+
+              throw new Error(
+                "Network response was not ok"
+              );
+
+            }
+
+
+            return res.json();
+
+          }
+        )
+
+        .then(
+          function (data) {
+
+            loadingEl.hidden =
+              true;
+
+
+            var list =
+
+              Array.isArray(data)
+
+                ? data
+
+                : (
+                  data &&
+                  Array.isArray(
+                    data.releases
+                  )
+                )
+
+                  ? data.releases
+
+                  : (
+                    data &&
+                    Array.isArray(
+                      data.items
+                    )
+                  )
+
+                    ? data.items
+
+                    : null;
+
+
+            if (!list) {
+
+              throw new Error(
+                "Unexpected releases.json format"
+              );
+
+            }
+
+
+            allReleases =
+              list.map(
+                pick
+              );
+
+
+            allReleases.sort(
+              function (a, b) {
+
+                return a.date < b.date
+                  ? 1
+                  : (
+                    a.date > b.date
+                      ? -1
+                      : 0
+                  );
+
+              }
+            );
+
+
+            if (
+              allReleases.length === 0
+            ) {
+
+              emptyEl.hidden =
+                false;
+
+              return;
+
+            }
+
+
+            searchWrap.hidden =
+              false;
+
+
+            observeReveal(
+              searchWrap
+            );
+
+
+            var initialQuery =
+              getQueryFromUrl();
+
+
+            searchInput.value =
+              initialQuery;
+
+
+            applyFilter(
+              initialQuery,
+              getPageFromUrl(),
+              false
+            );
+
+          }
+        )
+
+        .catch(
+          function () {
+
+            loadingEl.hidden =
+              true;
+
+            errorEl.hidden =
+              false;
+
+          }
+        );
+
+    })();
+  </script>
+
+</body>
+</html>
