@@ -1364,7 +1364,7 @@
         <span id="pageLabel" class="page-label"></span>
 
         <a href="#" id="nextLink" class="page-link" hidden>
-          Next  
+          Next →
         </a>
 
       </nav>
@@ -1835,11 +1835,20 @@
 
           loadingEl.hidden = true;
 
-          if (!Array.isArray(data)) {
+          var list =
+            Array.isArray(data)
+              ? data
+              : (data && Array.isArray(data.posts))
+                ? data.posts
+                : (data && Array.isArray(data.items))
+                  ? data.items
+                  : null;
+
+          if (!list) {
             throw new Error("Unexpected posts.json format");
           }
 
-          allPosts = data.map(pick);
+          allPosts = list.map(pick);
 
           allPosts.sort(function (a, b) {
             return a.date < b.date ? 1 : (a.date > b.date ? -1 : 0);
