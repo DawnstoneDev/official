@@ -498,6 +498,141 @@
 
 
     /* =========================================================
+       Search
+       ========================================================= */
+
+    .search-wrap {
+      margin-bottom: 2.25rem;
+    }
+
+    .search-input-shell {
+      position: relative;
+
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+
+      left: 1.25rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      pointer-events: none;
+
+      color:
+        rgba(24,48,74,0.4);
+    }
+
+    .search-input {
+      width: 100%;
+
+      padding: 0.95rem 1.25rem 0.95rem 2.75rem;
+
+      font-size: 1rem;
+
+      font-family: inherit;
+
+      color: var(--ink);
+
+      background: rgba(255,255,255,0.35);
+
+      border:
+        0.5px solid
+        rgba(24,48,74,0.10);
+
+      border-radius: 9999px;
+
+      box-shadow:
+        0 12px 40px
+        rgba(24,48,74,0.06);
+
+      outline: none;
+
+      transition:
+        background 0.4s,
+        border-color 0.4s,
+        box-shadow 0.4s;
+    }
+
+    .search-input::placeholder {
+      color:
+        rgba(24,48,74,0.42);
+    }
+
+    .search-input:hover {
+      background: rgba(255,255,255,0.45);
+    }
+
+    .search-input:focus {
+      background: rgba(255,255,255,0.6);
+
+      border-color:
+        rgba(194,106,46,0.3);
+
+      box-shadow:
+        0 18px 56px
+        rgba(24,48,74,0.10);
+    }
+
+    .search-clear {
+      position: absolute;
+
+      right: 0.6rem;
+
+      display: none;
+
+      align-items: center;
+      justify-content: center;
+
+      width: 2rem;
+      height: 2rem;
+
+      border-radius: 50%;
+
+      border: none;
+
+      background: transparent;
+
+      color:
+        rgba(24,48,74,0.45);
+
+      font-size: 1rem;
+
+      cursor: pointer;
+
+      transition:
+        background 0.3s,
+        color 0.3s;
+    }
+
+    .search-clear.show {
+      display: flex;
+    }
+
+    .search-clear:hover {
+      background:
+        rgba(24,48,74,0.08);
+
+      color: var(--warm-ink);
+    }
+
+    .search-meta {
+      margin-top: 0.85rem;
+
+      font-size: 0.8125rem;
+
+      letter-spacing: 0.02em;
+
+      color:
+        rgba(24,48,74,0.48);
+    }
+
+
+    /* =========================================================
        Posts
        ========================================================= */
 
@@ -654,6 +789,18 @@
         rgba(24,48,74,0.62);
 
       max-width: 42rem;
+    }
+
+    .post-title mark,
+    .post-excerpt mark,
+    .post-meta mark {
+      background: rgba(255,222,163,0.65);
+
+      color: var(--warm-ink);
+
+      border-radius: 3px;
+
+      padding: 0 0.15em;
     }
 
     .post-arrow {
@@ -1340,6 +1487,41 @@
         Latest notes
       </p>
 
+      <div class="search-wrap reveal" id="searchWrap" hidden>
+
+        <div class="search-input-shell">
+
+          <span class="search-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+              <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search by title, date, or tag&hellip;"
+            aria-label="Search Field Note posts by title, date, or tag"
+            autocomplete="off"
+          />
+
+          <button
+            type="button"
+            id="searchClear"
+            class="search-clear"
+            aria-label="Clear search"
+          >
+            ✕
+          </button>
+
+        </div>
+
+        <p id="searchMeta" class="search-meta" hidden aria-live="polite"></p>
+
+      </div>
+
       <div id="postList" class="post-list" aria-live="polite"></div>
 
       <p id="loadingState" class="state-msg">
@@ -1353,6 +1535,10 @@
 
       <p id="emptyState" class="state-msg" hidden>
         No notes yet.
+      </p>
+
+      <p id="noResultsState" class="state-msg" hidden>
+        No notes match your search.
       </p>
 
       <nav class="pagination" id="pagination" hidden aria-label="Field Note pagination">
@@ -1500,12 +1686,21 @@
       var loadingEl = document.getElementById("loadingState");
       var errorEl = document.getElementById("errorState");
       var emptyEl = document.getElementById("emptyState");
+      var noResultsEl = document.getElementById("noResultsState");
       var paginationEl = document.getElementById("pagination");
       var prevLink = document.getElementById("prevLink");
       var nextLink = document.getElementById("nextLink");
       var pageLabel = document.getElementById("pageLabel");
 
+      var searchWrap = document.getElementById("searchWrap");
+      var searchInput = document.getElementById("searchInput");
+      var searchClear = document.getElementById("searchClear");
+      var searchMeta = document.getElementById("searchMeta");
+
       var allPosts = [];
+      var filteredPosts = [];
+      var searchQuery = "";
+      var searchDebounce = null;
 
 
       /*
@@ -1681,7 +1876,16 @@
 
       }
 
-      function setPageInUrl(page, push) {
+      function getQueryFromUrl() {
+
+        var params = new URLSearchParams(window.location.search);
+        var q = params.get("q");
+
+        return q ? q : "";
+
+      }
+
+      function setPageInUrl(page, query, push) {
 
         var url = new URL(window.location.href);
 
@@ -1691,11 +1895,96 @@
           url.searchParams.set("page", String(page));
         }
 
-        if (push) {
-          window.history.pushState({ page: page }, "", url);
+        if (query) {
+          url.searchParams.set("q", query);
         } else {
-          window.history.replaceState({ page: page }, "", url);
+          url.searchParams.delete("q");
         }
+
+        if (push) {
+          window.history.pushState({ page: page, q: query }, "", url);
+        } else {
+          window.history.replaceState({ page: page, q: query }, "", url);
+        }
+
+      }
+
+
+      /*
+       * ========================================================
+       * Search / filtering
+       *
+       * Matches across title, formatted date (and raw ISO date),
+       * and category/tag — full text, case-insensitive.
+       * ========================================================
+       */
+
+      function escapeRegExp(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+
+      function highlight(text, query) {
+
+        if (!query) {
+          return escapeHtml(text);
+        }
+
+        var escaped = escapeHtml(text);
+        var re = new RegExp("(" + escapeRegExp(escapeHtml(query)) + ")", "ig");
+
+        return escaped.replace(re, "<mark>$1</mark>");
+
+      }
+
+      function matchesQuery(post, q) {
+
+        var needle = q.toLowerCase();
+
+        var haystacks = [
+          post.title.toLowerCase(),
+          post.category.toLowerCase(),
+          post.date.toLowerCase(),
+          formatDate(post.date).toLowerCase(),
+          post.excerpt.toLowerCase()
+        ];
+
+        for (var i = 0; i < haystacks.length; i++) {
+          if (haystacks[i].indexOf(needle) > -1) {
+            return true;
+          }
+        }
+
+        return false;
+
+      }
+
+      function applyFilter(query, page, push) {
+
+        searchQuery = (query || "").trim();
+
+        if (!searchQuery) {
+          filteredPosts = allPosts;
+        } else {
+          filteredPosts = allPosts.filter(function (post) {
+            return matchesQuery(post, searchQuery);
+          });
+        }
+
+        searchClear.classList.toggle("show", !!searchQuery);
+
+        if (searchQuery) {
+          searchMeta.hidden = false;
+          searchMeta.textContent =
+            filteredPosts.length === 1
+              ? "1 note found"
+              : filteredPosts.length + " notes found";
+        } else {
+          searchMeta.hidden = true;
+          searchMeta.textContent = "";
+        }
+
+        renderPage(page || 1);
+        setPageInUrl(page || 1, searchQuery, !!push);
 
       }
 
@@ -1708,16 +1997,22 @@
 
       function renderPage(page) {
 
-        var total = allPosts.length;
+        var total = filteredPosts.length;
         var totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
 
         if (page < 1) page = 1;
         if (page > totalPages) page = totalPages;
 
         var start = (page - 1) * POSTS_PER_PAGE;
-        var pagePosts = allPosts.slice(start, start + POSTS_PER_PAGE);
+        var pagePosts = filteredPosts.slice(start, start + POSTS_PER_PAGE);
 
         listEl.innerHTML = "";
+
+        if (total === 0 && searchQuery) {
+          noResultsEl.hidden = false;
+        } else {
+          noResultsEl.hidden = true;
+        }
 
         pagePosts.forEach(function (post) {
 
@@ -1728,12 +2023,12 @@
 
           row.innerHTML =
             '<div class="post-meta">' +
-              '<span class="post-date">' + escapeHtml(formatDate(post.date)) + '</span>' +
-              '<span class="post-cat">' + escapeHtml(post.category) + '</span>' +
+              '<span class="post-date">' + highlight(formatDate(post.date), searchQuery) + '</span>' +
+              '<span class="post-cat">' + highlight(post.category, searchQuery) + '</span>' +
             '</div>' +
             '<div class="post-main">' +
-              '<h3 class="post-title">' + escapeHtml(post.title) + '</h3>' +
-              (post.excerpt ? '<p class="post-excerpt">' + escapeHtml(post.excerpt) + '</p>' : '') +
+              '<h3 class="post-title">' + highlight(post.title, searchQuery) + '</h3>' +
+              (post.excerpt ? '<p class="post-excerpt">' + highlight(post.excerpt, searchQuery) + '</p>' : '') +
             '</div>' +
             '<span class="post-arrow" aria-hidden="true">↗</span>';
 
@@ -1756,16 +2051,20 @@
           prevLink.hidden = page <= 1;
           nextLink.hidden = page >= totalPages;
 
-          prevLink.href = page - 1 <= 1 ? "posts.html" : "posts.html?page=" + (page - 1);
-          nextLink.href = "posts.html?page=" + (page + 1);
+          var qs = searchQuery ? "&q=" + encodeURIComponent(searchQuery) : "";
+
+          prevLink.href =
+            page - 1 <= 1
+              ? (searchQuery ? "posts.html?q=" + encodeURIComponent(searchQuery) : "posts.html")
+              : "posts.html?page=" + (page - 1) + qs;
+
+          nextLink.href = "posts.html?page=" + (page + 1) + qs;
 
         } else {
 
           paginationEl.hidden = true;
 
         }
-
-        setPageInUrl(page, false);
 
       }
 
@@ -1776,6 +2075,34 @@
         return div.innerHTML;
 
       }
+
+
+      /*
+       * ========================================================
+       * Search input handling
+       * ========================================================
+       */
+
+      searchInput.addEventListener("input", function (e) {
+
+        var value = e.target.value;
+
+        clearTimeout(searchDebounce);
+
+        searchDebounce = setTimeout(function () {
+          applyFilter(value, 1, true);
+        }, 150);
+
+      });
+
+      searchClear.addEventListener("click", function () {
+
+        searchInput.value = "";
+        searchInput.focus();
+
+        applyFilter("", 1, true);
+
+      });
 
 
       /*
@@ -1798,8 +2125,8 @@
         var params = new URLSearchParams(url.search);
         var page = parseInt(params.get("page"), 10) || 1;
 
-        setPageInUrl(page, true);
         renderPage(page);
+        setPageInUrl(page, searchQuery, true);
 
         document
           .getElementById("posts")
@@ -1811,7 +2138,12 @@
       });
 
       window.addEventListener("popstate", function () {
-        renderPage(getPageFromUrl());
+
+        var q = getQueryFromUrl();
+
+        searchInput.value = q;
+        applyFilter(q, getPageFromUrl(), false);
+
       });
 
 
@@ -1859,7 +2191,13 @@
             return;
           }
 
-          renderPage(getPageFromUrl());
+          searchWrap.hidden = false;
+          observeReveal(searchWrap);
+
+          var initialQuery = getQueryFromUrl();
+          searchInput.value = initialQuery;
+
+          applyFilter(initialQuery, getPageFromUrl(), false);
 
         })
         .catch(function () {
