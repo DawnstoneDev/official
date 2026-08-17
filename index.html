@@ -357,11 +357,6 @@
       opacity: 0.6;
     }
 
-    /*
-     * Blog is slightly emphasized as an external page
-     * while remaining part of the same navigation language.
-     */
-
     .nav-links a.blog-link {
       display: inline-flex;
       align-items: center;
@@ -1127,6 +1122,166 @@
 
     .project-card-link:focus-visible .card {
       border-color: var(--gold);
+    }
+
+
+    /* =========================================================
+       Releases
+       ========================================================= */
+
+    .releases {
+      padding-top: 7rem;
+      padding-bottom: 11rem;
+    }
+
+    @media (min-width: 768px) {
+      .releases {
+        padding-top: 9rem;
+        padding-bottom: 15rem;
+      }
+    }
+
+    .releases h2 {
+      margin-top: 2.5rem;
+
+      max-width: 48rem;
+
+      font-size:
+        clamp(
+          2.25rem,
+          6.5vw,
+          5.5rem
+        );
+
+      line-height: 1.08;
+
+      color: #F5F7FB;
+    }
+
+    .releases h2 .accent {
+      color: var(--gold);
+    }
+
+    .releases .body {
+      margin-top: 2.5rem;
+
+      max-width: 38rem;
+
+      font-size: 1.25rem;
+
+      color:
+        rgba(245,247,251,0.68);
+    }
+
+    @media (min-width: 640px) {
+      .releases .body {
+        font-size: 1.5rem;
+      }
+    }
+
+
+    /* =========================================================
+       Releases link
+       ========================================================= */
+
+    .releases-link {
+      margin-top: 3.75rem;
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.85rem;
+
+      width: fit-content;
+
+      text-decoration: none;
+
+      color: #F5F7FB;
+
+      font-size: 1.125rem;
+
+      transition:
+        color 0.3s ease;
+    }
+
+    @media (min-width: 640px) {
+      .releases-link {
+        margin-top: 4.5rem;
+
+        font-size: 1.375rem;
+      }
+    }
+
+    .releases-link-label {
+      position: relative;
+
+      padding-bottom: 0.25rem;
+
+      border-bottom:
+        1px solid
+        rgba(245,247,251,0.22);
+
+      transition:
+        color 0.3s ease,
+        border-color 0.3s ease;
+    }
+
+    .releases-link-arrow {
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      width: 2rem;
+      height: 2rem;
+
+      border:
+        1px solid
+        rgba(245,247,251,0.18);
+
+      border-radius: 50%;
+
+      font-size: 0.85rem;
+
+      transition:
+        transform 0.4s
+          cubic-bezier(.23,1,.32,1),
+        background 0.3s ease,
+        border-color 0.3s ease;
+    }
+
+    .releases-link:hover {
+      color:
+        var(--gold);
+    }
+
+    .releases-link:hover
+    .releases-link-label {
+      border-color:
+        var(--gold);
+    }
+
+    .releases-link:hover
+    .releases-link-arrow {
+      transform:
+        translate(3px,-3px);
+
+      background:
+        rgba(255,222,163,0.08);
+
+      border-color:
+        rgba(255,222,163,0.25);
+    }
+
+    .releases-link:focus-visible {
+      outline:
+        2px solid
+        var(--gold);
+
+      outline-offset: 5px;
+
+      border-radius: 4px;
     }
 
 
@@ -2469,6 +2624,60 @@
 
 
     <!-- =======================================================
+         RELEASES
+         ======================================================= -->
+
+    <section
+      id="releases"
+      class="releases"
+    >
+
+      <p class="label reveal">
+        03 / Releases
+      </p>
+
+      <h2 class="display reveal">
+
+        Software,<br>
+
+        <span class="serif-italic accent">
+          released.
+        </span>
+
+      </h2>
+
+      <div class="body reveal">
+
+        <p>
+          Explore the software Dawnstone has released,
+          and the versions that brought each project to life.
+        </p>
+
+      </div>
+
+
+      <a
+        href="releases.html"
+        class="releases-link reveal"
+      >
+
+        <span class="releases-link-label">
+          See our all releases
+        </span>
+
+        <span
+          class="releases-link-arrow"
+          aria-hidden="true"
+        >
+          ↗
+        </span>
+
+      </a>
+
+    </section>
+
+
+    <!-- =======================================================
          PHILOSOPHY
          ======================================================= -->
 
@@ -2478,7 +2687,7 @@
     >
 
       <p class="label reveal">
-        03 / Philosophy
+        04 / Philosophy
       </p>
 
       <h2 class="display reveal">
@@ -2520,7 +2729,7 @@
     >
 
       <p class="label reveal">
-        04 / About
+        05 / About
       </p>
 
       <h2 class="display reveal">
@@ -2591,7 +2800,7 @@
     >
 
       <p class="label reveal">
-        05 / Team
+        06 / Team
       </p>
 
       <h2 class="display reveal">
@@ -2626,7 +2835,7 @@
     >
 
       <p class="label reveal">
-        06 / Contact
+        07 / Contact
       </p>
 
       <p class="lead reveal">
