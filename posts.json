@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+    "title": "Amber is now available on web.",
+    "date": "2026-08-17",
+    "category": "Development",
+    "excerpt": "Amber, Dawnstone's quiet music player, is now available on the web.",
+    "url": "./posts/web-amber-available.html"
+    },
+    {
       "title": "Why Amber.",
       "date": "2026-08-17",
       "category": "Amber",
