@@ -1,0 +1,1315 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta
+    name="description"
+    content="Welcome to Dawnstone. A small note about why we started, what we believe, and what we're building."
+  />
+
+  <meta name="theme-color" content="#030811" />
+
+  <meta
+    property="og:title"
+    content="Welcome to Dawnstone. — Dawnstone Field Note"
+  />
+
+  <meta
+    property="og:description"
+    content="A small note about why Dawnstone exists, what we believe, and what we're building."
+  />
+
+  <meta property="og:type" content="article" />
+
+  <title>Welcome to Dawnstone. — Field Note</title>
+
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+
+  <style>
+    :root {
+      --night-top: #030811;
+      --night-bottom: #071526;
+
+      --cream-top: #efe3ca;
+      --cream-bottom: #f6eddA;
+
+      --gold: #FFDEA3;
+      --orange: #F58F4B;
+
+      --ink: #18304A;
+      --warm-ink: #C26A2E;
+
+      --white: #F5F7FB;
+      --muted: rgba(245,247,251,0.58);
+
+      --nav-bg: rgba(255,255,255,0.05);
+      --nav-border: rgba(255,255,255,0.12);
+
+      --article-progress: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Text",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      color: var(--white);
+
+      background:
+        linear-gradient(
+          180deg,
+          var(--night-top) 0%,
+          var(--night-bottom) 100%
+        );
+
+      line-height: 1.7;
+
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: rgba(255,222,163,0.85);
+      color: #030811;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    a:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    .display {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+
+    .serif {
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        "Apple Garamond",
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    /* =========================================================
+       Background
+       ========================================================= */
+
+    .sky {
+      position: fixed;
+      inset: 0;
+
+      z-index: -10;
+
+      overflow: hidden;
+      pointer-events: none;
+
+      background:
+        radial-gradient(
+          100% 60% at 50% 30%,
+          rgba(245,143,75,0.08),
+          transparent 65%
+        ),
+        linear-gradient(
+          180deg,
+          var(--night-top),
+          var(--night-bottom)
+        );
+    }
+
+    .glow {
+      position: absolute;
+
+      left: 50%;
+      top: 12%;
+
+      width: 50vw;
+      height: 50vw;
+
+      max-width: 760px;
+      max-height: 760px;
+
+      transform: translateX(-50%);
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(255,222,163,0.17) 0%,
+          rgba(245,143,75,0.08) 32%,
+          transparent 70%
+        );
+
+      filter: blur(20px);
+    }
+
+    .stars {
+      position: absolute;
+
+      width: 1px;
+      height: 1px;
+
+      left: 0;
+      top: 0;
+
+      opacity: 0.85;
+    }
+
+    /* =========================================================
+       Navigation
+       ========================================================= */
+
+    .nav-wrap {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      right: 0;
+
+      z-index: 50;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .nav-wrap {
+        padding-top: 1.5rem;
+      }
+    }
+
+    .nav {
+      width: 100%;
+      max-width: 64rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0.75rem 1.25rem;
+
+      border-radius: 9999px;
+
+      background: var(--nav-bg);
+
+      border:
+        0.5px solid
+        var(--nav-border);
+
+      backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      -webkit-backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      box-shadow:
+        0 8px 40px rgba(0,0,0,0.35);
+    }
+
+    @media (min-width: 640px) {
+      .nav {
+        padding: 0.875rem 1.75rem;
+      }
+    }
+
+    .brand {
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+    }
+
+    @media (min-width: 640px) {
+      .brand {
+        font-size: 1rem;
+      }
+    }
+
+    .nav-back {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.65rem;
+
+      font-size: 11px;
+
+      letter-spacing: 0.12em;
+
+      text-transform: uppercase;
+
+      text-decoration: none;
+
+      color:
+        rgba(245,247,251,0.65);
+
+      transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .nav-back:hover {
+      color: var(--white);
+
+      transform: translateX(-3px);
+    }
+
+    /* =========================================================
+       Article
+       ========================================================= */
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    .article-header {
+      min-height: 78svh;
+
+      display: flex;
+      flex-direction: column;
+
+      justify-content: flex-end;
+
+      padding:
+        9rem 1.5rem
+        6rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-header {
+        padding:
+          10rem 3rem
+          7rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-header {
+        padding:
+          11rem 5rem
+          8rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-header {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .article-header-inner {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: flex;
+
+      align-items: center;
+
+      gap: 0.8rem;
+
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.3em;
+
+      color:
+        rgba(245,247,251,0.48);
+    }
+
+    .eyebrow .dot {
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: var(--orange);
+
+      box-shadow:
+        0 0 18px
+        rgba(245,143,75,0.7);
+    }
+
+    .article-title {
+      max-width: 64rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          3.4rem,
+          10vw,
+          9rem
+        );
+
+      line-height: 0.96;
+
+      letter-spacing: -0.055em;
+    }
+
+    .article-title .accent {
+      color: var(--gold);
+    }
+
+    .article-deck {
+      max-width: 42rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          1.2rem,
+          2.8vw,
+          1.75rem
+        );
+
+      line-height: 1.35;
+
+      color:
+        rgba(245,247,251,0.68);
+    }
+
+    .article-meta {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 1rem 1.5rem;
+
+      margin-top: 3rem;
+
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.2em;
+
+      color:
+        rgba(245,247,251,0.4);
+    }
+
+    .article-meta span + span {
+      position: relative;
+
+      padding-left: 1.5rem;
+    }
+
+    .article-meta span + span::before {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+      top: 50%;
+
+      width: 3px;
+      height: 3px;
+
+      border-radius: 50%;
+
+      background:
+        rgba(245,247,251,0.3);
+
+      transform: translateY(-50%);
+    }
+
+    /* =========================================================
+       Divider
+       ========================================================= */
+
+    .article-divider {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        0 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-divider {
+        padding: 0 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-divider {
+        padding: 0 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-divider {
+        padding:
+          0 10rem;
+      }
+    }
+
+    .article-divider::after {
+      content: "";
+
+      display: block;
+
+      height: 1px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0.12),
+          transparent
+        );
+    }
+
+    /* =========================================================
+       Body
+       ========================================================= */
+
+    .article-body {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        6rem 1.5rem
+        10rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-body {
+        padding:
+          7rem 3rem
+          12rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-body {
+        padding:
+          8rem 5rem
+          14rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-body {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .article-copy {
+      max-width: 42rem;
+
+      margin: 0 auto;
+    }
+
+    .article-copy p {
+      font-size:
+        clamp(
+          1.1rem,
+          2vw,
+          1.35rem
+        );
+
+      line-height: 1.85;
+
+      color:
+        rgba(245,247,251,0.78);
+    }
+
+    .article-copy p + p {
+      margin-top: 1.75rem;
+    }
+
+    .article-copy .lead {
+      font-size:
+        clamp(
+          1.45rem,
+          3vw,
+          2rem
+        );
+
+      line-height: 1.45;
+
+      color: var(--white);
+    }
+
+    .article-copy .lead .accent {
+      color: var(--gold);
+    }
+
+    .article-copy .section-title {
+      margin-top: 5rem;
+      margin-bottom: 1.5rem;
+
+      font-size:
+        clamp(
+          1.8rem,
+          4vw,
+          3rem
+        );
+
+      line-height: 1.1;
+
+      color: var(--white);
+    }
+
+    .article-copy .section-title .accent {
+      color: var(--gold);
+    }
+
+    .article-copy blockquote {
+      margin:
+        4rem 0;
+
+      padding:
+        2rem 0 2rem 1.75rem;
+
+      border-left:
+        1px solid
+        rgba(255,222,163,0.5);
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(
+          1.5rem,
+          3.5vw,
+          2.25rem
+        );
+
+      line-height: 1.35;
+
+      font-style: italic;
+
+      color:
+        rgba(255,222,163,0.9);
+    }
+
+    /* =========================================================
+       Closing
+       ========================================================= */
+
+    .article-end {
+      margin-top: 6rem;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,0.1);
+    }
+
+    .article-end p {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.24em;
+
+      color:
+        rgba(245,247,251,0.38);
+    }
+
+    .article-end .signature {
+      margin-top: 1rem;
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size: 1.6rem;
+
+      text-transform: none;
+
+      letter-spacing: 0;
+
+      color:
+        rgba(255,222,163,0.85);
+    }
+
+    /* =========================================================
+       Footer
+       ========================================================= */
+
+    .footer {
+      padding:
+        0 1.5rem
+        2rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer {
+        padding:
+          0 3rem
+          2rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .footer {
+        padding:
+          0 5rem
+          2rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .footer {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .footer-inner {
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,0.1);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 1.5rem;
+    }
+
+    .footer-brand {
+      font-size: 11px;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+
+      color:
+        rgba(245,247,251,0.55);
+    }
+
+    .footer-note {
+      font-size: 10px;
+
+      letter-spacing: 0.08em;
+
+      color:
+        rgba(245,247,251,0.32);
+    }
+
+    /* =========================================================
+       Reveal
+       ========================================================= */
+
+    .reveal {
+      opacity: 0;
+
+      transform:
+        translateY(22px);
+
+      filter:
+        blur(10px);
+
+      transition:
+        opacity 1s
+          cubic-bezier(.23,1,.32,1),
+        transform 1s
+          cubic-bezier(.23,1,.32,1),
+        filter 1s
+          cubic-bezier(.23,1,.32,1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+
+      transform: none;
+
+      filter: blur(0);
+    }
+
+    /* =========================================================
+       Responsive
+       ========================================================= */
+
+    @media (max-width: 639px) {
+      .nav-back span:first-child {
+        display: none;
+      }
+
+      .article-header {
+        min-height: 72svh;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+
+        flex-direction: column;
+      }
+    }
+
+    /* =========================================================
+       Reduced motion
+       ========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        filter: none;
+
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================================================
+       BACKGROUND
+       ========================================================= -->
+
+  <div class="sky" aria-hidden="true">
+    <div class="glow"></div>
+    <div class="stars" id="stars"></div>
+  </div>
+
+
+  <!-- =========================================================
+       NAVIGATION
+       ========================================================= -->
+
+  <div class="nav-wrap">
+
+    <nav class="nav" aria-label="Primary">
+
+      <a
+        href="../index.html"
+        class="brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <a
+        href="../Posts.html"
+        class="nav-back"
+      >
+        <span>Field Note</span>
+        <span>←</span>
+      </a>
+
+    </nav>
+
+  </div>
+
+
+  <!-- =========================================================
+       ARTICLE
+       ========================================================= -->
+
+  <main>
+
+    <!-- Header -->
+
+    <header class="article-header">
+
+      <div class="article-header-inner">
+
+        <div class="eyebrow reveal">
+          <span class="dot"></span>
+          <span>Field Note / 001</span>
+        </div>
+
+        <h1 class="article-title display reveal">
+          Welcome to
+          <span class="serif accent">
+            Dawnstone.
+          </span>
+        </h1>
+
+        <p class="article-deck reveal">
+          A small note about why we started,
+          what we believe,
+          and the things we're beginning to build.
+        </p>
+
+        <div class="article-meta reveal">
+          <span>August 2026</span>
+          <span>Introduction</span>
+          <span>3 min read</span>
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="article-divider"></div>
+
+
+    <!-- Article body -->
+
+    <article class="article-body">
+
+      <div class="article-copy">
+
+        <p class="lead reveal">
+          Dawnstone began with a simple idea:
+          <span class="accent">
+            software does not have to be loud to be useful.
+          </span>
+        </p>
+
+        <p class="reveal">
+          We spend a surprising amount of our days using software.
+          We write in it, listen through it, create with it,
+          organize our thoughts with it.
+        </p>
+
+        <p class="reveal">
+          And yet, the best tools often disappear into the background.
+          They do what they need to do, get out of the way,
+          and let you concentrate on the thing that actually matters.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          So,
+          <span class="serif accent">
+            why Dawnstone?
+          </span>
+        </h2>
+
+        <p class="reveal">
+          The name comes from the moment between night and day.
+          The world is still quiet.
+          The sky has not completely changed yet.
+          But somewhere on the horizon,
+          the first light has already appeared.
+        </p>
+
+        <p class="reveal">
+          That feeling is what we want our software to have.
+          Calm. Considered. A little bit curious.
+        </p>
+
+        <blockquote class="reveal">
+          “Good software should feel less like a machine
+          you operate and more like a place you already know.”
+        </blockquote>
+
+
+        <h2 class="section-title display reveal">
+          Building for
+          <span class="serif accent">
+            the Mac.
+          </span>
+        </h2>
+
+        <p class="reveal">
+          Our first projects are being built specifically for macOS.
+          Not because it is the only platform worth building for,
+          but because we believe the platform deserves software
+          that feels genuinely at home on it.
+        </p>
+
+        <p class="reveal">
+          Native interfaces.
+          Thoughtful interactions.
+          Familiar controls.
+          A little translucency where it makes sense.
+          And enough restraint to let the content breathe.
+        </p>
+
+        <p class="reveal">
+          We're particularly interested in the space where
+          technology and craft meet —
+          where a tiny interaction can make an application
+          feel significantly better.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          Small things,
+          <span class="serif accent">
+            carefully made.
+          </span>
+        </h2>
+
+        <p class="reveal">
+          Dawnstone is small.
+          That is intentional.
+        </p>
+
+        <p class="reveal">
+          It gives us room to care about details that might otherwise
+          be overlooked.
+          The way a window opens.
+          The rhythm of an animation.
+          The weight of a piece of text.
+          The moment an application becomes useful without needing
+          to explain itself.
+        </p>
+
+        <p class="reveal">
+          We're not trying to make everything.
+          We're trying to make a few things
+          that are worth keeping around.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          This is
+          <span class="serif accent">
+            the beginning.
+          </span>
+        </h2>
+
+        <p class="reveal">
+          Amber, Atlas, Strata, and the projects that will follow
+          are all part of the same experiment:
+          seeing how much thought we can put into small pieces
+          of software.
+        </p>
+
+        <p class="reveal">
+          There will be experiments.
+          There will probably be a few strange ideas.
+          Some things will work.
+          Some things will quietly disappear.
+        </p>
+
+        <p class="reveal">
+          That's part of building.
+        </p>
+
+        <p class="reveal">
+          Field Note will be where we write about those things —
+          what we're making, what we're learning,
+          and occasionally what we've broken along the way.
+        </p>
+
+
+        <div class="article-end reveal">
+
+          <p>
+            End of Field Note / 001
+          </p>
+
+          <p class="signature">
+            Dawnstone
+          </p>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  </main>
+
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+
+  <footer class="footer">
+
+    <div class="footer-inner">
+
+      <a
+        href="../index.html"
+        class="footer-brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <p class="footer-note">
+        Field Note / 001
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =========================================================
+       JAVASCRIPT
+       ========================================================= -->
+
+  <script>
+    (function () {
+
+      var reduce =
+        window.matchMedia &&
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+
+      /* =======================================================
+         Stars
+         ======================================================= */
+
+      (function () {
+
+        var count = reduce ? 60 : 130;
+        var shadows = [];
+
+        for (var i = 0; i < count; i++) {
+
+          var x =
+            (Math.random() * 100).toFixed(2);
+
+          var y =
+            (Math.random() * 70).toFixed(2);
+
+          var opacity =
+            (Math.random() * 0.55 + 0.15)
+              .toFixed(2);
+
+          var size =
+            Math.random() > 0.94
+              ? 1.5
+              : 0.8;
+
+          shadows.push(
+            x +
+            "vw " +
+            y +
+            "vh 0 " +
+            size +
+            "px rgba(245,247,251," +
+            opacity +
+            ")"
+          );
+
+        }
+
+        document
+          .getElementById("stars")
+          .style.boxShadow =
+          shadows.join(", ");
+
+      })();
+
+
+      /* =======================================================
+         Reveal
+         ======================================================= */
+
+      (function () {
+
+        var elements =
+          document.querySelectorAll(
+            ".reveal"
+          );
+
+        if (reduce) {
+
+          elements.forEach(
+            function (element) {
+              element.classList.add("in");
+            }
+          );
+
+          return;
+        }
+
+        var observer =
+          new IntersectionObserver(
+            function (entries) {
+
+              entries.forEach(
+                function (entry) {
+
+                  if (
+                    entry.isIntersecting
+                  ) {
+
+                    entry.target.classList.add(
+                      "in"
+                    );
+
+                    observer.unobserve(
+                      entry.target
+                    );
+
+                  }
+
+                }
+              );
+
+            },
+            {
+              threshold: 0.12,
+              rootMargin:
+                "0px 0px -8% 0px"
+            }
+          );
+
+        elements.forEach(
+          function (element) {
+            observer.observe(element);
+          }
+        );
+
+      })();
+
+
+      /* =======================================================
+         Subtle background movement
+         ======================================================= */
+
+      var ticking = false;
+
+      function updateBackground() {
+
+        var max =
+          document.documentElement
+            .scrollHeight -
+          window.innerHeight;
+
+        var progress =
+          max > 0
+            ? Math.min(
+                1,
+                Math.max(
+                  0,
+                  window.scrollY / max
+                )
+              )
+            : 0;
+
+        var glow =
+          0.17 -
+          progress * 0.10;
+
+        document
+          .querySelector(".glow")
+          .style.opacity =
+          Math.max(
+            0.04,
+            glow
+          );
+
+        document
+          .getElementById("stars")
+          .style.transform =
+          reduce
+            ? "none"
+            : "translateY(" +
+              progress * 80 +
+              "px)";
+
+        ticking = false;
+
+      }
+
+
+      function onScroll() {
+
+        if (!ticking) {
+
+          ticking = true;
+
+          requestAnimationFrame(
+            updateBackground
+          );
+
+        }
+
+      }
+
+
+      window.addEventListener(
+        "scroll",
+        onScroll,
+        {
+          passive: true
+        }
+      );
+
+      window.addEventListener(
+        "resize",
+        onScroll
+      );
+
+      updateBackground();
+
+    })();
+  </script>
+
+</body>
+</html>

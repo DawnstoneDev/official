@@ -1,0 +1,11 @@
+{
+  "posts": [
+    {
+      "title": "Welcome to DAWNSTONE",
+      "date": "2026-08-17",
+      "category": "Development",
+      "excerpt": "Welcome to DAWNSTONE.",
+      "url": "./posts/welcome-to-dawnstone.html"
+    }
+  ]
+}
