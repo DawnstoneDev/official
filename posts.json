@@ -1,8 +1,22 @@
 {
   "posts": [
     {
-      "title": "Welcome to DAWNSTONE",
+      "title": "Why Amber.",
       "date": "2026-08-17",
+      "category": "Amber",
+      "excerpt": "A small note on why we started building a music player, of all things, and what we want it to feel like.",
+      "url": "./posts/designing-amber.html"
+    },
+    {
+      "title": "Inside Atlas.",
+      "date": "2026-08-17",
+      "category": "Atlas",
+      "excerpt": "Notes on why we're building a document environment for macOS, and the decisions shaping it so far.",
+      "url": "./posts/inside-atlas.html"
+    },
+    {
+      "title": "Welcome to DAWNSTONE",
+      "date": "2026-08-16",
       "category": "Development",
       "excerpt": "Welcome to DAWNSTONE.",
       "url": "./posts/welcome-to-dawnstone.html"
