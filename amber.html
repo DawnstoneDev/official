@@ -252,6 +252,17 @@
   .status-row span:last-child{ font-size:.72rem; text-transform:uppercase; letter-spacing:.26em; color:var(--amber-light); }
   .status-facts{ margin-top:1.75rem; display:flex; flex-direction:column; gap:.55rem; max-width:26rem; font-size:1rem; color:var(--text-secondary); }
 
+  /* Web version link (under Status) — same treatment as Contact links */
+  .status-weblink{
+    margin-top:2rem; display:inline-flex; align-items:center; gap:.6rem;
+    text-decoration:none; color:var(--text); font-size:1rem; width:fit-content;
+    transition:color .3s;
+  }
+  .status-weblink span:first-child{ border-bottom:1px solid transparent; transition:border-color .3s, color .3s; }
+  .status-weblink:hover span:first-child{ border-color:var(--amber-light); color:var(--amber-light); }
+  .status-weblink .arrow{ font-size:.95rem; transition:transform .3s; }
+  .status-weblink:hover .arrow{ transform:translate(4px,-4px); }
+
   /* Contact */
   .contact .lead{ margin-top:2.25rem; font-size:1.05rem; color:var(--text-muted); }
   .contact h2{ margin-top:1rem; font-size:clamp(2.5rem,7vw,5.5rem); line-height:1.05; color:var(--text); }
@@ -890,6 +901,10 @@
         <div>For macOS</div>
         <div>Planned to be free</div>
       </div>
+      <a class="status-weblink reveal" href="/amber-web/index.html">
+        <span>Web Version is available</span>
+        <span class="arrow" aria-hidden="true">↗</span>
+      </a>
     </section>
 
     <!-- 09 / CONTACT -->
