@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta
+    name="description"
+    content="Why we're building Amber — a small note on the motivation behind a quiet music player for macOS."
+  />
+
+  <meta name="theme-color" content="#f6edda" />
+
+  <meta
+    property="og:title"
+    content="Why Amber. — Dawnstone Field Note"
+  />
+
+  <meta
+    property="og:description"
+    content="A small note on why we started building Amber, and what we want it to feel like."
+  />
+
+  <meta property="og:type" content="article" />
+
+  <title>Why Amber. — Field Note</title>
+
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+
+  <style>
+    :root {
+      --sky-top: #efe3ca;
+      --sky-bottom: #f6eddA;
+
+      --ink: #18304A;
+      --warm-ink: #C26A2E;
+      --gold: #FFDEA3;
+      --amber: #E8A85C;
+
+      --muted: rgba(24,48,74,0.62);
+      --faint: rgba(24,48,74,0.4);
+
+      --nav-color: #18304A;
+      --nav-bg: rgba(255,255,255,0.5);
+      --nav-border: rgba(24,48,74,0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Text",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      color: var(--ink);
+
+      background:
+        linear-gradient(
+          180deg,
+          var(--sky-top) 0%,
+          var(--sky-bottom) 100%
+        );
+
+      background-attachment: fixed;
+
+      line-height: 1.7;
+
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: rgba(194,106,46,0.22);
+      color: var(--ink);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    a:focus-visible {
+      outline: 2px solid var(--warm-ink);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    .display {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+
+    .serif {
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        "Apple Garamond",
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    /* =========================================================
+       Background — morning stage (soft, static, no stars)
+       ========================================================= */
+
+    .sky {
+      position: fixed;
+      inset: 0;
+
+      z-index: -10;
+
+      overflow: hidden;
+      pointer-events: none;
+
+      background:
+        radial-gradient(
+          90% 55% at 50% 0%,
+          rgba(255,222,163,0.35) 0%,
+          transparent 60%
+        ),
+        linear-gradient(
+          180deg,
+          var(--sky-top) 0%,
+          var(--sky-bottom) 100%
+        );
+    }
+
+    /* =========================================================
+       Navigation
+       ========================================================= */
+
+    .nav-wrap {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      right: 0;
+
+      z-index: 50;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .nav-wrap {
+        padding-top: 1.5rem;
+      }
+    }
+
+    .nav {
+      width: 100%;
+      max-width: 64rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0.75rem 1.25rem;
+
+      border-radius: 9999px;
+
+      background: var(--nav-bg);
+
+      border:
+        0.5px solid
+        var(--nav-border);
+
+      backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      -webkit-backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      box-shadow:
+        0 10px 40px rgba(24,48,74,0.10);
+
+      color: var(--nav-color);
+    }
+
+    @media (min-width: 640px) {
+      .nav {
+        padding: 0.875rem 1.75rem;
+      }
+    }
+
+    .brand {
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+    }
+
+    @media (min-width: 640px) {
+      .brand {
+        font-size: 1rem;
+      }
+    }
+
+    .nav-back {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.65rem;
+
+      font-size: 11px;
+
+      letter-spacing: 0.12em;
+
+      text-transform: uppercase;
+
+      text-decoration: none;
+
+      color:
+        rgba(24,48,74,0.65);
+
+      transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .nav-back:hover {
+      color: var(--warm-ink);
+
+      transform: translateX(-3px);
+    }
+
+    /* =========================================================
+       Article
+       ========================================================= */
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    .article-header {
+      min-height: 70svh;
+
+      display: flex;
+      flex-direction: column;
+
+      justify-content: flex-end;
+
+      padding:
+        9rem 1.5rem
+        6rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-header {
+        padding:
+          10rem 3rem
+          7rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-header {
+        padding:
+          11rem 5rem
+          8rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-header {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .article-header-inner {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: flex;
+
+      align-items: center;
+
+      gap: 0.8rem;
+
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.3em;
+
+      color:
+        rgba(24,48,74,0.5);
+    }
+
+    .eyebrow .dot {
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: var(--amber);
+
+      box-shadow:
+        0 0 14px
+        rgba(232,168,92,0.6);
+    }
+
+    .article-title {
+      max-width: 64rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          3.4rem,
+          10vw,
+          9rem
+        );
+
+      line-height: 0.96;
+
+      letter-spacing: -0.055em;
+
+      color: var(--ink);
+    }
+
+    .article-title .accent {
+      color: var(--warm-ink);
+    }
+
+    .article-deck {
+      max-width: 42rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          1.2rem,
+          2.8vw,
+          1.75rem
+        );
+
+      line-height: 1.35;
+
+      color:
+        rgba(24,48,74,0.66);
+    }
+
+    .article-meta {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 1rem 1.5rem;
+
+      margin-top: 3rem;
+
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.2em;
+
+      color:
+        rgba(24,48,74,0.45);
+    }
+
+    .article-meta span + span {
+      position: relative;
+
+      padding-left: 1.5rem;
+    }
+
+    .article-meta span + span::before {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+      top: 50%;
+
+      width: 3px;
+      height: 3px;
+
+      border-radius: 50%;
+
+      background:
+        rgba(24,48,74,0.32);
+
+      transform: translateY(-50%);
+    }
+
+    /* =========================================================
+       Divider
+       ========================================================= */
+
+    .article-divider {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        0 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-divider {
+        padding: 0 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-divider {
+        padding: 0 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-divider {
+        padding:
+          0 10rem;
+      }
+    }
+
+    .article-divider::after {
+      content: "";
+
+      display: block;
+
+      height: 1px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(24,48,74,0.14),
+          transparent
+        );
+    }
+
+    /* =========================================================
+       Body
+       ========================================================= */
+
+    .article-body {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        6rem 1.5rem
+        10rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-body {
+        padding:
+          7rem 3rem
+          12rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-body {
+        padding:
+          8rem 5rem
+          14rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-body {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .article-copy {
+      max-width: 42rem;
+
+      margin: 0 auto;
+    }
+
+    .article-copy p {
+      font-size:
+        clamp(
+          1.1rem,
+          2vw,
+          1.35rem
+        );
+
+      line-height: 1.85;
+
+      color:
+        rgba(24,48,74,0.8);
+    }
+
+    .article-copy p + p {
+      margin-top: 1.75rem;
+    }
+
+    .article-copy .lead {
+      font-size:
+        clamp(
+          1.45rem,
+          3vw,
+          2rem
+        );
+
+      line-height: 1.45;
+
+      color: var(--ink);
+    }
+
+    .article-copy .lead .accent {
+      color: var(--warm-ink);
+    }
+
+    .article-copy .section-title {
+      margin-top: 5rem;
+      margin-bottom: 1.5rem;
+
+      font-size:
+        clamp(
+          1.8rem,
+          4vw,
+          3rem
+        );
+
+      line-height: 1.1;
+
+      color: var(--ink);
+    }
+
+    .article-copy .section-title .accent {
+      color: var(--warm-ink);
+    }
+
+    .article-copy blockquote {
+      margin:
+        4rem 0;
+
+      padding:
+        2rem 0 2rem 1.75rem;
+
+      border-left:
+        1px solid
+        rgba(194,106,46,0.4);
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(
+          1.5rem,
+          3.5vw,
+          2.25rem
+        );
+
+      line-height: 1.35;
+
+      font-style: italic;
+
+      color: var(--warm-ink);
+    }
+
+    /* =========================================================
+       Closing
+       ========================================================= */
+
+    .article-end {
+      margin-top: 6rem;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(24,48,74,0.12);
+    }
+
+    .article-end p {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.24em;
+
+      color:
+        rgba(24,48,74,0.42);
+    }
+
+    .article-end .signature {
+      margin-top: 1rem;
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size: 1.6rem;
+
+      text-transform: none;
+
+      letter-spacing: 0;
+
+      color: var(--warm-ink);
+    }
+
+    /* =========================================================
+       Footer
+       ========================================================= */
+
+    .footer {
+      padding:
+        0 1.5rem
+        2rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer {
+        padding:
+          0 3rem
+          2rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .footer {
+        padding:
+          0 5rem
+          2rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .footer {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .footer-inner {
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(24,48,74,0.12);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 1.5rem;
+    }
+
+    .footer-brand {
+      font-size: 11px;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+
+      color:
+        rgba(24,48,74,0.58);
+    }
+
+    .footer-note {
+      font-size: 10px;
+
+      letter-spacing: 0.08em;
+
+      color:
+        rgba(24,48,74,0.4);
+    }
+
+    /* =========================================================
+       Reveal
+       ========================================================= */
+
+    .reveal {
+      opacity: 0;
+
+      transform:
+        translateY(22px);
+
+      filter:
+        blur(10px);
+
+      transition:
+        opacity 1s
+          cubic-bezier(.23,1,.32,1),
+        transform 1s
+          cubic-bezier(.23,1,.32,1),
+        filter 1s
+          cubic-bezier(.23,1,.32,1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+
+      transform: none;
+
+      filter: blur(0);
+    }
+
+    /* =========================================================
+       Responsive
+       ========================================================= */
+
+    @media (max-width: 639px) {
+      .nav-back span:first-child {
+        display: none;
+      }
+
+      .article-header {
+        min-height: 62svh;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+
+        flex-direction: column;
+      }
+    }
+
+    /* =========================================================
+       Reduced motion
+       ========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        filter: none;
+
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================================================
+       BACKGROUND — morning stage
+       ========================================================= -->
+
+  <div class="sky" aria-hidden="true"></div>
+
+
+  <!-- =========================================================
+       NAVIGATION
+       ========================================================= -->
+
+  <div class="nav-wrap">
+
+    <nav class="nav" aria-label="Primary">
+
+      <a
+        href="../index.html"
+        class="brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <a
+        href="../posts.html"
+        class="nav-back"
+      >
+        <span>Field Note</span>
+        <span>←</span>
+      </a>
+
+    </nav>
+
+  </div>
+
+
+  <!-- =========================================================
+       ARTICLE
+       ========================================================= -->
+
+  <main>
+
+    <!-- Header -->
+
+    <header class="article-header">
+
+      <div class="article-header-inner">
+
+        <div class="eyebrow reveal">
+          <span class="dot"></span>
+          <span>Field Note / 003</span>
+        </div>
+
+        <h1 class="article-title display reveal">
+          Why
+          <span class="serif accent">
+            Amber.
+          </span>
+        </h1>
+
+        <p class="article-deck reveal">
+          A small note on why we started building a music player,
+          of all things, and what we want it to feel like.
+        </p>
+
+        <div class="article-meta reveal">
+          <span>August 2026</span>
+          <span>Amber</span>
+          <span>4 min read</span>
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="article-divider"></div>
+
+
+    <!-- Article body -->
+
+    <article class="article-body">
+
+      <div class="article-copy">
+
+        <p class="lead reveal">
+          We didn't set out to build a music player.
+          <span class="accent">
+            We set out to fix the fifteen seconds before the music starts.
+          </span>
+        </p>
+
+        <p class="reveal">
+          That's the part that bothered us — not the sound, but everything
+          around it. Opening an app and being asked to log in again.
+          A homepage full of things we didn't ask for. A queue that
+          quietly rearranges itself. By the time a song actually starts
+          playing, the moment that made you want to listen has usually
+          passed.
+        </p>
+
+        <p class="reveal">
+          Amber is our attempt at getting out of that way.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          Your
+          <span class="serif accent">
+            library,
+          </span>
+          not a feed.
+        </h2>
+
+        <p class="reveal">
+          Amber is built around a library you already own or already
+          curate — local files, and eventually a small set of services —
+          rather than an algorithmic front page. There's no autoplay
+          queue trying to keep you scrolling. Opening Amber shows you
+          what you left open last, nothing more.
+        </p>
+
+        <p class="reveal">
+          That sounds like a small decision. In practice it changes
+          almost everything about the interface: no recommendation rail,
+          no "for you" carousel, no notification badge asking for
+          attention. Just the library, and whatever you're playing.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          Built for the
+          <span class="serif accent">
+            background.
+          </span>
+        </h2>
+
+        <p class="reveal">
+          Most of the time, a music player isn't the app you're looking
+          at — it's the app running quietly behind whatever you're
+          actually doing. So a lot of Amber's design effort has gone
+          into things you'll mostly interact with from outside the app
+          itself: the menu bar controls, Now Playing integration,
+          keyboard shortcuts that don't fight with anything else running.
+        </p>
+
+        <blockquote class="reveal">
+          "The best compliment for Amber would be forgetting it's there."
+        </blockquote>
+
+        <p class="reveal">
+          We spent an embarrassing number of days on the menu bar icon
+          alone — how it animates when a track changes, how it behaves
+          with dozens of other icons crowded next to it, how it looks
+          in both light and dark menu bars without ever feeling loud.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          What we're
+          <span class="serif accent">
+            still deciding.
+          </span>
+        </h2>
+
+        <p class="reveal">
+          Lyrics, equalizer presets, smart playlists — the usual list of
+          features a music player is expected to have. We're being slow
+          about adding them. Each one is a chance to reintroduce the
+          clutter we started this project to remove, so they only go in
+          if they can do that without adding noise.
+        </p>
+
+        <p class="reveal">
+          Amber is still early. The player works, the library works,
+          and the parts that don't feel quiet yet haven't shipped.
+          That's on purpose — we'd rather take longer and keep it small
+          than rush toward a feature list.
+        </p>
+
+
+        <div class="article-end reveal">
+
+          <p>
+            End of Field Note / 003
+          </p>
+
+          <p class="signature">
+            Dawnstone
+          </p>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  </main>
+
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+
+  <footer class="footer">
+
+    <div class="footer-inner">
+
+      <a
+        href="../index.html"
+        class="footer-brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <p class="footer-note">
+        Field Note / 003
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =========================================================
+       JAVASCRIPT
+       ========================================================= -->
+
+  <script>
+    (function () {
+
+      var reduce =
+        window.matchMedia &&
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+
+      /* =======================================================
+         Reveal
+         ======================================================= */
+
+      var elements =
+        document.querySelectorAll(".reveal");
+
+      if (reduce) {
+
+        elements.forEach(function (element) {
+          element.classList.add("in");
+        });
+
+      } else {
+
+        var observer =
+          new IntersectionObserver(
+            function (entries) {
+
+              entries.forEach(function (entry) {
+
+                if (entry.isIntersecting) {
+
+                  entry.target.classList.add("in");
+
+                  observer.unobserve(entry.target);
+
+                }
+
+              });
+
+            },
+            {
+              threshold: 0.12,
+              rootMargin: "0px 0px -8% 0px"
+            }
+          );
+
+        elements.forEach(function (element) {
+          observer.observe(element);
+        });
+
+      }
+
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1319 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta
+    name="description"
+    content="Inside Atlas — notes on building a native document environment for macOS."
+  />
+
+  <meta name="theme-color" content="#16283f" />
+
+  <meta
+    property="og:title"
+    content="Inside Atlas. — Dawnstone Field Note"
+  />
+
+  <meta
+    property="og:description"
+    content="Notes on why Atlas exists, how it's structured, and what we're still figuring out."
+  />
+
+  <meta property="og:type" content="article" />
+
+  <title>Inside Atlas. — Field Note</title>
+
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+
+  <style>
+    :root {
+      --sky-top: #0e1c30;
+      --sky-bottom: #4c5f79;
+
+      --horizon-glow: rgba(245,158,90,0.5);
+      --glow-inner: rgba(255,206,150,0.32);
+      --glow-outer: rgba(245,143,75,0.16);
+
+      --gold: #FFDEA3;
+      --orange: #F58F4B;
+      --teal: #6FD9CC;
+
+      --white: #F5F7FB;
+      --muted: rgba(245,247,251,0.6);
+
+      --nav-bg: rgba(255,255,255,0.06);
+      --nav-border: rgba(255,255,255,0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Text",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      color: var(--white);
+
+      background:
+        linear-gradient(
+          180deg,
+          var(--sky-top) 0%,
+          var(--sky-bottom) 100%
+        );
+
+      line-height: 1.7;
+
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: rgba(255,222,163,0.85);
+      color: #0e1c30;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    a:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    .display {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+
+    .serif {
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        "Apple Garamond",
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    /* =========================================================
+       Background — dawn stage
+       ========================================================= */
+
+    .sky {
+      position: fixed;
+      inset: 0;
+
+      z-index: -10;
+
+      overflow: hidden;
+      pointer-events: none;
+
+      background:
+        radial-gradient(
+          120% 65% at 50% 100%,
+          var(--horizon-glow) 0%,
+          transparent 62%
+        ),
+        linear-gradient(
+          180deg,
+          var(--sky-top) 0%,
+          var(--sky-bottom) 100%
+        );
+    }
+
+    .glow {
+      position: absolute;
+
+      left: 50%;
+      bottom: -18%;
+
+      width: 66vw;
+      height: 66vw;
+
+      max-width: 900px;
+      max-height: 900px;
+
+      transform: translateX(-50%);
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          var(--glow-inner) 0%,
+          var(--glow-outer) 38%,
+          transparent 70%
+        );
+
+      filter: blur(24px);
+    }
+
+    .stars {
+      position: absolute;
+
+      width: 1px;
+      height: 1px;
+
+      left: 0;
+      top: 0;
+
+      opacity: 0.45;
+    }
+
+    /* =========================================================
+       Navigation
+       ========================================================= */
+
+    .nav-wrap {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      right: 0;
+
+      z-index: 50;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .nav-wrap {
+        padding-top: 1.5rem;
+      }
+    }
+
+    .nav {
+      width: 100%;
+      max-width: 64rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0.75rem 1.25rem;
+
+      border-radius: 9999px;
+
+      background: var(--nav-bg);
+
+      border:
+        0.5px solid
+        var(--nav-border);
+
+      backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      -webkit-backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      box-shadow:
+        0 8px 40px rgba(0,0,0,0.28);
+    }
+
+    @media (min-width: 640px) {
+      .nav {
+        padding: 0.875rem 1.75rem;
+      }
+    }
+
+    .brand {
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+    }
+
+    @media (min-width: 640px) {
+      .brand {
+        font-size: 1rem;
+      }
+    }
+
+    .nav-back {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.65rem;
+
+      font-size: 11px;
+
+      letter-spacing: 0.12em;
+
+      text-transform: uppercase;
+
+      text-decoration: none;
+
+      color:
+        rgba(245,247,251,0.65);
+
+      transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .nav-back:hover {
+      color: var(--white);
+
+      transform: translateX(-3px);
+    }
+
+    /* =========================================================
+       Article
+       ========================================================= */
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    .article-header {
+      min-height: 78svh;
+
+      display: flex;
+      flex-direction: column;
+
+      justify-content: flex-end;
+
+      padding:
+        9rem 1.5rem
+        6rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-header {
+        padding:
+          10rem 3rem
+          7rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-header {
+        padding:
+          11rem 5rem
+          8rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-header {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .article-header-inner {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: flex;
+
+      align-items: center;
+
+      gap: 0.8rem;
+
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.3em;
+
+      color:
+        rgba(245,247,251,0.5);
+    }
+
+    .eyebrow .dot {
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: var(--teal);
+
+      box-shadow:
+        0 0 18px
+        rgba(111,217,204,0.7);
+    }
+
+    .article-title {
+      max-width: 64rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          3.4rem,
+          10vw,
+          9rem
+        );
+
+      line-height: 0.96;
+
+      letter-spacing: -0.055em;
+    }
+
+    .article-title .accent {
+      color: var(--gold);
+    }
+
+    .article-deck {
+      max-width: 42rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          1.2rem,
+          2.8vw,
+          1.75rem
+        );
+
+      line-height: 1.35;
+
+      color:
+        rgba(245,247,251,0.72);
+    }
+
+    .article-meta {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 1rem 1.5rem;
+
+      margin-top: 3rem;
+
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.2em;
+
+      color:
+        rgba(245,247,251,0.44);
+    }
+
+    .article-meta span + span {
+      position: relative;
+
+      padding-left: 1.5rem;
+    }
+
+    .article-meta span + span::before {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+      top: 50%;
+
+      width: 3px;
+      height: 3px;
+
+      border-radius: 50%;
+
+      background:
+        rgba(245,247,251,0.32);
+
+      transform: translateY(-50%);
+    }
+
+    /* =========================================================
+       Divider
+       ========================================================= */
+
+    .article-divider {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        0 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-divider {
+        padding: 0 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-divider {
+        padding: 0 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-divider {
+        padding:
+          0 10rem;
+      }
+    }
+
+    .article-divider::after {
+      content: "";
+
+      display: block;
+
+      height: 1px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0.14),
+          transparent
+        );
+    }
+
+    /* =========================================================
+       Body
+       ========================================================= */
+
+    .article-body {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        6rem 1.5rem
+        10rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-body {
+        padding:
+          7rem 3rem
+          12rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-body {
+        padding:
+          8rem 5rem
+          14rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-body {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .article-copy {
+      max-width: 42rem;
+
+      margin: 0 auto;
+    }
+
+    .article-copy p {
+      font-size:
+        clamp(
+          1.1rem,
+          2vw,
+          1.35rem
+        );
+
+      line-height: 1.85;
+
+      color:
+        rgba(245,247,251,0.8);
+    }
+
+    .article-copy p + p {
+      margin-top: 1.75rem;
+    }
+
+    .article-copy .lead {
+      font-size:
+        clamp(
+          1.45rem,
+          3vw,
+          2rem
+        );
+
+      line-height: 1.45;
+
+      color: var(--white);
+    }
+
+    .article-copy .lead .accent {
+      color: var(--gold);
+    }
+
+    .article-copy .section-title {
+      margin-top: 5rem;
+      margin-bottom: 1.5rem;
+
+      font-size:
+        clamp(
+          1.8rem,
+          4vw,
+          3rem
+        );
+
+      line-height: 1.1;
+
+      color: var(--white);
+    }
+
+    .article-copy .section-title .accent {
+      color: var(--gold);
+    }
+
+    .article-copy ul {
+      margin: 2rem 0;
+
+      padding-left: 1.25rem;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 0.75rem;
+    }
+
+    .article-copy li {
+      font-size:
+        clamp(
+          1.05rem,
+          1.8vw,
+          1.25rem
+        );
+
+      line-height: 1.6;
+
+      color:
+        rgba(245,247,251,0.78);
+    }
+
+    .article-copy li::marker {
+      color: var(--teal);
+    }
+
+    .article-copy blockquote {
+      margin:
+        4rem 0;
+
+      padding:
+        2rem 0 2rem 1.75rem;
+
+      border-left:
+        1px solid
+        rgba(255,222,163,0.5);
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(
+          1.5rem,
+          3.5vw,
+          2.25rem
+        );
+
+      line-height: 1.35;
+
+      font-style: italic;
+
+      color:
+        rgba(255,222,163,0.9);
+    }
+
+    /* =========================================================
+       Closing
+       ========================================================= */
+
+    .article-end {
+      margin-top: 6rem;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,0.12);
+    }
+
+    .article-end p {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.24em;
+
+      color:
+        rgba(245,247,251,0.4);
+    }
+
+    .article-end .signature {
+      margin-top: 1rem;
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size: 1.6rem;
+
+      text-transform: none;
+
+      letter-spacing: 0;
+
+      color:
+        rgba(255,222,163,0.85);
+    }
+
+    /* =========================================================
+       Footer
+       ========================================================= */
+
+    .footer {
+      padding:
+        0 1.5rem
+        2rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer {
+        padding:
+          0 3rem
+          2rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .footer {
+        padding:
+          0 5rem
+          2rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .footer {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .footer-inner {
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(255,255,255,0.12);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 1.5rem;
+    }
+
+    .footer-brand {
+      font-size: 11px;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+
+      color:
+        rgba(245,247,251,0.6);
+    }
+
+    .footer-note {
+      font-size: 10px;
+
+      letter-spacing: 0.08em;
+
+      color:
+        rgba(245,247,251,0.36);
+    }
+
+    /* =========================================================
+       Reveal
+       ========================================================= */
+
+    .reveal {
+      opacity: 0;
+
+      transform:
+        translateY(22px);
+
+      filter:
+        blur(10px);
+
+      transition:
+        opacity 1s
+          cubic-bezier(.23,1,.32,1),
+        transform 1s
+          cubic-bezier(.23,1,.32,1),
+        filter 1s
+          cubic-bezier(.23,1,.32,1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+
+      transform: none;
+
+      filter: blur(0);
+    }
+
+    /* =========================================================
+       Responsive
+       ========================================================= */
+
+    @media (max-width: 639px) {
+      .nav-back span:first-child {
+        display: none;
+      }
+
+      .article-header {
+        min-height: 72svh;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+
+        flex-direction: column;
+      }
+    }
+
+    /* =========================================================
+       Reduced motion
+       ========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        filter: none;
+
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================================================
+       BACKGROUND — dawn stage
+       ========================================================= -->
+
+  <div class="sky" aria-hidden="true">
+    <div class="glow"></div>
+    <div class="stars" id="stars"></div>
+  </div>
+
+
+  <!-- =========================================================
+       NAVIGATION
+       ========================================================= -->
+
+  <div class="nav-wrap">
+
+    <nav class="nav" aria-label="Primary">
+
+      <a
+        href="../index.html"
+        class="brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <a
+        href="../posts.html"
+        class="nav-back"
+      >
+        <span>Field Note</span>
+        <span>←</span>
+      </a>
+
+    </nav>
+
+  </div>
+
+
+  <!-- =========================================================
+       ARTICLE
+       ========================================================= -->
+
+  <main>
+
+    <!-- Header -->
+
+    <header class="article-header">
+
+      <div class="article-header-inner">
+
+        <div class="eyebrow reveal">
+          <span class="dot"></span>
+          <span>Field Note / 002</span>
+        </div>
+
+        <h1 class="article-title display reveal">
+          Inside
+          <span class="serif accent">
+            Atlas.
+          </span>
+        </h1>
+
+        <p class="article-deck reveal">
+          Notes on why we're building a document environment
+          for macOS, and the decisions shaping it so far.
+        </p>
+
+        <div class="article-meta reveal">
+          <span>August 2026</span>
+          <span>Atlas</span>
+          <span>5 min read</span>
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="article-divider"></div>
+
+
+    <!-- Article body -->
+
+    <article class="article-body">
+
+      <div class="article-copy">
+
+        <p class="lead reveal">
+          Atlas started from a small complaint:
+          <span class="accent">
+            most document apps make you think about the app
+            before they let you think about the document.
+          </span>
+        </p>
+
+        <p class="reveal">
+          Toolbars stacked three rows deep. Panels that open on their own.
+          Settings that quietly change how a page behaves depending on
+          which mode you happen to be in. We wanted something calmer —
+          a place where writing, sketching, and organizing ideas could
+          share the same window without competing for it.
+        </p>
+
+        <p class="reveal">
+          That's the short version of why Atlas exists.
+          The longer version is really a set of small decisions,
+          and this note is about a few of them.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          One
+          <span class="serif accent">
+            document,
+          </span>
+          many forms.
+        </h2>
+
+        <p class="reveal">
+          Early on we tried building Atlas as three separate modes —
+          a text editor, a canvas, and an outliner — switched with a
+          segmented control at the top of the window. It worked, but it
+          felt like three small apps wearing one coat.
+        </p>
+
+        <p class="reveal">
+          The current approach treats a document as a single continuous
+          space. Text can sit next to a sketch. An outline can live
+          beside a paragraph it's structuring. Nothing forces you to
+          declare, upfront, what kind of document you're making.
+        </p>
+
+        <ul class="reveal">
+          <li>Text blocks that can be reordered like an outline</li>
+          <li>A lightweight canvas layer for sketches and diagrams</li>
+          <li>Everything searchable from a single index, regardless of type</li>
+        </ul>
+
+        <p class="reveal">
+          It's a harder model to build well. It's also the only one
+          that matched how we actually work — jumping between writing
+          and drawing without opening a new file to do it.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          Native,
+          <span class="serif accent">
+            on purpose.
+          </span>
+        </h2>
+
+        <p class="reveal">
+          Atlas is being built directly on AppKit rather than a
+          cross-platform framework. That's a slower path, and it means
+          fewer things come for free. But it also means the little
+          things — scroll physics, trackpad gestures, window resizing,
+          how text feels under your cursor — behave the way macOS users
+          already expect, without us having to reinvent them.
+        </p>
+
+        <blockquote class="reveal">
+          "If it doesn't feel native, it doesn't matter how clever
+          the feature underneath it is."
+        </blockquote>
+
+        <p class="reveal">
+          We've rebuilt the sidebar three times so far, mostly because
+          the first two versions were technically fine but felt slightly
+          foreign — a little too eager, a little too animated.
+          The third version does less, and it's the one we kept.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          What's still
+          <span class="serif accent">
+            unresolved.
+          </span>
+        </h2>
+
+        <p class="reveal">
+          We don't have a good answer yet for how version history should
+          work across mixed content — text and canvas elements evolve
+          differently, and most history models assume one or the other.
+          It's the part of Atlas we're spending the most time on right now.
+        </p>
+
+        <p class="reveal">
+          Sync between devices is designed but not yet built.
+          Collaboration isn't on the roadmap for the first release —
+          we'd rather ship something small and correct than something
+          broad and shaky.
+        </p>
+
+        <p class="reveal">
+          Atlas is still in development, and it will likely look
+          somewhat different by the time it ships. But the core idea —
+          one calm space for a document to take whatever shape it needs —
+          hasn't changed since the first sketch.
+        </p>
+
+
+        <div class="article-end reveal">
+
+          <p>
+            End of Field Note / 002
+          </p>
+
+          <p class="signature">
+            Dawnstone
+          </p>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  </main>
+
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+
+  <footer class="footer">
+
+    <div class="footer-inner">
+
+      <a
+        href="../index.html"
+        class="footer-brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <p class="footer-note">
+        Field Note / 002
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =========================================================
+       JAVASCRIPT
+       ========================================================= -->
+
+  <script>
+    (function () {
+
+      var reduce =
+        window.matchMedia &&
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+
+      /* =======================================================
+         Stars (faint — dawn is fading them out)
+         ======================================================= */
+
+      (function () {
+
+        var count = reduce ? 30 : 60;
+        var shadows = [];
+
+        for (var i = 0; i < count; i++) {
+
+          var x =
+            (Math.random() * 100).toFixed(2);
+
+          var y =
+            (Math.random() * 45).toFixed(2);
+
+          var opacity =
+            (Math.random() * 0.35 + 0.08)
+              .toFixed(2);
+
+          var size =
+            Math.random() > 0.94
+              ? 1.4
+              : 0.8;
+
+          shadows.push(
+            x +
+            "vw " +
+            y +
+            "vh 0 " +
+            size +
+            "px rgba(245,247,251," +
+            opacity +
+            ")"
+          );
+
+        }
+
+        document
+          .getElementById("stars")
+          .style.boxShadow =
+          shadows.join(", ");
+
+      })();
+
+
+      /* =======================================================
+         Reveal
+         ======================================================= */
+
+      (function () {
+
+        var elements =
+          document.querySelectorAll(
+            ".reveal"
+          );
+
+        if (reduce) {
+
+          elements.forEach(
+            function (element) {
+              element.classList.add("in");
+            }
+          );
+
+          return;
+        }
+
+        var observer =
+          new IntersectionObserver(
+            function (entries) {
+
+              entries.forEach(
+                function (entry) {
+
+                  if (
+                    entry.isIntersecting
+                  ) {
+
+                    entry.target.classList.add(
+                      "in"
+                    );
+
+                    observer.unobserve(
+                      entry.target
+                    );
+
+                  }
+
+                }
+              );
+
+            },
+            {
+              threshold: 0.12,
+              rootMargin:
+                "0px 0px -8% 0px"
+            }
+          );
+
+        elements.forEach(
+          function (element) {
+            observer.observe(element);
+          }
+        );
+
+      })();
+
+
+      /* =======================================================
+         Subtle background movement
+         ======================================================= */
+
+      var ticking = false;
+
+      function updateBackground() {
+
+        var max =
+          document.documentElement
+            .scrollHeight -
+          window.innerHeight;
+
+        var progress =
+          max > 0
+            ? Math.min(
+                1,
+                Math.max(
+                  0,
+                  window.scrollY / max
+                )
+              )
+            : 0;
+
+        var glow =
+          0.9 -
+          progress * 0.35;
+
+        document
+          .querySelector(".glow")
+          .style.opacity =
+          Math.max(
+            0.35,
+            glow
+          );
+
+        document
+          .getElementById("stars")
+          .style.transform =
+          reduce
+            ? "none"
+            : "translateY(" +
+              progress * 60 +
+              "px)";
+
+        ticking = false;
+
+      }
+
+
+      function onScroll() {
+
+        if (!ticking) {
+
+          ticking = true;
+
+          requestAnimationFrame(
+            updateBackground
+          );
+
+        }
+
+      }
+
+
+      window.addEventListener(
+        "scroll",
+        onScroll,
+        {
+          passive: true
+        }
+      );
+
+      window.addEventListener(
+        "resize",
+        onScroll
+      );
+
+      updateBackground();
+
+    })();
+  </script>
+
+</body>
+</html>
