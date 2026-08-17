@@ -29,7 +29,6 @@
     :root {
       /* =========================================================
          Dynamic background
-         These are controlled ONLY by scroll position.
          ========================================================= */
 
       --bg-top: #030811;
@@ -64,6 +63,7 @@
       --scroll-progress: 0;
     }
 
+
     /* =========================================================
        Reset
        ========================================================= */
@@ -90,11 +90,6 @@
         Arial,
         sans-serif;
 
-      /*
-       * IMPORTANT:
-       * The body itself uses the dynamically interpolated colors.
-       * There is NO cream color anywhere in the initial state.
-       */
       background:
         linear-gradient(
           180deg,
@@ -122,6 +117,7 @@
       outline-offset: 3px;
       border-radius: 4px;
     }
+
 
     /* =========================================================
        Typography
@@ -154,6 +150,7 @@
       letter-spacing: -0.04em;
     }
 
+
     /* =========================================================
        Dynamic sky
        ========================================================= */
@@ -166,11 +163,6 @@
       overflow: hidden;
       pointer-events: none;
 
-      /*
-       * IMPORTANT:
-       * This background is also controlled by scroll.
-       * Initial state is entirely dark.
-       */
       background:
         radial-gradient(
           125% 75% at 50% 88%,
@@ -186,6 +178,7 @@
       transition:
         background 0.1s linear;
     }
+
 
     /* =========================================================
        Sun
@@ -221,6 +214,7 @@
       pointer-events: none;
     }
 
+
     /* =========================================================
        Stars
        ========================================================= */
@@ -237,6 +231,7 @@
 
       pointer-events: none;
     }
+
 
     /* =========================================================
        Navigation
@@ -344,6 +339,8 @@
     }
 
     .nav-links a {
+      position: relative;
+
       font-size: 13px;
       letter-spacing: 0.04em;
 
@@ -351,50 +348,91 @@
 
       color: inherit;
 
-      transition: opacity 0.3s;
+      transition:
+        opacity 0.3s;
     }
 
     .nav-links a:hover {
       opacity: 0.6;
     }
 
+    /*
+     * Blog is slightly emphasized as an external page
+     * while remaining part of the same navigation language.
+     */
+
+    .nav-links a.blog-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .nav-links a.blog-link::after {
+      content: "↗";
+
+      font-size: 10px;
+
+      opacity: 0.45;
+
+      transform:
+        translateY(-1px);
+
+      transition:
+        opacity 0.3s,
+        transform 0.3s;
+    }
+
+    .nav-links a.blog-link:hover::after {
+      opacity: 0.8;
+
+      transform:
+        translate(2px,-2px);
+    }
+
+
+    /* =========================================================
+       Language switch
+       ========================================================= */
+
     .language-switch {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin-left: 0.25rem;
-  padding-left: 1rem;
-  border-left: 1px solid rgba(255,255,255,0.12);
-}
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-left: 0.25rem;
+      padding-left: 1rem;
+      border-left: 1px solid rgba(255,255,255,0.12);
+    }
 
-.language-switch a {
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-decoration: none;
-  color: rgba(245,247,251,0.42);
-  transition:
-    color 0.3s ease,
-    opacity 0.3s ease;
-}
+    .language-switch a {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-decoration: none;
+      color: rgba(245,247,251,0.42);
 
-.language-switch a:hover {
-  color: rgba(245,247,251,0.9);
-}
+      transition:
+        color 0.3s ease,
+        opacity 0.3s ease;
+    }
 
-.language-switch a.active {
-  color: rgba(245,247,251,0.9);
-}
+    .language-switch a:hover {
+      color: rgba(245,247,251,0.9);
+    }
 
-.language-switch span {
-  font-size: 10px;
-  color: rgba(245,247,251,0.2);
-}
+    .language-switch a.active {
+      color: rgba(245,247,251,0.9);
+    }
 
-@media (max-width: 639px) {
-  .language-switch {
-    display: none;
-  }
-}
+    .language-switch span {
+      font-size: 10px;
+      color: rgba(245,247,251,0.2);
+    }
+
+    @media (max-width: 639px) {
+      .language-switch {
+        display: none;
+      }
+    }
+
 
     /* =========================================================
        Mobile navigation
@@ -530,22 +568,47 @@
       text-decoration: none;
 
       color: #F5F7FB;
+
+      transition:
+        opacity 0.3s;
+    }
+
+    .mobile-menu nav a:hover {
+      opacity: 0.65;
+    }
+
+    .mobile-menu nav a.blog-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mobile-menu nav a.blog-link::after {
+      content: "↗";
+
+      font-size: 1rem;
+
+      opacity: 0.5;
+
+      transform:
+        translateY(-3px);
     }
 
     .mobile-language-switch {
-  display: flex;
-  margin-top: auto;
-  margin-left: 0;
-  padding-left: 0;
-  border-left: 0;
-  padding-top: 2rem;
-}
+      display: flex;
+      margin-top: auto;
+      margin-left: 0;
+      padding-left: 0;
+      border-left: 0;
+      padding-top: 2rem;
+    }
 
-@media (min-width: 640px) {
-  .mobile-language-switch {
-    display: none;
-  }
-}
+    @media (min-width: 640px) {
+      .mobile-language-switch {
+        display: none;
+      }
+    }
+
 
     /* =========================================================
        Layout
@@ -599,6 +662,7 @@
       transition:
         color 0.15s linear;
     }
+
 
     /* =========================================================
        Hero
@@ -701,6 +765,7 @@
       }
     }
 
+
     /* =========================================================
        Intro
        ========================================================= */
@@ -737,6 +802,7 @@
     .intro h2 .accent {
       color: var(--gold);
     }
+
 
     /* =========================================================
        Projects
@@ -1008,60 +1074,60 @@
 
       letter-spacing: 0.28em;
     }
-    
+
+
     /* =========================================================
-   Project card link
-   ========================================================= */
+       Project card link
+       ========================================================= */
 
-.project-card-link {
-  display: block;
+    .project-card-link {
+      display: block;
 
-  color: inherit;
-  text-decoration: none;
+      color: inherit;
+      text-decoration: none;
 
-  border-radius: 2rem;
-}
+      border-radius: 2rem;
+    }
 
-@media (min-width: 640px) {
-  .project-card-link {
-    border-radius: 2.5rem;
-  }
-}
+    @media (min-width: 640px) {
+      .project-card-link {
+        border-radius: 2.5rem;
+      }
+    }
 
-.project-card-link .card {
-  cursor: pointer;
-}
+    .project-card-link .card {
+      cursor: pointer;
+    }
 
-/* Hover */
+    .project-card-link:hover .card {
+      background:
+        rgba(255,255,255,0.07);
 
-.project-card-link:hover .card {
-  background: rgba(255,255,255,0.07);
+      border-color:
+        rgba(255,255,255,0.18);
 
-  border-color:
-    rgba(255,255,255,0.18);
+      box-shadow:
+        0 28px 100px
+        rgba(0,0,0,0.5);
 
-  box-shadow:
-    0 28px 100px
-    rgba(0,0,0,0.5);
-}
+      transform:
+        translateY(-4px);
+    }
 
-.project-card-link:hover .card {
-  transform: translateY(-4px);
-}
+    .project-card-link:hover .glow {
+      opacity: 1;
+    }
 
-.project-card-link:hover .glow {
-  opacity: 1;
-}
+    .project-card-link:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 5px;
+      border-radius: 2rem;
+    }
 
-.project-card-link:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 5px;
-  border-radius: 2rem;
-}
+    .project-card-link:focus-visible .card {
+      border-color: var(--gold);
+    }
 
-.project-card-link:focus-visible .card {
-  border-color: var(--gold);
-}
 
     /* =========================================================
        Philosophy
@@ -1120,6 +1186,7 @@
     .philosophy .body p + p {
       margin-top: 1rem;
     }
+
 
     /* =========================================================
        About
@@ -1199,6 +1266,112 @@
     .about .punch .accent {
       color: var(--warm-ink);
     }
+
+
+    /* =========================================================
+       About / Blog
+       ========================================================= */
+
+    .about-blog-link {
+      margin-top: 3.75rem;
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.85rem;
+
+      width: fit-content;
+
+      text-decoration: none;
+
+      color: var(--ink);
+
+      font-size: 1.125rem;
+
+      transition:
+        color 0.3s ease;
+    }
+
+    @media (min-width: 640px) {
+      .about-blog-link {
+        margin-top: 4.5rem;
+
+        font-size: 1.375rem;
+      }
+    }
+
+    .about-blog-label {
+      position: relative;
+
+      padding-bottom: 0.25rem;
+
+      border-bottom:
+        1px solid
+        rgba(24,48,74,0.22);
+
+      transition:
+        color 0.3s ease,
+        border-color 0.3s ease;
+    }
+
+    .about-blog-arrow {
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      width: 2rem;
+      height: 2rem;
+
+      border:
+        1px solid
+        rgba(24,48,74,0.18);
+
+      border-radius: 50%;
+
+      font-size: 0.85rem;
+
+      transition:
+        transform 0.4s
+          cubic-bezier(.23,1,.32,1),
+        background 0.3s ease,
+        border-color 0.3s ease;
+    }
+
+    .about-blog-link:hover {
+      color:
+        var(--warm-ink);
+    }
+
+    .about-blog-link:hover
+    .about-blog-label {
+      border-color:
+        var(--warm-ink);
+    }
+
+    .about-blog-link:hover
+    .about-blog-arrow {
+      transform:
+        translate(3px,-3px);
+
+      background:
+        rgba(194,106,46,0.08);
+
+      border-color:
+        rgba(194,106,46,0.25);
+    }
+
+    .about-blog-link:focus-visible {
+      outline:
+        2px solid
+        var(--warm-ink);
+
+      outline-offset: 5px;
+
+      border-radius: 4px;
+    }
+
 
     /* =========================================================
        Contact
@@ -1315,394 +1488,427 @@
         translate(4px,-4px);
     }
 
-   /* =========================================================
-   Footer
-   ========================================================= */
 
-.footer {
-  position: relative;
+    /* =========================================================
+       Footer
+       ========================================================= */
 
-  padding-top: 3rem;
-  padding-bottom: 2rem;
+    .footer {
+      position: relative;
 
-  color: var(--ink);
+      padding-top: 3rem;
+      padding-bottom: 2rem;
 
-  /*
-   * Footer itself stays transparent.
-   * The background continues to be controlled
-   * entirely by scroll position.
-   */
-}
+      color: var(--ink);
+    }
 
-.footer-inner {
-  width: 100%;
-  max-width: 90rem;
+    .footer-inner {
+      width: 100%;
+      max-width: 90rem;
 
-  margin: 0 auto;
+      margin: 0 auto;
 
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
 
-@media (min-width: 640px) {
-  .footer-inner {
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
-}
+    @media (min-width: 640px) {
+      .footer-inner {
+        padding-left: 3rem;
+        padding-right: 3rem;
+      }
+    }
 
-@media (min-width: 768px) {
-  .footer-inner {
-    padding-left: 5rem;
-    padding-right: 5rem;
-  }
-}
+    @media (min-width: 768px) {
+      .footer-inner {
+        padding-left: 5rem;
+        padding-right: 5rem;
+      }
+    }
 
-@media (min-width: 1024px) {
-  .footer-inner {
-    padding-left: 7rem;
-    padding-right: 7rem;
-  }
-}
+    @media (min-width: 1024px) {
+      .footer-inner {
+        padding-left: 7rem;
+        padding-right: 7rem;
+      }
+    }
 
 
-/* =========================================================
-   Footer top
-   ========================================================= */
+    /* =========================================================
+       Footer top
+       ========================================================= */
 
-.footer-top {
-  display: grid;
+    .footer-top {
+      display: grid;
 
-  grid-template-columns:
-    1fr;
+      grid-template-columns:
+        1fr;
 
-  gap: 2rem;
+      gap: 2rem;
 
-  padding-top: 2rem;
-  padding-bottom: 3rem;
+      padding-top: 2rem;
+      padding-bottom: 3rem;
 
-  border-top:
-    1px solid
-    rgba(24,48,74,0.14);
+      border-top:
+        1px solid
+        rgba(24,48,74,0.14);
 
-  align-items: center;
-}
+      align-items: center;
+    }
 
-@media (min-width: 768px) {
-  .footer-top {
-    grid-template-columns:
-      1fr
-      auto
-      1fr;
+    @media (min-width: 768px) {
+      .footer-top {
+        grid-template-columns:
+          1fr
+          auto
+          1fr;
 
-    padding-top: 2.5rem;
-    padding-bottom: 3.5rem;
-  }
-}
+        padding-top: 2.5rem;
+        padding-bottom: 3.5rem;
+      }
+    }
 
 
-/* =========================================================
-   Brand
-   ========================================================= */
+    /* =========================================================
+       Footer brand
+       ========================================================= */
 
-.footer-brand {
-  display: inline-block;
+    .footer-brand {
+      display: inline-block;
 
-  width: fit-content;
+      width: fit-content;
 
-  font-size: 0.875rem;
+      font-size: 0.875rem;
 
-  font-weight: 600;
+      font-weight: 600;
 
-  letter-spacing: 0.24em;
+      letter-spacing: 0.24em;
 
-  text-decoration: none;
+      text-decoration: none;
 
-  color: var(--ink);
+      color: var(--ink);
 
-  transition:
-    opacity 0.3s ease;
-}
+      transition:
+        opacity 0.3s ease;
+    }
 
-.footer-brand:hover {
-  opacity: 0.55;
-}
+    .footer-brand:hover {
+      opacity: 0.55;
+    }
 
 
-/* =========================================================
-   Statement
-   ========================================================= */
+    /* =========================================================
+       Footer statement
+       ========================================================= */
 
-.footer-statement {
-  font-size: 1.25rem;
+    .footer-statement {
+      font-size: 1.25rem;
 
-  line-height: 1.2;
+      line-height: 1.2;
 
-  color:
-    rgba(24,48,74,0.55);
+      color:
+        rgba(24,48,74,0.55);
 
-  text-align: left;
-}
+      text-align: left;
+    }
 
-@media (min-width: 768px) {
-  .footer-statement {
-    text-align: center;
+    @media (min-width: 768px) {
+      .footer-statement {
+        text-align: center;
 
-    font-size: 1.375rem;
-  }
-}
+        font-size: 1.375rem;
+      }
+    }
 
 
-/* =========================================================
-   Back to top
-   ========================================================= */
+    /* =========================================================
+       Back to top
+       ========================================================= */
 
-.footer-back {
-  display: inline-flex;
+    .footer-back {
+      display: inline-flex;
 
-  align-items: center;
+      align-items: center;
 
-  justify-content: flex-start;
+      justify-content: flex-start;
 
-  gap: 0.65rem;
+      gap: 0.65rem;
 
-  width: fit-content;
+      width: fit-content;
 
-  text-decoration: none;
+      text-decoration: none;
 
-  font-size: 0.6875rem;
+      font-size: 0.6875rem;
 
-  text-transform: uppercase;
+      text-transform: uppercase;
 
-  letter-spacing: 0.22em;
+      letter-spacing: 0.22em;
 
-  color:
-    rgba(24,48,74,0.55);
+      color:
+        rgba(24,48,74,0.55);
 
-  transition:
-    color 0.3s ease;
-}
+      transition:
+        color 0.3s ease;
+    }
 
-@media (min-width: 768px) {
-  .footer-back {
-    justify-self: end;
-  }
-}
+    @media (min-width: 768px) {
+      .footer-back {
+        justify-self: end;
+      }
+    }
 
-.footer-back-arrow {
-  display: inline-flex;
+    .footer-back-arrow {
+      display: inline-flex;
 
-  align-items: center;
-  justify-content: center;
+      align-items: center;
+      justify-content: center;
 
-  width: 1.75rem;
-  height: 1.75rem;
+      width: 1.75rem;
+      height: 1.75rem;
 
-  border:
-    1px solid
-    rgba(24,48,74,0.18);
+      border:
+        1px solid
+        rgba(24,48,74,0.18);
 
-  border-radius: 50%;
+      border-radius: 50%;
 
-  font-size: 0.8rem;
+      font-size: 0.8rem;
 
-  transition:
-    transform 0.35s
-      cubic-bezier(.23,1,.32,1),
-    background 0.3s ease,
-    border-color 0.3s ease;
-}
+      transition:
+        transform 0.35s
+          cubic-bezier(.23,1,.32,1),
+        background 0.3s ease,
+        border-color 0.3s ease;
+    }
 
-.footer-back:hover {
-  color: var(--warm-ink);
-}
+    .footer-back:hover {
+      color: var(--warm-ink);
+    }
 
-.footer-back:hover
-.footer-back-arrow {
-  transform:
-    translateY(-3px);
+    .footer-back:hover
+    .footer-back-arrow {
+      transform:
+        translateY(-3px);
 
-  background:
-    rgba(194,106,46,0.08);
+      background:
+        rgba(194,106,46,0.08);
 
-  border-color:
-    rgba(194,106,46,0.25);
-}
+      border-color:
+        rgba(194,106,46,0.25);
+    }
 
 
-/* =========================================================
-   Footer main
-   ========================================================= */
+    /* =========================================================
+       Footer main
+       ========================================================= */
 
-.footer-main {
-  display: flex;
+    .footer-main {
+      display: flex;
 
-  flex-direction: column;
+      flex-direction: column;
 
-  gap: 3rem;
+      gap: 3rem;
 
-  padding-top: 3rem;
-  padding-bottom: 3.5rem;
-}
+      padding-top: 3rem;
+      padding-bottom: 3.5rem;
+    }
 
-@media (min-width: 768px) {
-  .footer-main {
-    flex-direction: row;
+    @media (min-width: 768px) {
+      .footer-main {
+        flex-direction: row;
 
-    align-items: flex-start;
+        align-items: flex-start;
 
-    justify-content: space-between;
+        justify-content: space-between;
 
-    padding-top: 3.5rem;
-    padding-bottom: 4rem;
-  }
-}
+        padding-top: 3.5rem;
+        padding-bottom: 4rem;
+      }
+    }
 
 
-/* =========================================================
-   Footer note
-   ========================================================= */
+    /* =========================================================
+       Footer note
+       ========================================================= */
 
-.footer-note {
-  display: flex;
+    .footer-note {
+      display: flex;
 
-  flex-direction: column;
+      flex-direction: column;
 
-  gap: 0.4rem;
-}
+      gap: 0.4rem;
+    }
 
-.footer-note p {
-  margin: 0;
+    .footer-note p {
+      margin: 0;
 
-  font-size: 0.8125rem;
+      font-size: 0.8125rem;
 
-  line-height: 1.5;
+      line-height: 1.5;
 
-  color:
-    rgba(24,48,74,0.48);
-}
+      color:
+        rgba(24,48,74,0.48);
+    }
 
-.footer-note p:first-child {
-  color:
-    rgba(24,48,74,0.72);
+    .footer-note p:first-child {
+      color:
+        rgba(24,48,74,0.72);
 
-  font-weight: 500;
+      font-weight: 500;
 
-  letter-spacing: 0.01em;
-}
+      letter-spacing: 0.01em;
+    }
 
 
-/* =========================================================
-   Footer links
-   ========================================================= */
+    /* =========================================================
+       Footer links
+       ========================================================= */
 
-.footer-links {
-  display: grid;
+    .footer-links {
+      display: grid;
 
-  grid-template-columns:
-    repeat(2, minmax(90px, 1fr));
+      grid-template-columns:
+        repeat(2, minmax(90px, 1fr));
 
-  column-gap: 3rem;
-  row-gap: 1rem;
-}
+      column-gap: 3rem;
+      row-gap: 1rem;
+    }
 
-@media (min-width: 640px) {
-  .footer-links {
-    display: flex;
+    @media (min-width: 640px) {
+      .footer-links {
+        display: flex;
 
-    gap: 2rem;
-  }
-}
+        gap: 2rem;
+      }
+    }
 
-.footer-links a {
-  position: relative;
+    .footer-links a {
+      position: relative;
 
-  width: fit-content;
+      width: fit-content;
 
-  font-size: 0.75rem;
+      font-size: 0.75rem;
 
-  text-decoration: none;
+      text-decoration: none;
 
-  color:
-    rgba(24,48,74,0.62);
+      color:
+        rgba(24,48,74,0.62);
 
-  transition:
-    color 0.3s ease;
-}
+      transition:
+        color 0.3s ease;
+    }
 
-.footer-links a::after {
-  content: "";
+    .footer-links a::after {
+      content: "";
 
-  position: absolute;
+      position: absolute;
 
-  left: 0;
-  bottom: -0.3rem;
+      left: 0;
+      bottom: -0.3rem;
 
-  width: 100%;
-  height: 1px;
+      width: 100%;
+      height: 1px;
 
-  background:
-    var(--warm-ink);
+      background:
+        var(--warm-ink);
 
-  transform:
-    scaleX(0);
+      transform:
+        scaleX(0);
 
-  transform-origin:
-    right center;
+      transform-origin:
+        right center;
 
-  transition:
-    transform 0.35s
-    cubic-bezier(.23,1,.32,1);
-}
+      transition:
+        transform 0.35s
+        cubic-bezier(.23,1,.32,1);
+    }
 
-.footer-links a:hover {
-  color:
-    var(--warm-ink);
-}
+    .footer-links a:hover {
+      color:
+        var(--warm-ink);
+    }
 
-.footer-links a:hover::after {
-  transform:
-    scaleX(1);
+    .footer-links a:hover::after {
+      transform:
+        scaleX(1);
 
-  transform-origin:
-    left center;
-}
+      transform-origin:
+        left center;
+    }
 
 
-/* =========================================================
-   Footer bottom
-   ========================================================= */
+    /* =========================================================
+       Footer blog link
+       ========================================================= */
 
-.footer-bottom {
-  display: flex;
+    .footer-links a.blog-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
 
-  flex-direction: column;
+    .footer-links a.blog-link::before {
+      content: "↗";
 
-  gap: 0.5rem;
+      position: static;
 
-  padding-top: 1.5rem;
+      width: auto;
+      height: auto;
 
-  border-top:
-    1px solid
-    rgba(24,48,74,0.10);
+      background: none;
 
-  font-size: 0.6875rem;
+      transform: none;
 
-  letter-spacing: 0.02em;
+      opacity: 0.45;
 
-  color:
-    rgba(24,48,74,0.42);
-}
+      transition:
+        opacity 0.3s,
+        transform 0.3s;
+    }
 
-@media (min-width: 640px) {
-  .footer-bottom {
-    flex-direction: row;
+    .footer-links a.blog-link:hover::before {
+      opacity: 0.8;
 
-    align-items: center;
+      transform:
+        translate(2px,-2px);
+    }
 
-    justify-content: space-between;
-  }
-}
+
+    /* =========================================================
+       Footer bottom
+       ========================================================= */
+
+    .footer-bottom {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0.5rem;
+
+      padding-top: 1.5rem;
+
+      border-top:
+        1px solid
+        rgba(24,48,74,0.10);
+
+      font-size: 0.6875rem;
+
+      letter-spacing: 0.02em;
+
+      color:
+        rgba(24,48,74,0.42);
+    }
+
+    @media (min-width: 640px) {
+      .footer-bottom {
+        flex-direction: row;
+
+        align-items: center;
+
+        justify-content: space-between;
+      }
+    }
+
 
     /* =========================================================
        Reveal
@@ -1730,6 +1936,7 @@
 
       filter: blur(0);
     }
+
 
     /* =========================================================
        Reduced motion
@@ -1766,6 +1973,7 @@
     <div class="stars" id="stars"></div>
   </div>
 
+
   <!-- =========================================================
        NAVIGATION
        ========================================================= -->
@@ -1781,10 +1989,30 @@
       </a>
 
       <div class="nav-links">
-        <a href="#projects">Projects</a>
-        <a href="#philosophy">Philosophy</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+
+        <a href="#projects">
+          Projects
+        </a>
+
+        <a href="#philosophy">
+          Philosophy
+        </a>
+
+        <a href="#about">
+          About
+        </a>
+
+        <a
+          href="posts.html"
+          class="blog-link"
+        >
+          Field Note
+        </a>
+
+        <a href="#contact">
+          Contact
+        </a>
+
       </div>
 
       <button
@@ -1796,8 +2024,10 @@
         <span></span>
         <span></span>
       </button>
+
     </nav>
   </div>
+
 
   <!-- =========================================================
        MOBILE MENU
@@ -1816,6 +2046,7 @@
     <div class="panel">
 
       <div class="close-row">
+
         <button
           class="close"
           id="closeMenu"
@@ -1823,9 +2054,11 @@
         >
           ✕
         </button>
+
       </div>
 
       <nav>
+
         <a
           href="#projects"
           class="m-link"
@@ -1848,15 +2081,24 @@
         </a>
 
         <a
+          href="posts.html"
+          class="m-link blog-link"
+        >
+          Field Note
+        </a>
+
+        <a
           href="#contact"
           class="m-link"
         >
           Contact
         </a>
+
       </nav>
 
     </div>
   </div>
+
 
   <!-- =========================================================
        CONTENT
@@ -1864,7 +2106,9 @@
 
   <main>
 
-    <!-- HERO -->
+    <!-- =======================================================
+         HERO
+         ======================================================= -->
 
     <section
       id="top"
@@ -1877,12 +2121,14 @@
 
       <p class="reveal">
         Software,<br>
+
         <span class="serif-italic qc">
           quietly crafted.
         </span>
       </p>
 
       <div class="scroll-hint">
+
         <span class="txt">
           Scroll to explore
         </span>
@@ -1890,11 +2136,15 @@
         <span class="arrow">
           ↓
         </span>
+
       </div>
 
     </section>
 
-    <!-- INTRO -->
+
+    <!-- =======================================================
+         INTRO
+         ======================================================= -->
 
     <section class="intro">
 
@@ -1912,7 +2162,10 @@
 
     </section>
 
-    <!-- PROJECTS -->
+
+    <!-- =======================================================
+         PROJECTS
+         ======================================================= -->
 
     <section
       id="projects"
@@ -1925,6 +2178,7 @@
 
       <h2 class="display reveal">
         Things we&rsquo;re<br>
+
         <span class="serif-italic accent">
           making.
         </span>
@@ -1934,73 +2188,85 @@
         Independent software, built with care.
       </p>
 
+
       <div class="cards">
 
-        <!-- AMBER -->
-        
-        <a href="amber.html" class="project-card-link">
+        <!-- ===================================================
+             AMBER
+             =================================================== -->
 
-        <article class="card reveal">
+        <a
+          href="amber.html"
+          class="project-card-link"
+        >
 
-          <div
-            class="glow"
-            style="
-              background:
-                radial-gradient(
-                  circle at 50% 50%,
-                  rgba(255,222,163,0.9) 0%,
-                  rgba(245,143,75,0.7) 35%,
-                  rgba(245,143,75,0) 70%
-                );
-            "
-          ></div>
+          <article class="card reveal">
 
-          <span class="letter display">
-            A
-          </span>
+            <div
+              class="glow"
+              style="
+                background:
+                  radial-gradient(
+                    circle at 50% 50%,
+                    rgba(255,222,163,0.9) 0%,
+                    rgba(245,143,75,0.7) 35%,
+                    rgba(245,143,75,0) 70%
+                  );
+              "
+            ></div>
 
-          <div class="inner">
+            <span class="letter display">
+              A
+            </span>
 
-            <p class="meta">
-              Amber &nbsp;&nbsp; macOS
-            </p>
+            <div class="inner">
 
-            <div>
-
-              <h3 class="display">
-                Amber
-              </h3>
-
-              <p class="desc">
-                Native music player for macOS.
+              <p class="meta">
+                Amber &nbsp;&nbsp; macOS
               </p>
 
+              <div>
+
+                <h3 class="display">
+                  Amber
+                </h3>
+
+                <p class="desc">
+                  Native music player for macOS.
+                </p>
+
+              </div>
+
+              <div class="status">
+
+                <span
+                  class="dot"
+                  style="background:#F58F4B"
+                ></span>
+
+                <span
+                  style="color:#F58F4B"
+                >
+                  In Development
+                </span>
+
+              </div>
+
             </div>
 
-            <div class="status">
+          </article>
 
-              <span
-                class="dot"
-                style="background:#F58F4B"
-              ></span>
-
-              <span
-                style="color:#F58F4B"
-              >
-                In Development
-              </span>
-
-            </div>
-
-          </div>
-
-        </article>
-        
         </a>
-        
-        <!-- ATLAS -->
-        
-        <a href="atlas.html" class="project-card-link">
+
+
+        <!-- ===================================================
+             ATLAS
+             =================================================== -->
+
+        <a
+          href="atlas.html"
+          class="project-card-link"
+        >
 
           <article class="card reveal">
 
@@ -2057,12 +2323,18 @@
             </div>
 
           </article>
-          
+
         </a>
 
-        <!-- STRATA -->
-        
-        <a href="strata.html" class="project-card-link">
+
+        <!-- ===================================================
+             STRATA
+             =================================================== -->
+
+        <a
+          href="strata.html"
+          class="project-card-link"
+        >
 
           <article class="card reveal">
 
@@ -2119,14 +2391,17 @@
             </div>
 
           </article>
-          
+
         </a>
-        
+
       </div>
 
     </section>
 
-    <!-- PHILOSOPHY -->
+
+    <!-- =======================================================
+         PHILOSOPHY
+         ======================================================= -->
 
     <section
       id="philosophy"
@@ -2138,11 +2413,15 @@
       </p>
 
       <h2 class="display reveal">
+
         The best software<br>
+
         doesn&rsquo;t ask for<br>
+
         <span class="serif-italic accent">
           attention.
         </span>
+
       </h2>
 
       <div class="body reveal">
@@ -2161,7 +2440,10 @@
 
     </section>
 
-    <!-- ABOUT -->
+
+    <!-- =======================================================
+         ABOUT
+         ======================================================= -->
 
     <section
       id="about"
@@ -2173,10 +2455,13 @@
       </p>
 
       <h2 class="display reveal">
+
         From the first<br>
+
         <span class="serif-italic accent">
           light.
         </span>
+
       </h2>
 
       <div class="body reveal">
@@ -2201,9 +2486,35 @@
 
       </div>
 
+
+      <!-- =====================================================
+           JOURNAL LINK
+           ===================================================== -->
+
+      <a
+        href="posts.html"
+        class="about-blog-link reveal"
+      >
+
+        <span class="about-blog-label">
+          Read our blog
+        </span>
+
+        <span
+          class="about-blog-arrow"
+          aria-hidden="true"
+        >
+          ↗
+        </span>
+
+      </a>
+
     </section>
 
-    <!-- CONTACT -->
+
+    <!-- =======================================================
+         CONTACT
+         ======================================================= -->
 
     <section
       id="contact"
@@ -2219,10 +2530,13 @@
       </p>
 
       <h2 class="display reveal">
+
         Let&rsquo;s make<br>
+
         <span class="serif-italic accent">
           something.
         </span>
+
       </h2>
 
       <a
@@ -2245,96 +2559,126 @@
 
     </section>
 
-<footer class="footer">
 
-  <div class="footer-inner">
+    <!-- =======================================================
+         FOOTER
+         ======================================================= -->
 
-    <!-- Top -->
-    <div class="footer-top">
+    <footer class="footer">
 
-      <a
-        href="#top"
-        class="footer-brand display"
-      >
-        DAWNSTONE
-      </a>
-
-      <p class="footer-statement serif-italic">
-        Software, quietly crafted.
-      </p>
-
-      <a
-        href="#top"
-        class="footer-back"
-        aria-label="Back to top"
-      >
-        <span>Back to top</span>
-        <span class="footer-back-arrow">↑</span>
-      </a>
-
-    </div>
+      <div class="footer-inner">
 
 
-    <!-- Main -->
-    <div class="footer-main">
+        <!-- ===================================================
+             Footer top
+             =================================================== -->
 
-      <div class="footer-note">
+        <div class="footer-top">
 
-        <p>
-          Independent software studio
-        </p>
+          <a
+            href="#top"
+            class="footer-brand display"
+          >
+            DAWNSTONE
+          </a>
 
-        <p>
-          Native applications for macOS.
-        </p>
+          <p class="footer-statement serif-italic">
+            Software, quietly crafted.
+          </p>
+
+          <a
+            href="#top"
+            class="footer-back"
+            aria-label="Back to top"
+          >
+
+            <span>
+              Back to top
+            </span>
+
+            <span class="footer-back-arrow">
+              ↑
+            </span>
+
+          </a>
+
+        </div>
+
+
+        <!-- ===================================================
+             Footer main
+             =================================================== -->
+
+        <div class="footer-main">
+
+          <div class="footer-note">
+
+            <p>
+              Independent software studio
+            </p>
+
+            <p>
+              Native applications for macOS.
+            </p>
+
+          </div>
+
+
+          <nav
+            class="footer-links"
+            aria-label="Footer"
+          >
+
+            <a href="#projects">
+              Projects
+            </a>
+
+            <a href="#philosophy">
+              Philosophy
+            </a>
+
+            <a href="#about">
+              About
+            </a>
+
+            <a
+              href="posts.html"
+              class="blog-link"
+            >
+              Field Note
+            </a>
+
+            <a href="#contact">
+              Contact
+            </a>
+
+          </nav>
+
+        </div>
+
+
+        <!-- ===================================================
+             Footer bottom
+             =================================================== -->
+
+        <div class="footer-bottom">
+
+          <p>
+            © 2026 Dawnstone
+          </p>
+
+          <p>
+            Made with care.
+          </p>
+
+        </div>
 
       </div>
 
-
-      <nav
-        class="footer-links"
-        aria-label="Footer"
-      >
-
-        <a href="#projects">
-          Projects
-        </a>
-
-        <a href="#philosophy">
-          Philosophy
-        </a>
-
-        <a href="#about">
-          About
-        </a>
-
-        <a href="#contact">
-          Contact
-        </a>
-
-      </nav>
-
-    </div>
-
-
-    <!-- Bottom -->
-    <div class="footer-bottom">
-
-      <p>
-        © 2026 Dawnstone
-      </p>
-
-      <p>
-        Made with care.
-      </p>
-
-    </div>
-
-  </div>
-
-</footer>
+    </footer>
 
   </main>
+
 
   <!-- =========================================================
        JAVASCRIPT
@@ -2543,19 +2887,6 @@
       /*
        * ========================================================
        * COLOR INTERPOLATION
-       *
-       * This is the important part.
-       *
-       * p = 0
-       *   Completely night.
-       *
-       * p = 1
-       *   Completely cream.
-       *
-       * The background NEVER becomes cream simply because
-       * the viewport contains the bottom of a gradient.
-       *
-       * It changes ONLY according to scroll progress.
        * ========================================================
        */
 
@@ -2567,9 +2898,9 @@
           "stars"
         );
 
+
       /*
-       * Each stop represents the COMPLETE PAGE background
-       * at that scroll position.
+       * Background stops
        */
 
       var backgroundStops = [
@@ -2802,7 +3133,7 @@
 
 
       /*
-       * Generic numeric stop sampler
+       * Numeric stop sampler
        */
 
       function sampleNumeric(
@@ -2974,13 +3305,6 @@
 
       function update() {
 
-        /*
-         * Calculate TRUE page scroll progress.
-         *
-         * 0 = very top
-         * 1 = very bottom
-         */
-
         var max =
           document.documentElement
             .scrollHeight -
@@ -3012,14 +3336,6 @@
          * ------------------------------------------------------
          * BACKGROUND
          * ------------------------------------------------------
-         *
-         * The critical point:
-         *
-         * We interpolate the entire background from dark
-         * to cream based ONLY on p.
-         *
-         * There is no vertical cream gradient that can be
-         * visible before scrolling.
          */
 
         var top =
@@ -3108,9 +3424,6 @@
          * ------------------------------------------------------
          * STARS
          * ------------------------------------------------------
-         *
-         * Visible at night.
-         * Slowly disappear during dawn.
          */
 
         var starOpacity;
@@ -3143,11 +3456,6 @@
         starsEl.style.opacity =
           starOpacity;
 
-
-        /*
-         * Stars drift slightly downward,
-         * creating the feeling of dawn passing by.
-         */
 
         starsEl.style.transform =
           reduce
@@ -3202,9 +3510,7 @@
 
 
         /*
-         * Shadow needs a discrete interpolation because
-         * CSS box-shadow strings cannot be numerically lerped
-         * here. Choose the appropriate stage.
+         * Shadow
          */
 
         var shadow;
@@ -3276,15 +3582,13 @@
 
 
       /*
-       * Initial state.
-       *
-       * This explicitly runs at p = 0.
-       * Therefore the first frame is ALWAYS night.
+       * Initial state
        */
 
       update();
 
     })();
+
   </script>
 
 </body>
