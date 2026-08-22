@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover" />
+<title>近畿交通近代史 事例判定アプリ</title>
+<meta name="description" content="京都・大阪・兵庫・奈良の鉄道・道路の近代史事例を閲覧し、採用・不採用・保留を判定するためのアプリ" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="landing-header">
+  <div class="brand"><i class="fa-solid fa-train-subway"></i>近畿交通近代史 事例判定</div>
+</header>
+
+<section class="hero">
+  <h1>京阪神奈の交通近代史を、<br />事例ひとつずつ丁寧に判定する。</h1>
+  <p class="lead">
+    京都府・大阪府・兵庫県・奈良県を中心に、鉄道・軌道・道路の敷設・改良・廃止・転用に関する調査事例を、
+    スマートフォン（iPhone）でも、パソコン（MacBook）でも、タッチ操作を中心に快適に閲覧・判定できるアプリです。
+  </p>
+  <div class="cta-row">
+    <a href="dashboard.html" class="btn btn-primary"><i class="fa-solid fa-clipboard-check"></i>ダッシュボードを開く</a>
+    <a href="#about" class="btn btn-secondary"><i class="fa-solid fa-circle-info"></i>分類体系について</a>
+  </div>
+  <div class="stats-strip" id="landing-stats">
+    <div class="stat"><span class="num" id="ls-total">–</span><span class="label">総事例数</span></div>
+    <div class="stat"><span class="num" id="ls-judged">–</span><span class="label">判定済み</span></div>
+    <div class="stat"><span class="num" id="ls-accept">–</span><span class="label">採用</span></div>
+    <div class="stat"><span class="num" id="ls-hold">–</span><span class="label">保留</span></div>
+  </div>
+</section>
+
+<section class="section-block" id="about">
+  <h2>分類体系の考え方</h2>
+  <p class="sub">本アプリのデータは「何を調べるか」と「何を調べるか(観点)」を分離した分類体系にもとづいて整理されています。</p>
+  <div class="card-grid">
+    <div class="info-card">
+      <div class="icon"><i class="fa-solid fa-train"></i></div>
+      <h3>A. 対象マスター分類</h3>
+      <p>交通種別（鉄道／道路）、事業者・管理者、路線群、路線・道路名、区間・施設名など「調査の対象」を整理します。新幹線からJR在来線、大手私鉄、地域私鉄、路面電車、地下鉄、モノレール、ケーブルカー、国道・府県道・高速道路まで網羅します。</p>
+    </div>
+    <div class="info-card">
+      <div class="icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+      <h3>B. 調査用分類</h3>
+      <p>構想・制度・経営、計画・建設・技術、開業・運行、都市・地域社会、産業・物流、観光・文化・宗教、政治・軍事・社会運動、災害・環境、衰退・廃止・未成、転用・保存・継承という10カテゴリ（A〜J）で「歴史的な意味」を整理します。</p>
+    </div>
+    <div class="info-card">
+      <div class="icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+      <h3>時期・地域の補助分類</h3>
+      <p>幕末以前から令和期までの10区分の時代分類と、京都府・大阪府・兵庫県・奈良県および広域区分による地域分類を組み合わせ、事例を横断的に比較できるようにします。</p>
+    </div>
+    <div class="info-card">
+      <div class="icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <h3>事実確度・出典段階</h3>
+      <p>「確定」から「仮説」までの5段階の事実確度、「一次資料確認済み」から「出典未確認」までの出典段階を併記し、判定時に資料の信頼度を踏まえた評価ができます。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section-block">
+  <h2>判定の進め方</h2>
+  <p class="sub">ダッシュボードでCSV／JSONの事例データを読み込むと、1件ずつ判定するレイヤーが開きます。</p>
+  <ul class="taxonomy-list">
+    <li><b>1</b>右上のメニューから調査済みの事例データ（CSV／JSON）を読み込みます。</li>
+    <li><b>2</b>一覧から気になる事例を選び、本文と全属性（交通分類・事業者・路線・時期・地域・調査分類など）を確認します。</li>
+    <li><b>3</b>「採用」「不採用」「保留」で判定し、重要度・意外性を5段階で評価、必要に応じてメモを残します。</li>
+    <li><b>4</b>判定中もいつでもダッシュボードで全体の進捗（採用・不採用・保留の件数）を振り返れます。</li>
+    <li><b>5</b>完了したら、CSV／JSONで書き出して記録・共有できます。</li>
+  </ul>
+</section>
+
+<footer class="landing-footer">
+  近畿交通近代史 事例判定アプリ ／ 対象地域：京都府・大阪府・兵庫県・奈良県
+</footer>
+
+<script src="js/db.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>
