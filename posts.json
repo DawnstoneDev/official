@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "title": "Together with TrickAble.",
+      "date": "2026-08-27",
+      "category": "Site",
+      "excerpt": "Announcement of Partnership with TrickAble.",
+      "url": "./posts/together-with-TrickAble.html"
+    },
+    {
       "title": "Quartz v1.0 is now available.",
       "date": "2026-08-17",
       "category": "Release",
