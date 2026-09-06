@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "title": "Welcome to DMGBox.",
+      "date": "2026-09-06",
+      "category": "Site",
+      "excerpt": "We made DMG Extract ･ Generate tool.",
+      "url": "./posts/welcome-to-DMGBox.html"
+    },
+    {
       "title": "Together with TrickAble.",
       "date": "2026-08-27",
       "category": "Site",
