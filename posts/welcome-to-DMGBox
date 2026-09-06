@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta
+    name="description"
+    content="Welcome to DMGBox — a small note on why we built a simpler way to work with disk images on macOS."
+  />
+
+  <meta name="theme-color" content="#f6edda" />
+
+  <meta
+    property="og:title"
+    content="Welcome to DMGBox. — Dawnstone Field Note"
+  />
+
+  <meta
+    property="og:description"
+    content="A small note on why DMGBox existed long before we decided to properly release it."
+  />
+
+  <meta property="og:type" content="article" />
+
+  <title>Welcome to DMGBox. — Field Note</title>
+
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+
+  <style>
+    :root {
+      --sky-top: #efe3ca;
+      --sky-bottom: #f6eddA;
+
+      --ink: #18304A;
+      --warm-ink: #C26A2E;
+      --gold: #FFDEA3;
+      --amber: #E8A85C;
+
+      --muted: rgba(24,48,74,0.62);
+      --faint: rgba(24,48,74,0.4);
+
+      --nav-color: #18304A;
+      --nav-bg: rgba(255,255,255,0.5);
+      --nav-border: rgba(24,48,74,0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Text",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      color: var(--ink);
+
+      background:
+        linear-gradient(
+          180deg,
+          var(--sky-top) 0%,
+          var(--sky-bottom) 100%
+        );
+
+      background-attachment: fixed;
+
+      line-height: 1.7;
+
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: rgba(194,106,46,0.22);
+      color: var(--ink);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    a:focus-visible {
+      outline: 2px solid var(--warm-ink);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    .display {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
+
+    .serif {
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        "Apple Garamond",
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    /* =========================================================
+       Background — morning stage
+       ========================================================= */
+
+    .sky {
+      position: fixed;
+      inset: 0;
+
+      z-index: -10;
+
+      overflow: hidden;
+      pointer-events: none;
+
+      background:
+        radial-gradient(
+          90% 55% at 50% 0%,
+          rgba(255,222,163,0.35) 0%,
+          transparent 60%
+        ),
+        linear-gradient(
+          180deg,
+          var(--sky-top) 0%,
+          var(--sky-bottom) 100%
+        );
+    }
+
+    /* =========================================================
+       Navigation
+       ========================================================= */
+
+    .nav-wrap {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      right: 0;
+
+      z-index: 50;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .nav-wrap {
+        padding-top: 1.5rem;
+      }
+    }
+
+    .nav {
+      width: 100%;
+      max-width: 64rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0.75rem 1.25rem;
+
+      border-radius: 9999px;
+
+      background: var(--nav-bg);
+
+      border:
+        0.5px solid
+        var(--nav-border);
+
+      backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      -webkit-backdrop-filter:
+        blur(40px)
+        saturate(150%);
+
+      box-shadow:
+        0 10px 40px rgba(24,48,74,0.10);
+
+      color: var(--nav-color);
+    }
+
+    @media (min-width: 640px) {
+      .nav {
+        padding: 0.875rem 1.75rem;
+      }
+    }
+
+    .brand {
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+    }
+
+    @media (min-width: 640px) {
+      .brand {
+        font-size: 1rem;
+      }
+    }
+
+    .nav-back {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 0.65rem;
+
+      font-size: 11px;
+
+      letter-spacing: 0.12em;
+
+      text-transform: uppercase;
+
+      text-decoration: none;
+
+      color:
+        rgba(24,48,74,0.65);
+
+      transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .nav-back:hover {
+      color: var(--warm-ink);
+
+      transform: translateX(-3px);
+    }
+
+    /* =========================================================
+       Article
+       ========================================================= */
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    .article-header {
+      min-height: 70svh;
+
+      display: flex;
+      flex-direction: column;
+
+      justify-content: flex-end;
+
+      padding:
+        9rem 1.5rem
+        6rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-header {
+        padding:
+          10rem 3rem
+          7rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-header {
+        padding:
+          11rem 5rem
+          8rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-header {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .article-header-inner {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: flex;
+
+      align-items: center;
+
+      gap: 0.8rem;
+
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.3em;
+
+      color:
+        rgba(24,48,74,0.5);
+    }
+
+    .eyebrow .dot {
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: var(--amber);
+
+      box-shadow:
+        0 0 14px
+        rgba(232,168,92,0.6);
+    }
+
+    .article-title {
+      max-width: 64rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          3.4rem,
+          10vw,
+          9rem
+        );
+
+      line-height: 0.96;
+
+      letter-spacing: -0.055em;
+
+      color: var(--ink);
+    }
+
+    .article-title .accent {
+      color: var(--warm-ink);
+    }
+
+    .article-deck {
+      max-width: 42rem;
+
+      margin-top: 2rem;
+
+      font-size:
+        clamp(
+          1.2rem,
+          2.8vw,
+          1.75rem
+        );
+
+      line-height: 1.35;
+
+      color:
+        rgba(24,48,74,0.66);
+    }
+
+    .article-meta {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 1rem 1.5rem;
+
+      margin-top: 3rem;
+
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.2em;
+
+      color:
+        rgba(24,48,74,0.45);
+    }
+
+    .article-meta span + span {
+      position: relative;
+
+      padding-left: 1.5rem;
+    }
+
+    .article-meta span + span::before {
+      content: "";
+
+      position: absolute;
+
+      left: 0;
+      top: 50%;
+
+      width: 3px;
+      height: 3px;
+
+      border-radius: 50%;
+
+      background:
+        rgba(24,48,74,0.32);
+
+      transform: translateY(-50%);
+    }
+
+    /* =========================================================
+       Divider
+       ========================================================= */
+
+    .article-divider {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        0 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-divider {
+        padding: 0 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-divider {
+        padding: 0 5rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-divider {
+        padding:
+          0 10rem;
+      }
+    }
+
+    .article-divider::after {
+      content: "";
+
+      display: block;
+
+      height: 1px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(24,48,74,0.14),
+          transparent
+        );
+    }
+
+    /* =========================================================
+       Body
+       ========================================================= */
+
+    .article-body {
+      width: 100%;
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding:
+        6rem 1.5rem
+        10rem;
+    }
+
+    @media (min-width: 640px) {
+      .article-body {
+        padding:
+          7rem 3rem
+          12rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .article-body {
+        padding:
+          8rem 5rem
+          14rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .article-body {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .article-copy {
+      max-width: 42rem;
+
+      margin: 0 auto;
+    }
+
+    .article-copy p {
+      font-size:
+        clamp(
+          1.1rem,
+          2vw,
+          1.35rem
+        );
+
+      line-height: 1.85;
+
+      color:
+        rgba(24,48,74,0.8);
+    }
+
+    .article-copy p + p {
+      margin-top: 1.75rem;
+    }
+
+    .article-copy .lead {
+      font-size:
+        clamp(
+          1.45rem,
+          3vw,
+          2rem
+        );
+
+      line-height: 1.45;
+
+      color: var(--ink);
+    }
+
+    .article-copy .lead .accent {
+      color: var(--warm-ink);
+    }
+
+    .article-copy .section-title {
+      margin-top: 5rem;
+      margin-bottom: 1.5rem;
+
+      font-size:
+        clamp(
+          1.8rem,
+          4vw,
+          3rem
+        );
+
+      line-height: 1.1;
+
+      color: var(--ink);
+    }
+
+    .article-copy .section-title .accent {
+      color: var(--warm-ink);
+    }
+
+    .article-copy blockquote {
+      margin:
+        4rem 0;
+
+      padding:
+        2rem 0 2rem 1.75rem;
+
+      border-left:
+        1px solid
+        rgba(194,106,46,0.4);
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(
+          1.5rem,
+          3.5vw,
+          2.25rem
+        );
+
+      line-height: 1.35;
+
+      font-style: italic;
+
+      color: var(--warm-ink);
+    }
+
+    /* =========================================================
+       Closing
+       ========================================================= */
+
+    .article-end {
+      margin-top: 6rem;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(24,48,74,0.12);
+    }
+
+    .article-end p {
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.24em;
+
+      color:
+        rgba(24,48,74,0.42);
+    }
+
+    .article-end .signature {
+      margin-top: 1rem;
+
+      font-family:
+        "New York",
+        "Iowan Old Style",
+        Georgia,
+        serif;
+
+      font-size: 1.6rem;
+
+      text-transform: none;
+
+      letter-spacing: 0;
+
+      color: var(--warm-ink);
+    }
+
+    /* =========================================================
+       Footer
+       ========================================================= */
+
+    .footer {
+      padding:
+        0 1.5rem
+        2rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer {
+        padding:
+          0 3rem
+          2rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .footer {
+        padding:
+          0 5rem
+          2rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .footer {
+        padding-left: 10rem;
+        padding-right: 10rem;
+      }
+    }
+
+    .footer-inner {
+      max-width: 70rem;
+
+      margin: 0 auto;
+
+      padding-top: 2rem;
+
+      border-top:
+        1px solid
+        rgba(24,48,74,0.12);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 1.5rem;
+    }
+
+    .footer-brand {
+      font-size: 11px;
+
+      letter-spacing: 0.22em;
+
+      text-decoration: none;
+
+      color:
+        rgba(24,48,74,0.58);
+    }
+
+    .footer-note {
+      font-size: 10px;
+
+      letter-spacing: 0.08em;
+
+      color:
+        rgba(24,48,74,0.4);
+    }
+
+    /* =========================================================
+       Reveal
+       ========================================================= */
+
+    .reveal {
+      opacity: 0;
+
+      transform:
+        translateY(22px);
+
+      filter:
+        blur(10px);
+
+      transition:
+        opacity 1s
+          cubic-bezier(.23,1,.32,1),
+        transform 1s
+          cubic-bezier(.23,1,.32,1),
+        filter 1s
+          cubic-bezier(.23,1,.32,1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+
+      transform: none;
+
+      filter: blur(0);
+    }
+
+    /* =========================================================
+       Responsive
+       ========================================================= */
+
+    @media (max-width: 639px) {
+      .nav-back span:first-child {
+        display: none;
+      }
+
+      .article-header {
+        min-height: 62svh;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+
+        flex-direction: column;
+      }
+    }
+
+    /* =========================================================
+       Reduced motion
+       ========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        filter: none;
+
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sky" aria-hidden="true"></div>
+
+  <div class="nav-wrap">
+
+    <nav class="nav" aria-label="Primary">
+
+      <a
+        href="../index.html"
+        class="brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <a
+        href="../posts.html"
+        class="nav-back"
+      >
+        <span>Field Note</span>
+        <span>←</span>
+      </a>
+
+    </nav>
+
+  </div>
+
+
+  <main>
+
+    <header class="article-header">
+
+      <div class="article-header-inner">
+
+        <div class="eyebrow reveal">
+          <span class="dot"></span>
+          <span>Field Note / 007</span>
+        </div>
+
+        <h1 class="article-title display reveal">
+          Welcome to
+          <span class="serif accent">
+            DMGBox.
+          </span>
+        </h1>
+
+        <p class="article-deck reveal">
+          A small utility for working with disk images on macOS,
+          and a slightly larger story about why we finally decided
+          to let other people use it.
+        </p>
+
+        <div class="article-meta reveal">
+          <span>September 2026</span>
+          <span>DMGBox</span>
+          <span>4 min read</span>
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="article-divider"></div>
+
+
+    <article class="article-body">
+
+      <div class="article-copy">
+
+        <p class="lead reveal">
+          DMGBox wasn't really supposed to become a public project.
+          <span class="accent">
+            It was originally made for a friend.
+          </span>
+        </p>
+
+        <p class="reveal">
+          That's probably the least dramatic origin story a macOS utility
+          can have. There was a DMG that needed dealing with, there were
+          a few commands that nobody particularly wanted to remember,
+          and at some point the obvious solution became: "Fine. I'll
+          make an app."
+        </p>
+
+        <p class="reveal">
+          So we did.
+        </p>
+
+        <p class="reveal">
+          DMGBox existed quietly for a while after that. It worked,
+          which was mostly the point. It could handle disk images without
+          turning a simple task into a small terminal session. It wasn't
+          trying to replace Finder, Disk Utility, or anything else.
+          It just wanted to get out of the way.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          Then we
+          <span class="serif accent">
+            rebuilt it.
+          </span>
+        </h2>
+
+        <p class="reveal">
+          The original DMGBox was useful, but it was also very much an
+          early project. The interface had grown around the implementation,
+          rather than the other way around. So we decided to stop adding
+          things on top of it and take a proper look underneath.
+        </p>
+
+        <p class="reveal">
+          The result was a much larger update than we originally planned.
+          The interface was redesigned, the workflow was simplified,
+          and the distinction between expanding a disk image and creating
+          one became much clearer.
+        </p>
+
+        <p class="reveal">
+          At some point during the process, we realized something slightly
+          inconvenient: this was no longer just the little utility we had
+          originally made for one person.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          Simple
+          <span class="serif accent">
+            on purpose.
+          </span>
+        </h2>
+
+        <p class="reveal">
+          DMG files are one of those things that macOS normally makes feel
+          effortless — until you actually need to do something beyond
+          opening one. Then suddenly you're looking at disk images,
+          volumes, filesystem tools, device nodes, and commands that are
+          perfectly reasonable once you know them and completely unnecessary
+          if all you wanted was to get a file out.
+        </p>
+
+        <p class="reveal">
+          DMGBox is built around the idea that the interface should handle
+          that complexity instead of asking you to memorize it.
+        </p>
+
+        <blockquote class="reveal">
+          "If the command is complicated, the button probably shouldn't be."
+        </blockquote>
+
+        <p class="reveal">
+          That became one of the rules we kept coming back to while
+          rebuilding the app. A good utility doesn't need to demonstrate
+          how much it knows about the system. It just needs to make the
+          thing you came here to do feel obvious.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          Made for
+          <span class="serif accent">
+            real Macs.
+          </span>
+        </h2>
+
+        <p class="reveal">
+          Another reason we cared about keeping DMGBox lightweight is
+          where it actually gets used. Not every Mac is a personal machine
+          with administrator access, a carefully configured shell, and
+          permission to install whatever happens to look useful that day.
+        </p>
+
+        <p class="reveal">
+          DMGBox is designed as a normal macOS utility that can work within
+          those boundaries. No unnecessary system modifications. No need
+          to turn a straightforward disk-image task into a battle with
+          permissions.
+        </p>
+
+        <p class="reveal">
+          That matters especially on managed Macs, where the best tool is
+          often the one that simply respects the machine it's running on.
+        </p>
+
+
+        <h2 class="section-title display reveal">
+          From one
+          <span class="serif accent">
+            friend,
+          </span>
+          to everyone.
+        </h2>
+
+        <p class="reveal">
+          The funny thing is that we didn't originally build DMGBox because
+          we thought there was a huge audience waiting for another utility.
+          We built it because one person needed it.
+        </p>
+
+        <p class="reveal">
+          Then the project got better. The interface got better. The
+          internals got better. And after the latest major update, it
+          finally felt like something worth putting in front of people
+          instead of keeping in the "things we made for ourselves" folder.
+        </p>
+
+        <p class="reveal">
+          So, here it is.
+        </p>
+
+        <p class="reveal">
+          Welcome to DMGBox.
+        </p>
+
+
+        <div class="article-end reveal">
+
+          <p>
+            End of Field Note / 007
+          </p>
+
+          <p class="signature">
+            Dawnstone
+          </p>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  </main>
+
+
+  <footer class="footer">
+
+    <div class="footer-inner">
+
+      <a
+        href="../index.html"
+        class="footer-brand display"
+      >
+        DAWNSTONE
+      </a>
+
+      <p class="footer-note">
+        Field Note / 007
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <script>
+    (function () {
+
+      var reduce =
+        window.matchMedia &&
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+
+      var elements =
+        document.querySelectorAll(".reveal");
+
+      if (reduce) {
+
+        elements.forEach(function (element) {
+          element.classList.add("in");
+        });
+
+      } else {
+
+        var observer =
+          new IntersectionObserver(
+            function (entries) {
+
+              entries.forEach(function (entry) {
+
+                if (entry.isIntersecting) {
+
+                  entry.target.classList.add("in");
+
+                  observer.unobserve(entry.target);
+
+                }
+
+              });
+
+            },
+            {
+              threshold: 0.12,
+              rootMargin: "0px 0px -8% 0px"
+            }
+          );
+
+        elements.forEach(function (element) {
+          observer.observe(element);
+        });
+
+      }
+
+    })();
+  </script>
+
+</body>
+</html>
